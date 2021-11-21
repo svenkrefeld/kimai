@@ -3,6 +3,7 @@
 .htaccess
 .env-*
 .idea/
+.migraw/
 .DS_Store
 
 # for symfony local webserver

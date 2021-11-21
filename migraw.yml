@@ -1,0 +1,14 @@
+name: local.kimai.svenkrefeld.de
+document_root: public
+network:
+  ip: 127.0.0.1
+  host: local.kimai.svenkrefeld.de
+config:
+  php: 8.0
+  php_ini_file: false
+  apache: true
+  mysql: true
+  mailhog: true
+exec:
+  - ./init.sh
+
