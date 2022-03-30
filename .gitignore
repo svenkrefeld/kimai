@@ -30,7 +30,6 @@ translations/branding.*.xlf
 /var/cache/*
 !var/cache/.gitkeep
 
-/var/invoices/*
 /var/export/*
 
 /var/packages/*
