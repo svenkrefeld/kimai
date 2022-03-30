@@ -44,13 +44,13 @@ final class MarkdownExtension implements RuntimeExtensionInterface
     }
 
     /**
-     * Transforms the entities comment (customer, project, activity ...) into HTML.
+     * Transforms entity and user comments (customer, project, activity ...) into HTML.
      *
      * @param string|null $content
      * @param bool $fullLength
      * @return string
      */
-    public function commentContent(?string $content, bool $fullLength = false): string
+    public function commentContent(?string $content, bool $fullLength = true): string
     {
         if (empty($content)) {
             return '';
@@ -61,7 +61,7 @@ final class MarkdownExtension implements RuntimeExtensionInterface
         }
 
         if ($this->isMarkdownEnabled()) {
-            $content = $this->markdown->toHtml($content, false);
+            $content = $this->markdown->toHtml($content);
         } elseif ($fullLength) {
             $content = '<p>' . nl2br($content) . '</p>';
         }
@@ -112,7 +112,7 @@ final class MarkdownExtension implements RuntimeExtensionInterface
         }
 
         if ($this->isMarkdownEnabled()) {
-            return $this->markdown->toHtml($content, false);
+            return $this->markdown->toHtml($content);
         }
 
         return nl2br($content);
@@ -126,6 +126,6 @@ final class MarkdownExtension implements RuntimeExtensionInterface
      */
     public function markdownToHtml(string $content): string
     {
-        return $this->markdown->toHtml($content, false);
+        return $this->markdown->withFullMarkdownSupport($content);
     }
 }

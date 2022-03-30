@@ -10,17 +10,23 @@
 namespace App\Widget\Type;
 
 use App\Configuration\SystemConfiguration;
+use App\Event\RevenueStatisticEvent;
 use App\Repository\TimesheetRepository;
+use App\Widget\WidgetInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class AmountYear extends CounterYear
 {
-    public function __construct(TimesheetRepository $repository, SystemConfiguration $systemConfiguration)
+    private $dispatcher;
+
+    public function __construct(TimesheetRepository $repository, SystemConfiguration $systemConfiguration, EventDispatcherInterface $dispatcher)
     {
         parent::__construct($repository, $systemConfiguration);
+        $this->dispatcher = $dispatcher;
         $this->setId('amountYear');
         $this->setOption('dataType', 'money');
         $this->setOption('icon', 'money');
-        $this->setOption('color', 'yellow');
+        $this->setOption('color', WidgetInterface::COLOR_YEAR);
         $this->setTitle('stats.amountYear');
     }
 
@@ -30,6 +36,14 @@ final class AmountYear extends CounterYear
         $this->setQuery(TimesheetRepository::STATS_QUERY_RATE);
         $this->setQueryWithUser(false);
 
-        return parent::getData($options);
+        $data = parent::getData($options);
+
+        $event = new RevenueStatisticEvent($this->begin, $this->end);
+        if ($data !== null) {
+            $event->addRevenue($data);
+        }
+        $this->dispatcher->dispatch($event);
+
+        return $event->getRevenue();
     }
 }

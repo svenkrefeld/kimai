@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      }
  * )
  *
- * @Exporter\Order({"id", "name", "customer", "orderNumber", "orderDate", "start", "end", "budget", "timeBudget", "budgetType", "color", "visible", "teams", "comment"})
+ * @Exporter\Order({"id", "name", "customer", "orderNumber", "orderDate", "start", "end", "budget", "timeBudget", "budgetType", "color", "visible", "teams", "comment", "billable"})
  * @Exporter\Expose("customer", label="label.customer", exp="object.getCustomer() === null ? null : object.getCustomer().getName()")
  * @ Exporter\Expose("teams", label="label.team", exp="object.getTeams().toArray()", type="array")
  */
@@ -104,7 +104,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     /**
      * Project order number
      *
-     * @var string
+     * @var string|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Project_Entity"})
@@ -116,7 +116,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      */
     private $orderNumber;
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Project_Entity"})
@@ -131,7 +131,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      */
     private $orderDate;
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Project"})
@@ -146,7 +146,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      */
     private $start;
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Project"})
@@ -161,7 +161,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      */
     private $end;
     /**
-     * @var string
+     * @var string|null
      * @internal used for storing the timezone for "order", "start" and "end" date
      *
      * @ORM\Column(name="timezone", type="string", length=64, nullable=true)
@@ -173,10 +173,10 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      */
     private $localized = false;
     /**
-     * @var string
+     * @var string|null
      *
      * @Serializer\Expose()
-     * @Serializer\Groups({"Project_Entity"})
+     * @Serializer\Groups({"Default"})
      *
      * @Exporter\Expose(label="label.comment")
      *
@@ -195,6 +195,18 @@ class Project implements EntityWithMetaFields, EntityWithBudget
      * @Assert\NotNull()
      */
     private $visible = true;
+    /**
+     * @var bool
+     *
+     * @Serializer\Expose()
+     * @Serializer\Groups({"Default"})
+     *
+     * @Exporter\Expose(label="label.billable", type="boolean")
+     *
+     * @ORM\Column(name="billable", type="boolean", nullable=false)
+     * @Assert\NotNull()
+     */
+    private $billable = true;
     /**
      * Meta fields
      *
@@ -292,6 +304,16 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     public function isVisible(): bool
     {
         return $this->visible;
+    }
+
+    public function setBillable(bool $billable): void
+    {
+        $this->billable = $billable;
+    }
+
+    public function isBillable(): bool
+    {
+        return $this->billable;
     }
 
     public function getOrderNumber(): ?string
@@ -423,6 +445,20 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool|int|string|null
+     */
+    public function getMetaFieldValue(string $name)
+    {
+        $field = $this->getMetaField($name);
+        if ($field === null) {
+            return null;
+        }
+
+        return $field->getValue();
     }
 
     public function setMetaField(MetaTableTypeInterface $meta): EntityWithMetaFields

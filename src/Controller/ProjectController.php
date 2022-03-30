@@ -17,6 +17,7 @@ use App\Entity\ProjectComment;
 use App\Entity\ProjectRate;
 use App\Entity\Rate;
 use App\Entity\Team;
+use App\Event\ProjectDetailControllerEvent;
 use App\Event\ProjectMetaDefinitionEvent;
 use App\Event\ProjectMetaDisplayEvent;
 use App\Export\Spreadsheet\EntityWithMetaFieldsExporter;
@@ -194,7 +195,7 @@ final class ProjectController extends AbstractController
             return $this->redirectToRoute('project_details', ['id' => $projectId]);
         }
 
-        $csrfTokenManager->refreshToken($token);
+        $csrfTokenManager->refreshToken('project.delete_comment');
 
         try {
             $this->repository->deleteComment($comment);
@@ -241,7 +242,7 @@ final class ProjectController extends AbstractController
             return $this->redirectToRoute('project_details', ['id' => $projectId]);
         }
 
-        $csrfTokenManager->refreshToken($token);
+        $csrfTokenManager->refreshToken('project.pin_comment');
 
         $comment->setPinned(!$comment->isPinned());
         try {
@@ -348,6 +349,11 @@ final class ProjectController extends AbstractController
             $teams = $project->getTeams();
         }
 
+        // additional boxes by plugins
+        $event = new ProjectDetailControllerEvent($project);
+        $this->dispatcher->dispatch($event);
+        $boxes = $event->getController();
+
         return $this->render('project/details.html.twig', [
             'project' => $project,
             'comments' => $comments,
@@ -358,6 +364,7 @@ final class ProjectController extends AbstractController
             'teams' => $teams,
             'rates' => $rates,
             'now' => $now,
+            'boxes' => $boxes
         ]);
     }
 
@@ -432,7 +439,7 @@ final class ProjectController extends AbstractController
             return $this->redirectToRoute('project_details', ['id' => $project->getId()]);
         }
 
-        $csrfTokenManager->refreshToken($token);
+        $csrfTokenManager->refreshToken('project.duplicate');
 
         $newProject = $projectDuplicationService->duplicate($project, $project->getName() . ' [COPY]');
 

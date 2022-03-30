@@ -9,6 +9,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Configuration\SystemConfiguration;
 use App\Entity\Customer;
 use App\Entity\CustomerComment;
 use App\Entity\CustomerMeta;
@@ -42,6 +43,29 @@ class CustomerControllerTest extends ControllerBaseTest
         $client = $this->getClientForAuthenticatedUser(User::ROLE_TEAMLEAD);
         $this->assertAccessIsGranted($client, '/admin/customer/');
         $this->assertHasDataTable($client);
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/customer/export'),
+            'help' => 'https://www.kimai.org/documentation/customer.html'
+        ]);
+    }
+
+    public function testIndexActionAsSuperAdmin()
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
+        $this->assertAccessIsGranted($client, '/admin/customer/');
+        $this->assertHasDataTable($client);
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/customer/export'),
+            'create modal-ajax-form' => $this->createUrl('/admin/customer/create'),
+            'settings modal-ajax-form' => $this->createUrl('/admin/system-config/edit/customer'),
+            'help' => 'https://www.kimai.org/documentation/customer.html'
+        ]);
     }
 
     public function testIndexActionWithSearchTermQuery()
@@ -59,6 +83,14 @@ class CustomerControllerTest extends ControllerBaseTest
         $this->importFixture($fixture);
 
         $this->assertAccessIsGranted($client, '/admin/customer/');
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/customer/export'),
+            'create modal-ajax-form' => $this->createUrl('/admin/customer/create'),
+            'help' => 'https://www.kimai.org/documentation/customer.html'
+        ]);
 
         $form = $client->getCrawler()->filter('form.searchform')->form();
         $client->submit($form, [
@@ -161,6 +193,13 @@ class CustomerControllerTest extends ControllerBaseTest
         $this->assertIsRedirect($client, $this->createUrl('/admin/customer/1/details'));
         $client->followRedirect();
         $node = $client->getCrawler()->filter('div.box#comments_box .direct-chat-text');
+        self::assertStringContainsString('A beautiful and short comment **with some** markdown formatting', $node->html());
+
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
+        $configService = static::$kernel->getContainer()->get(SystemConfiguration::class);
+        $configService->offsetSet('timesheet.markdown_content', true);
+        $this->assertAccessIsGranted($client, '/admin/customer/1/details');
+        $node = $client->getCrawler()->filter('div.box#comments_box .direct-chat-text');
         self::assertStringContainsString('<p>A beautiful and short comment <strong>with some</strong> markdown formatting</p>', $node->html());
     }
 
@@ -241,8 +280,10 @@ class CustomerControllerTest extends ControllerBaseTest
         $this->assertIsRedirect($client, $this->createUrl('/admin/customer/1/details'));
         $client->followRedirect();
         $node = $client->getCrawler()->filter('div.box#comments_box .box-body a.btn.active');
+        $token2 = self::$container->get('security.csrf.token_manager')->getToken('customer.pin_comment');
         self::assertEquals(1, $node->count());
-        self::assertEquals($this->createUrl('/admin/customer/' . $id . '/comment_pin/' . $token), $node->attr('href'));
+        self::assertEquals($this->createUrl('/admin/customer/' . $id . '/comment_pin/' . $token2), $node->attr('href'));
+        self::assertNotEquals($token, $token2);
     }
 
     public function testCreateDefaultTeamAction()
@@ -326,8 +367,9 @@ class CustomerControllerTest extends ControllerBaseTest
         $this->assertTrue($client->getResponse()->isSuccessful());
 
         $form = $client->getCrawler()->filter('form[name=customer_edit_form]')->form();
-        $this->assertTrue($form->has('customer_edit_form[metaFields][0][value]'));
-        $this->assertFalse($form->has('customer_edit_form[metaFields][1][value]'));
+        $this->assertTrue($form->has('customer_edit_form[metaFields][metatestmock][value]'));
+        $this->assertTrue($form->has('customer_edit_form[metaFields][foobar][value]'));
+        $this->assertFalse($form->has('customer_edit_form[metaFields][0][value]'));
     }
 
     public function testEditAction()

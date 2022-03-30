@@ -74,9 +74,9 @@
     {% if user.avatar is not empty and kimai_config.themeAllowAvatarUrls %}
         {% set avatar = asset(user.avatar, 'avatars') %}
         {% if tooltip is same as (false) %}
-        <img src="{{ avatar }}" class="img-circle{% if class is not empty %} {{ class }}{% endif %}" alt="{{ user.displayName }}" />
+        <img src="{{ avatar }}" class="img-circle avatar{% if class is not empty %} {{ class }}{% endif %}" alt="{{ user.displayName }}" />
         {% else %}
-        <img src="{{ avatar }}" class="img-circle{% if class is not empty %} {{ class }}{% endif %}" data-toggle="tooltip" data-placement="top" alt="{{ user.displayName }}" title="{{ tooltip|default(user.displayName) }}" />
+        <img src="{{ avatar }}" class="img-circle avatar{% if class is not empty %} {{ class }}{% endif %}" alt="{{ user.displayName }}" data-toggle="tooltip" data-placement="top" title="{{ tooltip|default(user.displayName) }}" />
         {% endif %}
     {% else %}
         {% set color = user.color|colorize(user.displayName) %}
@@ -528,7 +528,7 @@
                 <td class="avatars">
                     {% set teamHiddenId = 'team_' ~ team.id ~ '_hiddenUser' ~ random() %}
                     {% set counter = 0  %}
-                    {% for member in members|sort((a, b) => a.teamlead < b.teamlead) %}
+                    {% for member in members|sort((a, b) => b.teamlead <=> a.teamlead) %}
                         {% set user = member.user %}
                         {% if member.teamlead %}
                             {{ _self.user_avatar(user, ('label.teamlead'|trans ~ ': ' ~ user.displayName), 'teamlead') }}

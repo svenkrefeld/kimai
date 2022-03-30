@@ -31,6 +31,7 @@ class CustomerTest extends AbstractEntityTest
         self::assertNull($sut->getNumber());
         self::assertNull($sut->getComment());
         self::assertTrue($sut->isVisible());
+        self::assertTrue($sut->isBillable());
 
         self::assertNull($sut->getCompany());
         self::assertNull($sut->getVatId());
@@ -51,6 +52,7 @@ class CustomerTest extends AbstractEntityTest
         self::assertInstanceOf(Collection::class, $sut->getMetaFields());
         self::assertEquals(0, $sut->getMetaFields()->count());
         self::assertNull($sut->getMetaField('foo'));
+        self::assertNull($sut->getMetaFieldValue('foo'));
         self::assertInstanceOf(Collection::class, $sut->getTeams());
         self::assertEquals(0, $sut->getTeams()->count());
     }
@@ -69,6 +71,11 @@ class CustomerTest extends AbstractEntityTest
 
         self::assertInstanceOf(Customer::class, $sut->setVisible(false));
         self::assertFalse($sut->isVisible());
+
+        $sut->setVisible(false);
+        self::assertFalse($sut->isVisible());
+        $sut->setVisible(true);
+        self::assertTrue($sut->isVisible());
 
         self::assertInstanceOf(Customer::class, $sut->setComment('hello world'));
         self::assertEquals('hello world', $sut->getComment());
@@ -117,12 +124,14 @@ class CustomerTest extends AbstractEntityTest
     {
         $sut = new Customer();
         $meta = new CustomerMeta();
-        $meta->setName('foo')->setValue('bar')->setType('test');
+        $meta->setName('foo')->setValue('bar2')->setType('test');
         self::assertInstanceOf(Customer::class, $sut->setMetaField($meta));
         self::assertEquals(1, $sut->getMetaFields()->count());
         $result = $sut->getMetaField('foo');
         self::assertSame($result, $meta);
         self::assertEquals('test', $result->getType());
+        self::assertEquals('bar2', $result->getValue());
+        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $meta2 = new CustomerMeta();
         $meta2->setName('foo')->setValue('bar')->setType('test2');
@@ -133,6 +142,7 @@ class CustomerTest extends AbstractEntityTest
         $result = $sut->getMetaField('foo');
         self::assertSame($result, $meta);
         self::assertEquals('test2', $result->getType());
+        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $sut->setMetaField((new CustomerMeta())->setName('blub')->setIsVisible(true));
         $sut->setMetaField((new CustomerMeta())->setName('blab')->setIsVisible(true));
@@ -194,6 +204,7 @@ class CustomerTest extends AbstractEntityTest
             ['label.color', 'string'],
             ['label.visible', 'boolean'],
             ['label.comment', 'string'],
+            ['label.billable', 'boolean'],
         ];
 
         self::assertCount(\count($expected), $columns);
@@ -234,6 +245,7 @@ class CustomerTest extends AbstractEntityTest
         foreach ($sut->getMetaFields() as $metaField) {
             $cloneMeta = $clone->getMetaField($metaField->getName());
             self::assertEquals($cloneMeta->getValue(), $metaField->getValue());
+            self::assertEquals($metaField->getValue(), $clone->getMetaFieldValue($metaField->getName()));
         }
         self::assertEquals($clone->getBudget(), $sut->getBudget());
         self::assertEquals($clone->getTimeBudget(), $sut->getTimeBudget());

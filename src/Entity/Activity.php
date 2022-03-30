@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      }
  * )
  *
- * @Exporter\Order({"id", "name", "project", "budget", "timeBudget", "budgetType", "color", "visible", "comment"})
+ * @Exporter\Order({"id", "name", "project", "budget", "timeBudget", "budgetType", "color", "visible", "comment", "billable"})
  * @Exporter\Expose("project", label="label.project", exp="object.getProject() === null ? null : object.getProject().getName()")
  */
 class Activity implements EntityWithMetaFields, EntityWithBudget
@@ -99,10 +99,10 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
     /**
      * Description of this activity
      *
-     * @var string
+     * @var string|null
      *
      * @Serializer\Expose()
-     * @Serializer\Groups({"Activity_Entity"})
+     * @Serializer\Groups({"Default"})
      *
      * @Exporter\Expose(label="label.comment")
      *
@@ -123,6 +123,18 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
      * @Assert\NotNull()
      */
     private $visible = true;
+    /**
+     * @var bool
+     *
+     * @Serializer\Expose()
+     * @Serializer\Groups({"Default"})
+     *
+     * @Exporter\Expose(label="label.billable", type="boolean")
+     *
+     * @ORM\Column(name="billable", type="boolean", nullable=false)
+     * @Assert\NotNull()
+     */
+    private $billable = true;
     /**
      * Meta fields
      *
@@ -227,6 +239,16 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         return $this->visible;
     }
 
+    public function setBillable(bool $billable): void
+    {
+        $this->billable = $billable;
+    }
+
+    public function isBillable(): bool
+    {
+        return $this->billable;
+    }
+
     /**
      * @return Collection|MetaTableTypeInterface[]
      */
@@ -259,6 +281,20 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool|int|string|null
+     */
+    public function getMetaFieldValue(string $name)
+    {
+        $field = $this->getMetaField($name);
+        if ($field === null) {
+            return null;
+        }
+
+        return $field->getValue();
     }
 
     public function setMetaField(MetaTableTypeInterface $meta): EntityWithMetaFields
@@ -325,7 +361,7 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
 
         $currentMeta = $this->meta;
         $this->meta = new ArrayCollection();
-        /** @var ProjectMeta $meta */
+        /** @var ActivityMeta $meta */
         foreach ($currentMeta as $meta) {
             $newMeta = clone $meta;
             $newMeta->setEntity($this);

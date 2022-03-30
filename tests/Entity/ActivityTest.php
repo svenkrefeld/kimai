@@ -32,12 +32,14 @@ class ActivityTest extends AbstractEntityTest
         $this->assertNull($sut->getName());
         $this->assertNull($sut->getComment());
         $this->assertTrue($sut->isVisible());
+        $this->assertTrue($sut->isBillable());
         $this->assertTrue($sut->isGlobal());
         $this->assertNull($sut->getColor());
         self::assertFalse($sut->hasColor());
         $this->assertInstanceOf(Collection::class, $sut->getMetaFields());
         $this->assertEquals(0, $sut->getMetaFields()->count());
         $this->assertNull($sut->getMetaField('foo'));
+        $this->assertNull($sut->getMetaFieldValue('foo'));
         $this->assertInstanceOf(Collection::class, $sut->getTeams());
     }
 
@@ -55,6 +57,11 @@ class ActivityTest extends AbstractEntityTest
 
         $this->assertInstanceOf(Activity::class, $sut->setVisible(false));
         $this->assertFalse($sut->isVisible());
+
+        $sut->setVisible(false);
+        self::assertFalse($sut->isVisible());
+        $sut->setVisible(true);
+        self::assertTrue($sut->isVisible());
 
         $this->assertInstanceOf(Activity::class, $sut->setComment('hello world'));
         $this->assertEquals('hello world', $sut->getComment());
@@ -77,12 +84,14 @@ class ActivityTest extends AbstractEntityTest
     {
         $sut = new Activity();
         $meta = new ActivityMeta();
-        $meta->setName('foo')->setValue('bar')->setType('test');
+        $meta->setName('foo')->setValue('bar2')->setType('test');
         $this->assertInstanceOf(Activity::class, $sut->setMetaField($meta));
         self::assertEquals(1, $sut->getMetaFields()->count());
         $result = $sut->getMetaField('foo');
         self::assertSame($result, $meta);
         self::assertEquals('test', $result->getType());
+        self::assertEquals('bar2', $result->getValue());
+        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $meta2 = new ActivityMeta();
         $meta2->setName('foo')->setValue('bar')->setType('test2');
@@ -93,6 +102,7 @@ class ActivityTest extends AbstractEntityTest
         $result = $sut->getMetaField('foo');
         self::assertSame($result, $meta);
         self::assertEquals('test2', $result->getType());
+        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $sut->setMetaField((new ActivityMeta())->setName('blub')->setIsVisible(true));
         $sut->setMetaField((new ActivityMeta())->setName('blab')->setIsVisible(true));
@@ -141,6 +151,7 @@ class ActivityTest extends AbstractEntityTest
             ['label.color', 'string'],
             ['label.visible', 'boolean'],
             ['label.comment', 'string'],
+            ['label.billable', 'boolean'],
         ];
 
         self::assertCount(\count($expected), $columns);
@@ -190,6 +201,7 @@ class ActivityTest extends AbstractEntityTest
         foreach ($sut->getMetaFields() as $metaField) {
             $cloneMeta = $clone->getMetaField($metaField->getName());
             self::assertEquals($cloneMeta->getValue(), $metaField->getValue());
+            self::assertEquals($metaField->getValue(), $clone->getMetaFieldValue($metaField->getName()));
         }
         self::assertEquals($clone->getBudget(), $sut->getBudget());
         self::assertEquals($clone->getTimeBudget(), $sut->getTimeBudget());

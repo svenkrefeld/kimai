@@ -2,7 +2,7 @@
 {% import "macros/widgets.html.twig" as widgets %}
 {% import "macros/widgets.html.twig" as widgets %}
 
-{% block page_title %}{{ 'calendar.title'|trans }}{% endblock %}
+{% block page_title %}{{ 'calendar'|trans }}{% endblock %}
 {% block page_actions %}
     {% set event = actions(app.user, 'calendar', 'index') %}
     {{ widgets.page_actions(event.actions) }}
@@ -120,11 +120,13 @@
 
         function renderEventPopoverContent(eventObj)
         {
+            const escaper = kimai.getPlugin('escape');
+
             return '<div class="calendar-entry">' +
                     '<ul>' +
-                        '<li>' + '{{ 'label.customer'|trans }}: ' + eventObj.customer + '</li>' +
-                        '<li>' + '{{ 'label.project'|trans }}: ' + eventObj.project + '</li>' +
-                        '<li>' + '{{ 'label.activity'|trans }}: ' + eventObj.activity + '</li>' +
+                        '<li>' + '{{ 'label.customer'|trans }}: ' + escaper.escapeForHtml(eventObj.customer) + '</li>' +
+                        '<li>' + '{{ 'label.project'|trans }}: ' + escaper.escapeForHtml(eventObj.project) + '</li>' +
+                        '<li>' + '{{ 'label.activity'|trans }}: ' + escaper.escapeForHtml(eventObj.activity) + '</li>' +
                     '</ul>' +
                     (eventObj.description !== null || eventObj.tags.length > 0 ? '<hr>' : '') +
                     (eventObj.description ? '<p>' + eventObj.description + '</p>' : '') +

@@ -17,6 +17,7 @@
 } %}
 
 {% set tableName = 'export' %}
+{% set editExported = is_granted('edit_exported_timesheet') %}
 
 {% block page_title %}{{ 'export.title'|trans }}{% endblock %}
 {% block page_actions %}
@@ -83,18 +84,26 @@
                     <div class="btn-group" id="export-buttons" role="group">
                         {% for group in buttons %}
                             {% set button = group.0 %}
+                            {% set btnTitle = ('button.' ~ button.title)|trans %}
+                            {% if btnTitle == ('button.' ~ button.title) %}
+                                {% set btnTitle = button.title  %}
+                            {% endif %}
                             {% if group|length == 1 %}
                                 <button type="button" id="export-{{ button.id }}-button" class="btn btn-success startExportBtn" data-type="{{ button.id }}">
-                                    {{ ('button.' ~ button.title)|trans }}
+                                    {{ btnTitle }}
                                 </button>
                             {% elseif group|length > 1 %}
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{ ('button.' ~ button.title)|trans }} <span class="caret"></span>
+                                        {{ btnTitle }} <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu">
                                         {% for button in group %}
-                                            <li><a href="#" class="startExportBtn" data-type="{{ button.id }}">{{ (button.id)|trans({}, 'export') }}</a></li>
+                                            {% set btnTitle = (button.id)|trans({}, 'export') %}
+                                            {% if btnTitle == button.id %}
+                                                {% set btnTitle = button.id|split('.')|first|replace({'-': ' ', '_': ' '})|split(' ')|map(t => t|capitalize)|join(' ') %}
+                                            {% endif %}
+                                            <li><a href="#" class="startExportBtn" data-type="{{ button.id }}">{{ btnTitle }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -185,10 +194,14 @@
                     <td class="{{ tables.data_table_column_class(tableName, columns, 'exported') }}">
                     {% if is_granted('edit_export', entry) %}
                         {% if entry.exported %}
+                            {% if editExported %}
                             <button type="button" class="btn btn-default exportBtn active" data-toggle="button" aria-pressed="true" autocomplete="off"
                                     data-exported-text="{{ 'entryState.exported'|trans }}" data-clean-text="{{ 'entryState.not_exported'|trans }}" data-timesheet="{{ entry.id }}">
                             {{ 'entryState.exported'|trans }}
                             </button>
+                            {% else %}
+                            {{ 'entryState.exported'|trans }}
+                            {% endif %}
                         {% else %}
                             <button type="button" class="btn btn-default exportBtn" data-toggle="button" aria-pressed="false" autocomplete="off"
                                     data-exported-text="{{ 'entryState.exported'|trans }}" data-clean-text="{{ 'entryState.not_exported'|trans }}" data-timesheet="{{ entry.id }}">
@@ -274,12 +287,19 @@
                 },
                 method: 'PATCH',
                 success: function(data) {
+                    let isShowAll = jQuery('select#exported').val() === '{{ constant('App\\Repository\\Query\\TimesheetQuery::STATE_ALL') }}';
                     if (exported) {
+                        {% if editExported %}
                         button.button('exported');
+                        {% else %}
+                        if (isShowAll) {
+                            button.replaceWith('{{ 'entryState.exported'|trans }}');
+                        }
+                        {% endif %}
                     } else {
                         button.button('clean');
                     }
-                    if (jQuery('select#exported').val() !== '{{ constant('App\\Repository\\Query\\TimesheetQuery::STATE_ALL') }}') {
+                    if (!isShowAll) {
                         button.closest('tr').hide('ease', function() {
                             jQuery(this).remove();
                             if(jQuery(this).closest('table').find('tbody tr:visible').length === 0) {

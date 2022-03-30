@@ -211,14 +211,14 @@ abstract class TimesheetAbstractController extends AbstractController
         ]);
     }
 
-    protected function duplicate(Timesheet $timesheet, Request $request, string $renderTemplate, string $token): Response
+    protected function duplicate(Timesheet $timesheet, Request $request, string $renderTemplate): Response
     {
         $copyTimesheet = clone $timesheet;
 
         $event = new TimesheetMetaDefinitionEvent($copyTimesheet);
         $this->dispatcher->dispatch($event);
 
-        $form = $this->getDuplicateForm($copyTimesheet, $timesheet, $token);
+        $form = $this->getDuplicateForm($copyTimesheet, $timesheet);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -455,6 +455,7 @@ abstract class TimesheetAbstractController extends AbstractController
             'action' => $this->generateUrl($this->getMultiUpdateRoute(), []),
             'method' => 'POST',
             'include_exported' => $this->isGranted($this->getPermissionEditExport()),
+            'include_billable' => $this->isGranted($this->getPermissionEditBillable()),
             'include_rate' => $this->isGranted($this->getPermissionEditRate()),
             'include_user' => $this->includeUserInForms('multi'),
         ]);
@@ -482,6 +483,7 @@ abstract class TimesheetAbstractController extends AbstractController
             'action' => $action,
             'include_rate' => $this->isGranted('edit_rate', $entry),
             'include_exported' => $this->isGranted('edit_export', $entry),
+            'include_billable' => $this->isGranted('edit_billable', $entry),
             'include_user' => $this->includeUserInForms('create'),
             'allow_begin_datetime' => $mode->canEditBegin(),
             'allow_end_datetime' => $mode->canEditEnd(),
@@ -510,6 +512,7 @@ abstract class TimesheetAbstractController extends AbstractController
             ]),
             'include_rate' => $this->isGranted('edit_rate', $entry),
             'include_exported' => $this->isGranted('edit_export', $entry),
+            'include_billable' => $this->isGranted('edit_billable', $entry),
             'include_user' => $this->includeUserInForms('edit'),
             'allow_begin_datetime' => $mode->canEditBegin(),
             'allow_end_datetime' => $mode->canEditEnd(),
@@ -547,6 +550,11 @@ abstract class TimesheetAbstractController extends AbstractController
     protected function getPermissionEditExport(): string
     {
         return 'edit_export_own_timesheet';
+    }
+
+    protected function getPermissionEditBillable(): string
+    {
+        return 'edit_billable_own_timesheet';
     }
 
     protected function getPermissionEditRate(): string
@@ -612,7 +620,7 @@ abstract class TimesheetAbstractController extends AbstractController
         return $query;
     }
 
-    abstract protected function getDuplicateForm(Timesheet $entry, Timesheet $original, string $token): FormInterface;
+    abstract protected function getDuplicateForm(Timesheet $entry, Timesheet $original): FormInterface;
 
     abstract protected function getCreateForm(Timesheet $entry): FormInterface;
 }

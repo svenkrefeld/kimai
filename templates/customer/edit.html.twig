@@ -1,7 +1,7 @@
 {% extends app.request.xmlHttpRequest ? 'form.html.twig' : 'base.html.twig' %}
 {% import "customer/actions.html.twig" as actions %}
 
-{% block page_title %}{{ 'admin_customer.title'|trans }}{% endblock %}
+{% block page_title %}{{ 'customers'|trans }}{% endblock %}
 {% block page_actions %}{{ actions.customer(customer, 'edit') }}{% endblock %}
 
 {% block main %}
@@ -80,7 +80,14 @@
                     </div>
                 </div>
             {% endif %}
-            {{ form_row(form.visible) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.visible) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.billable) }}
+                </div>
+            </div>
             {% if form.metaFields is defined and form.metaFields is not empty %}
                 {% for meta in form.metaFields|sort((a, b) => a.vars.data.order <=> b.vars.data.order) %}
                     {{ form_row(meta) }}

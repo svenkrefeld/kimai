@@ -14,7 +14,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Custom form field type to select if something is billable.
- * To be used in combination with the invoicing system.
  */
 class BillableType extends AbstractType
 {

@@ -9,6 +9,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Configuration\SystemConfiguration;
 use App\Entity\Activity;
 use App\Entity\ActivityMeta;
 use App\Entity\ActivityRate;
@@ -48,6 +49,29 @@ class ProjectControllerTest extends ControllerBaseTest
         $client = $this->getClientForAuthenticatedUser(User::ROLE_TEAMLEAD);
         $this->assertAccessIsGranted($client, '/admin/project/');
         $this->assertHasDataTable($client);
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/project/export'),
+            'help' => 'https://www.kimai.org/documentation/project.html'
+        ]);
+    }
+
+    public function testIndexActionAsSuperAdmin()
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
+        $this->assertAccessIsGranted($client, '/admin/project/');
+        $this->assertHasDataTable($client);
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/project/export'),
+            'create modal-ajax-form' => $this->createUrl('/admin/project/create'),
+            'settings modal-ajax-form' => $this->createUrl('/admin/system-config/edit/project'),
+            'help' => 'https://www.kimai.org/documentation/project.html'
+        ]);
     }
 
     public function testIndexActionWithSearchTermQuery()
@@ -65,6 +89,14 @@ class ProjectControllerTest extends ControllerBaseTest
         $this->importFixture($fixture);
 
         $this->assertAccessIsGranted($client, '/admin/project/');
+
+        $this->assertPageActions($client, [
+            'search' => '#',
+            'visibility' => '#',
+            'download toolbar-action' => $this->createUrl('/admin/project/export'),
+            'create modal-ajax-form' => $this->createUrl('/admin/project/create'),
+            'help' => 'https://www.kimai.org/documentation/project.html'
+        ]);
 
         $form = $client->getCrawler()->filter('form.searchform')->form();
         $client->submit($form, [
@@ -260,6 +292,13 @@ class ProjectControllerTest extends ControllerBaseTest
         $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
         $client->followRedirect();
         $node = $client->getCrawler()->filter('div.box#comments_box .direct-chat-text');
+        self::assertStringContainsString('A beautiful and long comment **with some** markdown formatting', $node->html());
+
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
+        $configService = static::$kernel->getContainer()->get(SystemConfiguration::class);
+        $configService->offsetSet('timesheet.markdown_content', true);
+        $this->assertAccessIsGranted($client, '/admin/project/1/details');
+        $node = $client->getCrawler()->filter('div.box#comments_box .direct-chat-text');
         self::assertStringContainsString('<p>A beautiful and long comment <strong>with some</strong> markdown formatting</p>', $node->html());
     }
 
@@ -318,8 +357,10 @@ class ProjectControllerTest extends ControllerBaseTest
         $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
         $client->followRedirect();
         $node = $client->getCrawler()->filter('div.box#comments_box .box-body a.btn.active');
+        $token2 = self::$container->get('security.csrf.token_manager')->getToken('project.pin_comment');
         self::assertEquals(1, $node->count());
-        self::assertEquals($this->createUrl('/admin/project/' . $id . '/comment_pin/' . $token), $node->attr('href'));
+        self::assertEquals($this->createUrl('/admin/project/' . $id . '/comment_pin/' . $token2), $node->attr('href'));
+        self::assertNotEquals($token, $token2);
     }
 
     public function testCreateDefaultTeamAction()
@@ -394,8 +435,9 @@ class ProjectControllerTest extends ControllerBaseTest
         $this->assertTrue($client->getResponse()->isSuccessful());
 
         $form = $client->getCrawler()->filter('form[name=project_edit_form]')->form();
-        $this->assertTrue($form->has('project_edit_form[metaFields][0][value]'));
-        $this->assertFalse($form->has('project_edit_form[metaFields][1][value]'));
+        $this->assertTrue($form->has('project_edit_form[metaFields][metatestmock][value]'));
+        $this->assertTrue($form->has('project_edit_form[metaFields][foobar][value]'));
+        $this->assertFalse($form->has('project_edit_form[metaFields][0][value]'));
     }
 
     public function testEditAction()

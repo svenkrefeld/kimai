@@ -16,6 +16,7 @@ use App\Event\MetaDisplayEventInterface;
 use App\Event\ProjectMetaDisplayEvent;
 use App\Event\TimesheetMetaDisplayEvent;
 use App\Event\UserPreferenceDisplayEvent;
+use App\Export\ExportFilename;
 use App\Export\ExportItemInterface;
 use App\Repository\Query\CustomerQuery;
 use App\Repository\Query\TimesheetQuery;
@@ -44,9 +45,16 @@ abstract class AbstractSpreadsheetRenderer
     public const TIME_FORMAT = 'hh:mm';
     public const DURATION_FORMAT = '[hh]:mm';
     public const DURATION_DECIMAL = '#0.00';
+
+    // https://support.microsoft.com/de-de/office/zahlenformatcodes-5026bbd6-04bc-48cd-bf33-80f18b4eae68
+    // Part 1 = positive; Part 2 = negative; Part 3 = zero; Part 4 = Text
     public const RATE_FORMAT_DEFAULT = '#.##0,00 [$%1$s];-#.##0,00 [$%1$s]';
-    public const RATE_FORMAT_LEFT = '_("%1$s"* #,##0.00_);_("%1$s"* \(#,##0.00\);_("%1$s"* "-"??_);_(@_)';
+    public const RATE_FORMAT_LEFT = '_("%1$s"* #,##0.00_);_("%1$s"* -#,##0.00;_("%1$s"* "-"??_);_(@_)';
     public const RATE_FORMAT = self::RATE_FORMAT_LEFT;
+    /**
+     * @internal used in html to excel exporter
+     */
+    public const RATE_FORMAT_NO_CURRENCY = '#,##0.00;-#,##0.00';
 
     protected $durationFormat = self::DURATION_FORMAT;
     protected $durationBase = 86400;
@@ -184,7 +192,7 @@ abstract class AbstractSpreadsheetRenderer
 
     protected function setDurationTotal(Worksheet $sheet, $column, $row, $startCoordinate, $endCoordinate)
     {
-        $sheet->setCellValueByColumnAndRow($column, $row, sprintf('=SUM(%s:%s)', $startCoordinate, $endCoordinate));
+        $sheet->setCellValueByColumnAndRow($column, $row, sprintf('=SUBTOTAL(9,%s:%s)', $startCoordinate, $endCoordinate));
         $style = $sheet->getStyleByColumnAndRow($column, $row);
         $style->getNumberFormat()->setFormatCode($this->durationFormat);
     }
@@ -200,7 +208,7 @@ abstract class AbstractSpreadsheetRenderer
 
     protected function setRateTotal(Worksheet $sheet, $column, $row, $startCoordinate, $endCoordinate)
     {
-        $sheet->setCellValueByColumnAndRow($column, $row, sprintf('=SUM(%s:%s)', $startCoordinate, $endCoordinate));
+        $sheet->setCellValueByColumnAndRow($column, $row, sprintf('=SUBTOTAL(9,%s:%s)', $startCoordinate, $endCoordinate));
     }
 
     protected function setRateStyle(Worksheet $sheet, $column, $row, $rate, $currency)
@@ -753,9 +761,10 @@ abstract class AbstractSpreadsheetRenderer
     public function render(array $exportItems, TimesheetQuery $query): Response
     {
         $spreadsheet = $this->fromArrayToSpreadsheet($exportItems, $query);
-        $filename = $this->saveSpreadsheet($spreadsheet);
+        $file = $this->saveSpreadsheet($spreadsheet);
+        $filename = new ExportFilename($query);
 
-        return $this->getFileResponse($filename, 'kimai-export' . $this->getFileExtension());
+        return $this->getFileResponse($file, $filename->getFilename() . $this->getFileExtension());
     }
 
     /**

@@ -14,12 +14,15 @@ use App\Event\SystemConfigurationEvent;
 use App\Form\Model\Configuration;
 use App\Form\Model\SystemConfiguration as SystemConfigurationModel;
 use App\Form\SystemConfigurationForm;
+use App\Form\Type\ActivityTypePatternType;
 use App\Form\Type\ArrayToCommaStringType;
+use App\Form\Type\CustomerTypePatternType;
 use App\Form\Type\DatePickerType;
 use App\Form\Type\DateTimeTextType;
 use App\Form\Type\DayTimeType;
 use App\Form\Type\LanguageType;
 use App\Form\Type\MinuteIncrementType;
+use App\Form\Type\ProjectTypePatternType;
 use App\Form\Type\RoundingModeType;
 use App\Form\Type\SkinType;
 use App\Form\Type\TimezoneType;
@@ -266,8 +269,7 @@ final class SystemConfigurationController extends AbstractController
             }
         }
 
-        $authentication = (new SystemConfigurationModel())
-            ->setSection(SystemConfigurationModel::SECTION_AUTHENTICATION)
+        $authentication = (new SystemConfigurationModel('authentication'))
             ->setConfiguration([
                 (new Configuration())
                     ->setName('user.login')
@@ -319,9 +321,8 @@ final class SystemConfigurationController extends AbstractController
             $authentication->getConfigurationByName('user.password_reset_token_ttl')->setEnabled(false);
         }
 
-        $configurationModels = [
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_TIMESHEET)
+        return [
+            (new SystemConfigurationModel('timesheet'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('timesheet.mode')
@@ -382,13 +383,21 @@ final class SystemConfigurationController extends AbstractController
                         ->setConstraints([
                             new GreaterThanOrEqual(['value' => 0])
                         ]),
-                    (new Configuration())
-                        ->setName('defaults.timesheet.billable')
-                        ->setType(YesNoType::class)
-                        ->setOptions(['help' => 'default_value_new', 'label' => 'label.billable']),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_LOCKDOWN)
+            (new SystemConfigurationModel('quick_entry'))
+                ->setTranslation('quick_entry.title')
+                ->setTranslationDomain('messages')
+                ->setConfiguration([
+                    (new Configuration())
+                        ->setName('quick_entry.recent_activities')
+                        ->setType(IntegerType::class)
+                        ->setTranslationDomain('system-configuration')
+                        ->setRequired(false)
+                        ->setConstraints([
+                            new Range(['min' => 0, 'max' => 20]),
+                        ]),
+                ]),
+            (new SystemConfigurationModel('lockdown_period'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('timesheet.rules.lockdown_period_start')
@@ -417,8 +426,7 @@ final class SystemConfigurationController extends AbstractController
                         ->setConstraints([new DateTimeFormat()])
                         ->setTranslationDomain('system-configuration'),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_ROUNDING)
+            (new SystemConfigurationModel('rounding'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('timesheet.rounding.default.mode')
@@ -450,8 +458,9 @@ final class SystemConfigurationController extends AbstractController
                         ->setType(WeekDaysType::class)
                         ->setTranslationDomain('system-configuration'),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_FORM_INVOICE)
+            (new SystemConfigurationModel('invoice'))
+                ->setTranslation('invoices')
+                ->setTranslationDomain('messages')
                 ->setConfiguration([
                     // TODO that should be a custom type with validation
                     (new Configuration())
@@ -468,8 +477,7 @@ final class SystemConfigurationController extends AbstractController
                         ->setTranslationDomain('system-configuration'),
                 ]),
             $authentication,
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_FORM_CUSTOMER)
+            (new SystemConfigurationModel('customer'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('defaults.customer.timezone')
@@ -487,9 +495,26 @@ final class SystemConfigurationController extends AbstractController
                         ->setLabel('currency')
                         ->setType(CurrencyType::class)
                         ->setOptions(['help' => 'default_value_new']),
+                    (new Configuration())
+                        ->setName('customer.choice_pattern')
+                        ->setLabel('choice_pattern')
+                        ->setType(CustomerTypePatternType::class),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_FORM_USER)
+            (new SystemConfigurationModel('project'))
+                ->setConfiguration([
+                    (new Configuration())
+                        ->setName('project.choice_pattern')
+                        ->setLabel('choice_pattern')
+                        ->setType(ProjectTypePatternType::class),
+                ]),
+            (new SystemConfigurationModel('activity'))
+                ->setConfiguration([
+                    (new Configuration())
+                        ->setName('activity.choice_pattern')
+                        ->setLabel('choice_pattern')
+                        ->setType(ActivityTypePatternType::class),
+                ]),
+            (new SystemConfigurationModel('user'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('defaults.user.timezone')
@@ -518,8 +543,7 @@ final class SystemConfigurationController extends AbstractController
                         ->setType(CheckboxType::class)
                         ->setTranslationDomain('system-configuration'),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_THEME)
+            (new SystemConfigurationModel('theme'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('theme.autocomplete_chars')
@@ -557,8 +581,9 @@ final class SystemConfigurationController extends AbstractController
                         ->setType(CheckboxType::class)
                         ->setTranslationDomain('system-configuration'),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_CALENDAR)
+            (new SystemConfigurationModel('calendar'))
+                ->setTranslation('calendar')
+                ->setTranslationDomain('messages')
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('calendar.week_numbers')
@@ -599,8 +624,7 @@ final class SystemConfigurationController extends AbstractController
                         ->setType(IntegerType::class)
                         ->setConstraints([new Range(['min' => 0, 'max' => 20]), new NotNull()]),
                 ]),
-            (new SystemConfigurationModel())
-                ->setSection(SystemConfigurationModel::SECTION_BRANDING)
+            (new SystemConfigurationModel('branding'))
                 ->setConfiguration([
                     (new Configuration())
                         ->setName('theme.branding.logo')
@@ -632,7 +656,5 @@ final class SystemConfigurationController extends AbstractController
                     ->setOptions(['input' => 'string']),
                 ]),
         ];
-
-        return $configurationModels;
     }
 }

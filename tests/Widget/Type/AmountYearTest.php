@@ -15,6 +15,8 @@ use App\Widget\Type\AbstractWidgetType;
 use App\Widget\Type\AmountYear;
 use App\Widget\Type\CounterYear;
 use App\Widget\Type\SimpleStatisticChart;
+use App\Widget\WidgetInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @covers \App\Widget\Type\AmountYear
@@ -22,6 +24,11 @@ use App\Widget\Type\SimpleStatisticChart;
  */
 class AmountYearTest extends AbstractWidgetTypeTest
 {
+    protected function assertDefaultData(AbstractWidgetType $sut)
+    {
+        self::assertEquals(0.0, $sut->getData());
+    }
+
     /**
      * @return CounterYear
      */
@@ -29,8 +36,9 @@ class AmountYearTest extends AbstractWidgetTypeTest
     {
         $repository = $this->createMock(TimesheetRepository::class);
         $configuration = $this->createMock(SystemConfiguration::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        return new AmountYear($repository, $configuration);
+        return new AmountYear($repository, $configuration, $dispatcher);
     }
 
     public function getDefaultOptions(): array
@@ -38,7 +46,7 @@ class AmountYearTest extends AbstractWidgetTypeTest
         return [
             'dataType' => 'money',
             'icon' => 'money',
-            'color' => 'yellow',
+            'color' => WidgetInterface::COLOR_YEAR,
         ];
     }
 

@@ -232,11 +232,6 @@ class SystemConfiguration implements SystemBundleConfiguration
         return (string) $this->find('timesheet.default_begin');
     }
 
-    public function getTimesheetDefaultBillable(): bool
-    {
-        return (bool) $this->find('defaults.timesheet.billable');
-    }
-
     public function isTimesheetAllowFutureTimes(): bool
     {
         return (bool) $this->find('timesheet.rules.allow_future_times');
@@ -350,6 +345,11 @@ class SystemConfiguration implements SystemBundleConfiguration
     public function getTimesheetIncrementEnd(): ?int
     {
         return $this->getIncrement('timesheet.time_increment', $this->getTimesheetDefaultRoundingEnd(), 0);
+    }
+
+    public function getQuickEntriesRecentAmount(): int
+    {
+        return $this->getIncrement('quick_entry.recent_activities', 5, 0) ?? 5;
     }
 
     // ========== Company configurations ==========

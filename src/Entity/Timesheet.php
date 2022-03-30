@@ -98,6 +98,11 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      */
     public const OVERTIME = 'overtime';
 
+    public const BILLABLE_AUTOMATIC = 'auto';
+    public const BILLABLE_YES = 'yes';
+    public const BILLABLE_NO = 'no';
+    public const BILLABLE_DEFAULT = 'default';
+
     /**
      * @var int|null
      *
@@ -134,7 +139,7 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      */
     private $begin;
     /**
-     * @var DateTime
+     * @var DateTime|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Default"})
@@ -160,7 +165,7 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      */
     private $localized = false;
     /**
-     * @var int
+     * @var int|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Default"})
@@ -202,7 +207,7 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      */
     private $project;
     /**
-     * @var string
+     * @var string|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Default"})
@@ -240,7 +245,7 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      */
     private $fixedRate = null;
     /**
-     * @var float
+     * @var float|null
      *
      * @Serializer\Expose()
      * @Serializer\Groups({"Entity"})
@@ -269,6 +274,11 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      * @Assert\NotNull()
      */
     private $billable = true;
+    /**
+     * Internal property used to determine whether the billable field should be calculated automatically.
+     * @var string
+     */
+    private $billableMode = self::BILLABLE_DEFAULT;
     /**
      * @var string
      *
@@ -649,11 +659,26 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
         return $this->billable;
     }
 
+    public function getBillable(): bool
+    {
+        return $this->billable;
+    }
+
     public function setBillable(bool $billable): Timesheet
     {
         $this->billable = $billable;
 
         return $this;
+    }
+
+    public function getBillableMode(): string
+    {
+        return $this->billableMode;
+    }
+
+    public function setBillableMode(string $billableMode): void
+    {
+        $this->billableMode = $billableMode;
     }
 
     public function getFixedRate(): ?float
@@ -717,6 +742,20 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool|int|string|null
+     */
+    public function getMetaFieldValue(string $name)
+    {
+        $field = $this->getMetaField($name);
+        if ($field === null) {
+            return null;
+        }
+
+        return $field->getValue();
     }
 
     public function setMetaField(MetaTableTypeInterface $meta): EntityWithMetaFields
