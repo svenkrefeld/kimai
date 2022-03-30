@@ -52,6 +52,7 @@ task('deploy', [
 desc('Installing kimai');
 task('build', function () {
     run('cd {{release_path}} && bin/console kimai:install -n');
+    run('cd {{release_path}} && bin/console kimai:reload');
 });
 
 after('deploy:vendors', 'build');
