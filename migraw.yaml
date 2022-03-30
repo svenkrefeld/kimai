@@ -1,4 +1,4 @@
-name: local.kimai.svenkrefeld.de
+name: kimai
 document_root: public
 network:
   ip: 127.0.0.1
@@ -11,4 +11,3 @@ config:
   mailhog: true
 exec:
   - ./init.sh
-

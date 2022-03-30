@@ -6,6 +6,8 @@
 .migraw/
 .DS_Store
 
+*.sql
+
 # for symfony local webserver
 php.ini
 

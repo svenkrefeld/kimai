@@ -1,12 +1,12 @@
 {
-    "name": "kevinpapst/kimai2",
+    "name": "svenkrefeld/kimai",
     "license": "MIT",
     "type": "project",
     "description": "Kimai - Time Tracking",
     "authors": [
         {
-            "name": "Kevin Papst",
-            "homepage": "https://www.kevinpapst.de"
+            "name": "Sven Krefeld",
+            "homepage": "https://svenkrefeld.de"
         }
     ],
     "require": {
