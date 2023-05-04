@@ -107,6 +107,7 @@ class InvoiceControllerTest extends ControllerBaseTest
                 'company' => 'Company name',
                 'renderer' => 'default',
                 'calculator' => 'default',
+                'vat' => '27,937',
             ]
         ]);
 
@@ -114,6 +115,14 @@ class InvoiceControllerTest extends ControllerBaseTest
         $client->followRedirect();
         $this->assertTrue($client->getResponse()->isSuccessful());
         $this->assertHasFlashSuccess($client);
+
+        $template = $this->getEntityManager()->getRepository(InvoiceTemplate::class)->findAll()[0];
+        self::assertEquals('Test', $template->getName());
+        self::assertEquals('Test invoice template', $template->getTitle());
+        self::assertEquals('Company name', $template->getCompany());
+        self::assertEquals('default', $template->getRenderer());
+        self::assertEquals('default', $template->getCalculator());
+        self::assertEquals('27.937', $template->getVat());
     }
 
     public function testCopyTemplateAction()
@@ -442,5 +451,17 @@ class InvoiceControllerTest extends ControllerBaseTest
         $node = $client->getCrawler()->filter('form[name=invoice_document_upload_form]');
         self::assertEquals(1, $node->count(), 'Could not find upload form');
         // we do not test the upload here, just make sure that the action can be rendered properly
+    }
+
+    public function testExportIsSecureForRole()
+    {
+        $this->assertUrlIsSecuredForRole(User::ROLE_USER, '/invoice/export');
+    }
+
+    public function testExportAction()
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_TEAMLEAD);
+        $this->assertAccessIsGranted($client, '/invoice/export');
+        $this->assertExcelExportResponse($client, 'kimai-invoices_');
     }
 }

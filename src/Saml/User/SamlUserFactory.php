@@ -9,7 +9,7 @@
 
 namespace App\Saml\User;
 
-use App\Configuration\SamlConfiguration;
+use App\Configuration\SamlConfigurationInterface;
 use App\Entity\User;
 use App\Saml\Token\SamlTokenInterface;
 
@@ -17,7 +17,7 @@ final class SamlUserFactory
 {
     private $configuration;
 
-    public function __construct(SamlConfiguration $configuration)
+    public function __construct(SamlConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
     }
@@ -56,7 +56,13 @@ final class SamlUserFactory
                     $roles[] = $groupMap[$groupName];
                 }
             }
-            $user->setRoles($roles);
+            if ($this->configuration->isRolesResetOnLogin()) {
+                $user->setRoles($roles);
+            } else {
+                foreach ($roles as $role) {
+                    $user->addRole($role);
+                }
+            }
         }
 
         $mappingConfig = $this->configuration->getAttributeMapping();

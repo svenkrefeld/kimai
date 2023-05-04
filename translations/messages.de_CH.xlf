@@ -987,7 +987,7 @@
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>Diese Daten werden ebenfalls mit gelöscht! Alternativ können Sie einen Eintrag auswählen, auf den alle existierenden Daten umgebucht werden:</target>
+        <target>Diese Daten werden ebenfalls gelöscht! Alternativ können Sie einen Eintrag auswählen, auf den alle existierenden Daten umgebucht werden:</target>
       </trans-unit>
       <trans-unit id="_ohHsMM" resname="create">
         <source>create</source>
@@ -1107,12 +1107,7 @@
       </trans-unit>
       <trans-unit id="_cY.wHP" resname="resetting.check_email">
         <source>resetting.check_email</source>
-        <target>
-          Eine E-Mail wurde verschickt. Diese beinhaltet einen Link zum Zurücksetzen des Passwortes.
-          Hinweis: Ein neues Passwort kann nur alle %tokenLifetime% Stunden beantragt werden.
-
-          Eventuell wurde diese E-Mail als Spam markiert, wenn sie nicht angekommen ist.
-        </target>
+        <target>Eine E-Mail wurde verschickt. Diese beinhaltet einen Link zum Zurücksetzen des Passwortes. Hinweis: Ein neues Passwort kann nur alle %tokenLifetime% Stunden beantragt werden. Eventuell wurde diese E-Mail als Spam markiert, wenn sie nicht angekommen ist.</target>
       </trans-unit>
       <trans-unit id="XQ2.pq2" resname="error.too_many_entries">
         <source>error.too_many_entries</source>
@@ -1202,7 +1197,7 @@
         <source>label.hours_24</source>
         <target state="translated">24 Stunden</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target state="translated">Darstellung der Einträge in Auswahllisten</target>
       </trans-unit>
@@ -1210,13 +1205,17 @@
         <source>invoice_document.max_reached</source>
         <target state="translated">Maximale Anzahl von %max% Rechnungsdokumenten erreicht. Um weitere hinzufügen müssen Sie zunächst eins löschen.</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target state="translated">Aktualisiert am</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
         <target>Automatisch</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Rechnungstext</target>
       </trans-unit>
     </body>
   </file>

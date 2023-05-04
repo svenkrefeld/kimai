@@ -65,7 +65,7 @@
             -->
       <trans-unit id="UoOv6mx" resname="menu.homepage">
         <source>menu.homepage</source>
-        <target>Панель управления</target>
+        <target state="translated">Информпанель</target>
       </trans-unit>
       <trans-unit id="wvvYSw_" resname="menu.admin">
         <source>menu.admin</source>
@@ -81,7 +81,7 @@
       </trans-unit>
       <trans-unit id="WGIhZv1" resname="menu.admin_timesheet">
         <source>menu.admin_timesheet</source>
-        <target>Время работы сотрудников</target>
+        <target state="translated">Табели</target>
       </trans-unit>
       <trans-unit id="IeshU90" resname="customers">
         <source>customers</source>
@@ -233,7 +233,7 @@
             -->
       <trans-unit id="3bqLM8Q" resname="dashboard.title">
         <source>dashboard.title</source>
-        <target>Панель управления</target>
+        <target state="translated">Информпанель</target>
       </trans-unit>
       <trans-unit id="3PYadzb" resname="dashboard.subtitle">
         <source>dashboard.subtitle</source>
@@ -489,7 +489,7 @@
       </trans-unit>
       <trans-unit id="Bor.76M" resname="stats.activityTotal">
         <source>stats.activityTotal</source>
-        <target>Объем деятельности</target>
+        <target state="translated">Активности</target>
       </trans-unit>
       <trans-unit id="67uSaR3" resname="stats.projectTotal">
         <source>stats.projectTotal</source>
@@ -532,11 +532,11 @@
       </trans-unit>
       <trans-unit id="4XKFnWh" resname="invoice.from">
         <source>invoice.from</source>
-        <target>Исполнитель</target>
+        <target state="translated">От</target>
       </trans-unit>
       <trans-unit id="hx7vsMA" resname="invoice.to">
         <source>invoice.to</source>
-        <target>Заказчик</target>
+        <target state="translated">К</target>
       </trans-unit>
       <trans-unit id="x_W5sV4" resname="invoice.number">
         <source>invoice.number</source>
@@ -810,7 +810,7 @@
       </trans-unit>
       <trans-unit id="hOZxcaK" resname="menu.plugin">
         <source>menu.plugin</source>
-        <target>Дополнения</target>
+        <target state="translated">Плагины</target>
       </trans-unit>
       <trans-unit id="I.eil4u" resname="menu.export">
         <source>menu.export</source>
@@ -862,7 +862,7 @@
       </trans-unit>
       <trans-unit id="rYzHCFd" resname="label.timesheet.daily_stats">
         <source>label.timesheet.daily_stats</source>
-        <target>Показать дневную статистику в таблице</target>
+        <target state="translated">Показывать дневную статистику в табеле</target>
       </trans-unit>
       <trans-unit id="Ss2xe99" resname="label.team">
         <source>label.team</source>
@@ -1240,7 +1240,7 @@
         <source>label.hours_24</source>
         <target>24 часа</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Обновлено в</target>
       </trans-unit>
@@ -1256,9 +1256,25 @@
         <source>invoice_document.max_reached</source>
         <target>Достигнуто максимальное количество документов счета-фактуры %max%. Вы можете добавить больше после удаления одного документа.</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
-        <target state="needs-translation">Display of entries in selection lists</target>
+        <target state="translated">Отображение записей в списках выбора</target>
+      </trans-unit>
+      <trans-unit id="U_D.NIy" resname="automatic">
+        <source>automatic</source>
+        <target>Автоматический</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">Показывать независимо от "бюджетного типа"</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Текст счета</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">Разрешать глобальные деятельности</target>
       </trans-unit>
     </body>
   </file>

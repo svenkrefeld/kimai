@@ -9,7 +9,10 @@
 
 namespace App\Configuration;
 
-final class SamlConfiguration
+/**
+ * @CloudRequired
+ */
+final class SamlConfiguration implements SamlConfigurationInterface
 {
     private $configuration;
 
@@ -41,6 +44,11 @@ final class SamlConfiguration
     public function getRolesMapping(): array
     {
         return $this->configuration->getSamlRolesMapping();
+    }
+
+    public function isRolesResetOnLogin(): bool
+    {
+        return $this->configuration->isSamlRolesResetOnLogin();
     }
 
     public function getConnection(): array

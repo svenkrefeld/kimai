@@ -70,6 +70,7 @@ class Configuration implements ConfigurationInterface
                 ->append($this->getLdapNode())
                 ->append($this->getSamlNode())
                 ->append($this->getQuickEntryNode())
+                ->append($this->getProjectNode())
             ->end()
         ->end();
 
@@ -87,6 +88,30 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->integerNode('recent_activities')
                     ->defaultValue(5)
+                ->end()
+                ->integerNode('recent_activity_weeks')
+                    ->defaultNull()
+                ->end()
+                ->integerNode('minimum_rows')
+                    ->defaultValue(3)
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    private function getProjectNode()
+    {
+        $builder = new TreeBuilder('project');
+        /** @var ArrayNodeDefinition $node */
+        $node = $builder->getRootNode();
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->booleanNode('copy_teams_on_create')
+                    ->defaultValue(false)
                 ->end()
             ->end()
         ;
@@ -243,6 +268,9 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode('allow_future_times')
                             ->defaultTrue()
                         ->end()
+                        ->booleanNode('allow_zero_duration')
+                            ->defaultTrue()
+                        ->end()
                         ->booleanNode('allow_overbooking_budget')
                             ->defaultTrue()
                         ->end()
@@ -304,6 +332,9 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('number_format')
                     ->defaultValue('{Y}/{cy,3}')
+                ->end()
+                ->booleanNode('upload_twig')
+                    ->defaultTrue()
                 ->end()
             ->end()
         ;
@@ -428,6 +459,11 @@ class Configuration implements ConfigurationInterface
                         })
                         ->thenInvalid('The dragdrop_amount must be between 0 and 20')
                     ->end()
+                ->end()
+                ->booleanNode('dragdrop_data')->defaultFalse()->end()
+                ->enumNode('title_pattern')
+                    ->values(['{activity}', '{project}', '{customer}', '{description}'])
+                    ->defaultValue('{activity}')
                 ->end()
             ->end()
         ;
@@ -872,6 +908,9 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('roles')
                     ->addDefaultsIfNotSet()
                     ->children()
+                        ->booleanNode('resetOnLogin')
+                            ->defaultTrue()
+                        ->end()
                         ->scalarNode('attribute')
                             ->defaultNull()
                         ->end()

@@ -15,8 +15,12 @@ use App\Entity\Project;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Entity\UserPreference;
+use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command used to execute all the basic application bootstrapping AFTER "composer install" was executed.
@@ -27,6 +31,14 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ResetTestCommand extends AbstractResetCommand
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        parent::__construct();
+        $this->entityManager = $entityManager;
+    }
+
     protected function getEnvName(): string
     {
         return 'test';
@@ -133,5 +145,19 @@ class ResetTestCommand extends AbstractResetCommand
         $this->entityManager->persist($team);
 
         $this->entityManager->flush();
+    }
+
+    protected function dropSchema(SymfonyStyle $io, OutputInterface $output): int
+    {
+        try {
+            $command = $this->getApplication()->find('doctrine:schema:drop');
+            $command->run(new ArrayInput(['--force' => true, '--full-database' => true]), $output);
+        } catch (Exception $ex) {
+            $io->error('Failed to drop database schema: ' . $ex->getMessage());
+
+            return 2;
+        }
+
+        return 0;
     }
 }

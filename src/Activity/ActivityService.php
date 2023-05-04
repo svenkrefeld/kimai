@@ -101,4 +101,13 @@ class ActivityService
 
         return $activity;
     }
+
+    public function findActivityByName(string $name, ?Project $project = null): ?Activity
+    {
+        if ($project === null) {
+            return $this->repository->findOneBy(['project' => null, 'name' => $name]);
+        }
+
+        return $this->repository->findOneBy(['project' => $project->getId(), 'name' => $name]);
+    }
 }

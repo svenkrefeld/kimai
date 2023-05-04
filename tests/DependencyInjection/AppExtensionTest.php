@@ -131,6 +131,8 @@ class AppExtensionTest extends TestCase
                 ],
                 'weekends' => true,
                 'dragdrop_amount' => 10,
+                'dragdrop_data' => false,
+                'title_pattern' => '{activity}',
             ],
             'kimai.dashboard' => [],
             'kimai.widgets' => [],
@@ -201,6 +203,7 @@ class AppExtensionTest extends TestCase
                 ],
                 'rules' => [
                     'allow_future_times' => true,
+                    'allow_zero_duration' => true,
                     'allow_overlapping_records' => true,
                     'lockdown_period_start' => null,
                     'lockdown_period_end' => null,

@@ -1250,7 +1250,7 @@
         <source>stats.workingTimeWeekShort</source>
         <target>Semana %week%</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Atualizado em</target>
       </trans-unit>
@@ -1266,13 +1266,25 @@
         <source>error.directory_protected</source>
         <target>O diretório «%dir%» está protegido contra gravação.</target>
       </trans-unit>
-      <trans-unit id="sdfgsdfgsdfg" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target>Aparência das entradas nas listas de seleção</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
         <target>Automático</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Texto da fatura</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">Mostrar independentemente do "tipo de orçamento"</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">Permitir atividades globais</target>
       </trans-unit>
     </body>
   </file>

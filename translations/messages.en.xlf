@@ -18,8 +18,8 @@
         <target>No</target>
       </trans-unit>
       <trans-unit id=".3dyBTq" resname="both">
-        <source>both</source>
-        <target>Both</target>
+        <source>Both</source>
+        <target state="needs-translation">Both</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
@@ -39,10 +39,7 @@
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>
-                    This data will be deleted as well!
-                    Alternatively, you can select an entry to which all data will be transferred:
-                </target>
+        <target>This data will be deleted as well! Alternatively, you can select an entry to which all data will be transferred:</target>
       </trans-unit>
       <trans-unit id="COyxNde" resname="delete.not_in_use">
         <source>delete.not_in_use</source>
@@ -120,7 +117,7 @@
         <source>modal.dirty</source>
         <target>The form has changed. Please click "Save" to save the changes or "Close" to cancel.</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target>Display of entries in selection lists</target>
       </trans-unit>
@@ -160,13 +157,8 @@
         <target>An email has been sent to %email%. It contains an activation link you must click to activate your account.</target>
       </trans-unit>
       <trans-unit id="_cY.wHP" resname="resetting.check_email">
-        <source>resetting.check_email</source>
-        <target>
-                    An email has been sent. It contains a link you must click to reset your password.
-                    Note: You can only request a new password once within %tokenLifetime% hours.
-
-                    If you don't get an email check your spam folder or try again.
-                </target>
+        <source>An email has been sent. It contains a link you must click to reset your password. Note: You can only request a new password once within %tokenLifetime% hours. If you don't get an email check your spam folder or try again.</source>
+        <target state="needs-translation">An email has been sent. It contains a link you must click to reset your password. Note: You can only request a new password once within %tokenLifetime% hours. If you don't get an email check your spam folder or try again.</target>
       </trans-unit>
       <!--
               Menu / Navbar items
@@ -293,6 +285,10 @@
         <source>label.description</source>
         <target>Description</target>
       </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target>Invoice text</target>
+      </trans-unit>
       <trans-unit id="ysOvPSq" resname="label.name">
         <source>label.name</source>
         <target>Name</target>
@@ -306,8 +302,8 @@
         <target>ID</target>
       </trans-unit>
       <trans-unit id="CYpZwBz" resname="label.visible">
-        <source>label.visible</source>
-        <target>Visible</target>
+        <source>Visible</source>
+        <target state="needs-translation">Visible</target>
       </trans-unit>
       <trans-unit id="2ktNwkr" resname="label.budget">
         <source>label.budget</source>
@@ -345,7 +341,7 @@
         <source>label.skin</source>
         <target>Display: colors</target>
       </trans-unit>
-      <trans-unit id="O40d_3K" resname="label.theme.layout">
+      <trans-unit id="42BRM3Q" resname="label.theme.layout">
         <source>label.theme.layout</source>
         <target>Display: layout</target>
       </trans-unit>
@@ -1081,8 +1077,8 @@
         <target>Canceled</target>
       </trans-unit>
       <trans-unit id="crrlEUA" resname="preview.skipped_rows">
-        <source>preview.skipped_rows</source>
-        <target>Skipped preview of %rows% more rows …</target>
+        <source>Skipped preview of %rows% more rows …</source>
+        <target state="translated">Skipped preview of %rows% more rows …</target>
       </trans-unit>
       <!--
               Export
@@ -1197,6 +1193,10 @@
         <source>label.globalsOnly</source>
         <target>Only global</target>
       </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target>Allow global activities</target>
+      </trans-unit>
       <trans-unit id="2Ek7sXu" resname="label.batch_meta_fields">
         <source>label.batch_meta_fields</source>
         <target>Additional fields</target>
@@ -1216,6 +1216,10 @@
       <trans-unit id="Wq.h4nD" resname="label.includeBudgetType_month">
         <source>label.includeBudgetType_month</source>
         <target>Show entries with "monthly" budget</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target>Show regardless of "budget-type"</target>
       </trans-unit>
       <trans-unit id="nVulc7." resname="label.includeBudgetType_full">
         <source>label.includeBudgetType_full</source>
@@ -1280,7 +1284,7 @@
         <source>label.hours_24</source>
         <target>24 hours</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Updated at</target>
       </trans-unit>

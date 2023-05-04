@@ -23,10 +23,9 @@ use App\Form\MultiUpdate\MultiUpdateTableDTO;
 use App\Form\MultiUpdate\TimesheetMultiUpdate;
 use App\Form\MultiUpdate\TimesheetMultiUpdateDTO;
 use App\Form\TimesheetEditForm;
+use App\Form\TimesheetPreCreateForm;
 use App\Form\Toolbar\TimesheetExportToolbarForm;
 use App\Form\Toolbar\TimesheetToolbarForm;
-use App\Repository\ActivityRepository;
-use App\Repository\ProjectRepository;
 use App\Repository\Query\TimesheetQuery;
 use App\Repository\TagRepository;
 use App\Repository\TimesheetRepository;
@@ -147,50 +146,15 @@ abstract class TimesheetAbstractController extends AbstractController
         ]);
     }
 
-    protected function getTags(TagRepository $tagRepository, $tagNames)
+    protected function create(Request $request, string $renderTemplate): Response
     {
-        $tags = [];
-        if (!\is_array($tagNames)) {
-            $tagNames = explode(',', $tagNames);
-        }
-        foreach ($tagNames as $tagName) {
-            $tag = $tagRepository->findTagByName($tagName);
-            if (!$tag) {
-                $tag = new Tag();
-                $tag->setName($tagName);
-            }
-            $tags[] = $tag;
-        }
+        $entry = $this->service->createNewTimesheet($this->getUser(), $request);
 
-        return $tags;
-    }
+        $preForm = $this->createFormForGetRequest(TimesheetPreCreateForm::class, $entry, [
+            'include_user' => $this->includeUserInForms('create'),
+        ]);
+        $preForm->submit($request->query->all(), false);
 
-    protected function create(Request $request, string $renderTemplate, ProjectRepository $projectRepository, ActivityRepository $activityRepository, TagRepository $tagRepository): Response
-    {
-        $entry = $this->service->createNewTimesheet($this->getUser());
-
-        if ($request->query->get('project')) {
-            $project = $projectRepository->find($request->query->get('project'));
-            $entry->setProject($project);
-        }
-
-        if ($request->query->get('activity')) {
-            $activity = $activityRepository->find($request->query->get('activity'));
-            $entry->setActivity($activity);
-        }
-
-        if ($request->query->get('description')) {
-            $description = $request->query->get('description');
-            $entry->setDescription($description);
-        }
-
-        if ($request->query->get('tags')) {
-            foreach ($this->getTags($tagRepository, $request->query->get('tags')) as $tag) {
-                $entry->addTag($tag);
-            }
-        }
-
-        $this->service->prepareNewTimesheet($entry, $request);
         $createForm = $this->getCreateForm($entry);
         $createForm->handleRequest($request);
 
@@ -243,6 +207,7 @@ abstract class TimesheetAbstractController extends AbstractController
     protected function export(Request $request, ServiceExport $serviceExport): Response
     {
         $query = $this->createDefaultQuery();
+        $query->setOrder(TimesheetQuery::ORDER_ASC);
 
         $form = $this->getExportForm($query);
 
@@ -569,7 +534,7 @@ abstract class TimesheetAbstractController extends AbstractController
 
     protected function includeSummary(): bool
     {
-        return (bool) $this->getUser()->getPreferenceValue('timesheet.daily_stats', false);
+        return (bool) $this->getUser()->getPreferenceValue('timesheet.daily_stats', false, false);
     }
 
     protected function includeUserInForms(string $formName): bool

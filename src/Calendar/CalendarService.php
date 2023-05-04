@@ -67,8 +67,9 @@ final class CalendarService
 
         $entries = [];
         $colorHelper = new Color();
+        $copy = $this->configuration->isCalendarDragAndDropCopyData();
         foreach ($recentActivity->getRecentActivities() as $timesheet) {
-            $entries[] = new TimesheetEntry($timesheet, $colorHelper->getTimesheetColor($timesheet));
+            $entries[] = new TimesheetEntry($timesheet, $colorHelper->getTimesheetColor($timesheet), $copy);
         }
 
         $event->addSource(new RecentActivitiesSource($entries));
@@ -114,6 +115,7 @@ final class CalendarService
             'timeframeBegin' => $this->configuration->getCalendarTimeframeBegin(),
             'timeframeEnd' => $this->configuration->getCalendarTimeframeEnd(),
             'dragDropAmount' => $this->configuration->getCalendarDragAndDropMaxEntries(),
+            'entryTitlePattern' => $this->configuration->find('calendar.title_pattern'),
         ];
 
         $event = new CalendarConfigurationEvent($config);

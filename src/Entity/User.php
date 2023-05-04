@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * @UniqueEntity("username")
  * @UniqueEntity("email")
- * @Constraints\User(groups={"UserCreate", "Registration", "Default"})
+ * @Constraints\User(groups={"UserCreate", "Registration", "Default", "Profile"})
  *
  * @Serializer\ExclusionPolicy("all")
  * @Serializer\VirtualProperty(
@@ -156,8 +156,9 @@ class User implements UserInterface, EquatableInterface, \Serializable
      */
     private $apiToken;
     /**
-     * @var string
+     * @var string|null
      * @internal to be set via form, must not be persisted
+     *
      * @Assert\NotBlank(groups={"ApiTokenUpdate"})
      * @Assert\Length(min="8", max="60", groups={"ApiTokenUpdate"})
      */
@@ -480,17 +481,17 @@ class User implements UserInterface, EquatableInterface, \Serializable
 
     public function is24Hour(): bool
     {
-        return (bool) $this->getPreferenceValue(UserPreference::HOUR_24, true);
+        return (bool) $this->getPreferenceValue(UserPreference::HOUR_24, true, false);
     }
 
     public function getLocale(): string
     {
-        return $this->getPreferenceValue(UserPreference::LOCALE, User::DEFAULT_LANGUAGE);
+        return $this->getPreferenceValue(UserPreference::LOCALE, User::DEFAULT_LANGUAGE, false);
     }
 
     public function getTimezone(): string
     {
-        return $this->getPreferenceValue(UserPreference::TIMEZONE, date_default_timezone_get());
+        return $this->getPreferenceValue(UserPreference::TIMEZONE, date_default_timezone_get(), false);
     }
 
     public function getLanguage(): string
@@ -513,17 +514,17 @@ class User implements UserInterface, EquatableInterface, \Serializable
 
     public function getFirstDayOfWeek(): string
     {
-        return $this->getPreferenceValue(UserPreference::FIRST_WEEKDAY, User::DEFAULT_FIRST_WEEKDAY);
+        return $this->getPreferenceValue(UserPreference::FIRST_WEEKDAY, User::DEFAULT_FIRST_WEEKDAY, false);
     }
 
     public function isSmallLayout(): bool
     {
-        return $this->getPreferenceValue('theme.layout', 'fixed') === 'boxed';
+        return $this->getPreferenceValue('theme.layout', 'fixed', false) === 'boxed';
     }
 
     public function isExportDecimal(): bool
     {
-        return (bool) $this->getPreferenceValue('timesheet.export_decimal', false);
+        return (bool) $this->getPreferenceValue('timesheet.export_decimal', false, false);
     }
 
     public function setTimezone(?string $timezone)
@@ -537,16 +538,19 @@ class User implements UserInterface, EquatableInterface, \Serializable
     /**
      * @param string $name
      * @param mixed $default
+     * @param bool $allowNull
      * @return bool|int|string|null
      */
-    public function getPreferenceValue(string $name, $default = null)
+    public function getPreferenceValue(string $name, $default = null, bool $allowNull = true)
     {
         $preference = $this->getPreference($name);
         if (null === $preference) {
             return $default;
         }
 
-        return $preference->getValue();
+        $value = $preference->getValue();
+
+        return $allowNull ? $value : ($value ?? $default);
     }
 
     /**
@@ -848,6 +852,7 @@ class User implements UserInterface, EquatableInterface, \Serializable
     public function eraseCredentials()
     {
         $this->plainPassword = null;
+        $this->plainApiToken = null;
     }
 
     /**
@@ -1046,6 +1051,17 @@ class User implements UserInterface, EquatableInterface, \Serializable
         return true;
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'enabled' => $this->enabled,
+            'email' => $this->email,
+            'password' => $this->password,
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -1058,6 +1074,18 @@ class User implements UserInterface, EquatableInterface, \Serializable
             $this->id,
             $this->email,
         ]);
+    }
+
+    public function __unserialize(array $data): void
+    {
+        if (!\array_key_exists('id', $data)) {
+            return;
+        }
+        $this->id = $data['id'];
+        $this->username = $data['username'];
+        $this->enabled = $data['enabled'];
+        $this->email = $data['email'];
+        $this->password = $data['password'];
     }
 
     /**
@@ -1141,5 +1169,10 @@ class User implements UserInterface, EquatableInterface, \Serializable
     public function setAccountNumber(?string $accountNumber): void
     {
         $this->accountNumber = $accountNumber;
+    }
+
+    public function isSystemAccount(): bool
+    {
+        return false;
     }
 }

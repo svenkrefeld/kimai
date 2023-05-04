@@ -31,11 +31,11 @@
       </trans-unit>
       <trans-unit id="DYHuW58" resname="confirm.delete">
         <source>confirm.delete</source>
-        <target>Êtes-vous sûr·e de vouloir le supprimer ?</target>
+        <target state="translated">Êtes-vous sûr·e de vouloir le supprimer ?</target>
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>Ces données seront également supprimées ! Vous pouvez toutefois sélectionner une entrée vers laquelle toutes les données seront transférées :</target>
+        <target state="translated">Ces données seront également supprimées ! Vous pouvez toutefois sélectionner une entrée vers laquelle toutes les données seront transférées :</target>
       </trans-unit>
       <trans-unit id="COyxNde" resname="delete.not_in_use">
         <source>delete.not_in_use</source>
@@ -1262,17 +1262,29 @@
         <source>invoice_document.max_reached</source>
         <target>La quantité maximale de %max% documents de facturation a été atteinte. Vous pouvez en ajouter après en avoir supprimé un.</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Mis à jour le</target>
       </trans-unit>
-      <trans-unit id="sdfgsdfgsdfg" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target>Affichage des entrées dans les listes de sélection</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
         <target>Automatique</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Texte de la facture</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">Afficher sans tenir compte du « type de budget »</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">Autoriser les activités globales</target>
       </trans-unit>
     </body>
   </file>

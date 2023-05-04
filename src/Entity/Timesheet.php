@@ -171,7 +171,6 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
      * @Serializer\Groups({"Default"})
      *
      * @ORM\Column(name="duration", type="integer", nullable=true)
-     * @Assert\GreaterThanOrEqual(0)
      */
     private $duration = 0;
     /**
@@ -438,10 +437,19 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
     {
         // only auto calculate if manually set duration is null - the result is important for eg. validations
         if ($calculate && $this->duration === null && $this->begin !== null && $this->end !== null) {
-            return $this->end->getTimestamp() - $this->begin->getTimestamp();
+            return $this->getCalculatedDuration();
         }
 
         return $this->duration;
+    }
+
+    public function getCalculatedDuration(): ?int
+    {
+        if ($this->begin !== null && $this->end !== null) {
+            return $this->end->getTimestamp() - $this->begin->getTimestamp();
+        }
+
+        return null;
     }
 
     /**
@@ -546,7 +554,6 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
             return $this;
         }
         $this->tags->add($tag);
-        $tag->addTimesheet($this);
 
         return $this;
     }
@@ -560,7 +567,6 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
             return;
         }
         $this->tags->removeElement($tag);
-        $tag->removeTimesheet($this);
     }
 
     /**
@@ -652,6 +658,14 @@ class Timesheet implements EntityWithMetaFields, ExportItemInterface
         $this->category = $category;
 
         return $this;
+    }
+
+    public function resetRates(): void
+    {
+        $this->rate = 0.00;
+        $this->internalRate = null;
+        $this->hourlyRate = null;
+        $this->fixedRate = null;
     }
 
     public function isBillable(): bool

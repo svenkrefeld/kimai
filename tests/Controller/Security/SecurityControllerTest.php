@@ -9,7 +9,11 @@
 
 namespace App\Tests\Controller\Security;
 
+use App\Configuration\SamlConfiguration;
+use App\Configuration\SystemConfiguration;
 use App\Controller\Security\SecurityController;
+use App\Entity\User;
+use App\Tests\Configuration\TestConfigLoader;
 use App\Tests\Controller\ControllerBaseTest;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -76,6 +80,21 @@ class SecurityControllerTest extends ControllerBaseTest
         $this->assertTrue($client->getResponse()->isSuccessful());
     }
 
+    public function testLoginAlreadyLoggedIn()
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_TEAMLEAD);
+
+        $this->request($client, '/login');
+
+        $this->assertIsRedirect($client, '/homepage'); // redirect to homepage
+        $client->followRedirect();
+
+        $this->assertIsRedirect($client, '/timesheet/'); // redirect to configured start page
+        $client->followRedirect();
+
+        $this->assertTrue($client->getResponse()->isSuccessful());
+    }
+
     public function testLoginNegative()
     {
         $client = self::createClient();
@@ -103,7 +122,9 @@ class SecurityControllerTest extends ControllerBaseTest
 
         $client = self::createClient(); // just to bootstrap the container
         $csrf = $this->createMock(CsrfTokenManagerInterface::class);
-        $sut = new SecurityController($csrf);
+        $systemConfig = new SystemConfiguration(new TestConfigLoader([]), ['saml' => ['activate' => true]]);
+        $samlConfig = new SamlConfiguration($systemConfig);
+        $sut = new SecurityController($csrf, $samlConfig);
         $sut->checkAction();
     }
 
@@ -114,7 +135,9 @@ class SecurityControllerTest extends ControllerBaseTest
 
         $client = self::createClient(); // just to bootstrap the container
         $csrf = $this->createMock(CsrfTokenManagerInterface::class);
-        $sut = new SecurityController($csrf);
+        $systemConfig = new SystemConfiguration(new TestConfigLoader([]), ['saml' => ['activate' => true]]);
+        $samlConfig = new SamlConfiguration($systemConfig);
+        $sut = new SecurityController($csrf, $samlConfig);
         $sut->logoutAction();
     }
 }

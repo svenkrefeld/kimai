@@ -32,10 +32,7 @@
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>
-                    הנתון הזה גם כן ימחק!
-                    לחילופין, אתה יכול לבחור רשומה שאליה כל הנתונים יעברו:
-                </target>
+        <target>הנתון הזה גם כן ימחק! לחילופין, אתה יכול לבחור רשומה שאליה כל הנתונים יעברו:</target>
       </trans-unit>
       <trans-unit id="COyxNde" resname="delete.not_in_use">
         <source>delete.not_in_use</source>
@@ -843,15 +840,15 @@
       </trans-unit>
       <trans-unit id="X_NRsed" resname="status.new">
         <source>status.new</source>
-        <target>חדש</target>
+        <target state="translated">חדשה</target>
       </trans-unit>
       <trans-unit id="Uvo1CbP" resname="status.pending">
         <source>status.pending</source>
-        <target>ממתין</target>
+        <target state="translated">ממתינה</target>
       </trans-unit>
       <trans-unit id="PHJwR4w" resname="status.paid">
         <source>status.paid</source>
-        <target>שולם</target>
+        <target state="translated">שולמה</target>
       </trans-unit>
       <trans-unit id="F6Jmro7" resname="export.title">
         <source>export.title</source>
@@ -1179,7 +1176,7 @@
       </trans-unit>
       <trans-unit id="gT9W2pZ" resname="status.canceled">
         <source>status.canceled</source>
-        <target>בוטל</target>
+        <target state="translated">בוטלה</target>
       </trans-unit>
       <trans-unit id="61p_ckr" resname="label.hours_24">
         <source>label.hours_24</source>
@@ -1189,7 +1186,7 @@
         <source>stats.workingTimeWeekShort</source>
         <target>שבוע %week%</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>עודכן בתאריך</target>
       </trans-unit>
@@ -1205,13 +1202,25 @@
         <source>invoice_document.max_reached</source>
         <target>הגעת לכמות המרבית %max% של מסמכי חשבוניות. אפשר להוסיף עוד לאחר הסרת אחת מהן.</target>
       </trans-unit>
-      <trans-unit id="sdfgsdfgsdfg" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target>הצגת רשומות ברשימות הבחירה</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
         <target>אוטומטית</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">טקסט חשבונית</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">להציג ללא תלות ב־„budget-type” (סוג תקציב)</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">לאפשר פעילויות גלובליות</target>
       </trans-unit>
     </body>
   </file>

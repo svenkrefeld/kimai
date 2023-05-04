@@ -1,5 +1,6 @@
 {
-  "homepage": "https://github.com/kevinpapst/kimai2",
+  "name": "kimai2",
+  "homepage": "https://github.com/kimai/kimai",
   "license": "MIT",
   "maintainers": [
     {
@@ -8,10 +9,9 @@
       "url": "https://www.kevinpapst.de"
     }
   ],
-  "name": "kimai2",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kevinpapst/kimai2.git"
+    "url": "git+https://github.com/kimai/kimai.git"
   },
   "scripts": {
     "dev-server": "./node_modules/.bin/encore dev-server",
@@ -36,8 +36,8 @@
     "jquery-ui": "^1.12",
     "js-cookie": "^2.2",
     "moment": "^2.29",
-    "node-sass": "^7.0",
-    "sass-loader": "^11.0",
+    "node-sass": "^8.0",
+    "sass-loader": "^13.2",
     "select2": "^4.0",
     "select2-bootstrap-theme": "^0.1.0-beta.10",
     "sweetalert2": "^10.16",

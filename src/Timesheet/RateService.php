@@ -65,7 +65,7 @@ final class RateService implements RateServiceInterface
 
         if (null !== $fixedRate) {
             if (null === $fixedInternalRate) {
-                $fixedInternalRate = (float) $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $fixedRate);
+                $fixedInternalRate = (float) $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $fixedRate, false);
             }
 
             return new Rate($fixedRate, $fixedInternalRate, null, $fixedRate);
@@ -73,20 +73,15 @@ final class RateService implements RateServiceInterface
 
         // user preferences => fallback if nothing else was configured
         if (null === $hourlyRate) {
-            $hourlyRate = (float) $record->getUser()->getPreferenceValue(UserPreference::HOURLY_RATE, 0.00);
+            $hourlyRate = (float) $record->getUser()->getPreferenceValue(UserPreference::HOURLY_RATE, 0.00, false);
         }
 
         if (null === $internalRate) {
-            $internalRate = $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, 0.00);
-            if (null === $internalRate) {
-                $internalRate = $hourlyRate;
-            } else {
-                $internalRate = (float) $internalRate;
-            }
+            $internalRate = (float) $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $hourlyRate, false);
         }
 
         $factor = 1.00;
-        // do not apply once a value was calculated - see https://github.com/kevinpapst/kimai2/issues/1988
+        // do not apply once a value was calculated - see https://github.com/kimai/kimai/issues/1988
         if ($record->getFixedRate() === null && $record->getHourlyRate() === null) {
             $factor = $this->getRateFactor($record);
         }

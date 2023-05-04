@@ -9,6 +9,7 @@
 
 namespace App\Controller\Security;
 
+use App\Configuration\SamlConfigurationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,10 +22,12 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 final class SecurityController extends AbstractController
 {
     private $tokenManager;
+    private $samlConfiguration;
 
-    public function __construct(CsrfTokenManagerInterface $tokenManager)
+    public function __construct(CsrfTokenManagerInterface $tokenManager, SamlConfigurationInterface $samlConfiguration)
     {
         $this->tokenManager = $tokenManager;
+        $this->samlConfiguration = $samlConfiguration;
     }
 
     /**
@@ -32,6 +35,10 @@ final class SecurityController extends AbstractController
      */
     public function loginAction(Request $request): Response
     {
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('homepage');
+        }
+
         /** @var SessionInterface $session */
         $session = $request->getSession();
 
@@ -63,6 +70,7 @@ final class SecurityController extends AbstractController
             'last_username' => $lastUsername,
             'error' => $error,
             'csrf_token' => $csrfToken,
+            'saml_config' => $this->samlConfiguration,
         ]);
     }
 

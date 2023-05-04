@@ -11,12 +11,14 @@ namespace App\Invoice;
 
 use App\Configuration\LanguageFormattings;
 use App\Constants;
+use App\Entity\Customer;
 use App\Entity\Invoice;
 use App\Entity\InvoiceDocument;
 use App\Event\InvoiceCreatedEvent;
 use App\Event\InvoiceDeleteEvent;
 use App\Event\InvoicePostRenderEvent;
 use App\Event\InvoicePreRenderEvent;
+use App\Export\Base\DispositionInlineInterface;
 use App\Repository\InvoiceDocumentRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\Query\InvoiceQuery;
@@ -309,7 +311,7 @@ final class ServiceInvoice
         }
     }
 
-    public function renderInvoiceWithModel(InvoiceModel $model, EventDispatcherInterface $dispatcher): Response
+    public function renderInvoiceWithModel(InvoiceModel $model, EventDispatcherInterface $dispatcher, bool $dispositionInline = false): Response
     {
         $document = $this->getDocumentByName($model->getTemplate()->getRenderer());
         if (null === $document) {
@@ -319,6 +321,10 @@ final class ServiceInvoice
         foreach ($this->getRenderer() as $renderer) {
             if ($renderer->supports($document)) {
                 $dispatcher->dispatch(new InvoicePreRenderEvent($model, $document, $renderer));
+
+                if ($renderer instanceof DispositionInlineInterface) {
+                    $renderer->setDispositionInline($dispositionInline);
+                }
 
                 $response = $renderer->render($document, $model);
 
@@ -355,7 +361,12 @@ final class ServiceInvoice
 
         foreach ($this->getRenderer() as $renderer) {
             if ($renderer->supports($document)) {
-                $dispatcher->dispatch(new InvoicePreRenderEvent($model, $document, $renderer));
+                $preEvent = new InvoicePreRenderEvent($model, $document, $renderer);
+                $dispatcher->dispatch($preEvent);
+
+                if ($preEvent->isPropagationStopped()) {
+                    continue;
+                }
 
                 if ($this->invoiceRepository->hasInvoice($model->getInvoiceNumber())) {
                     throw new DuplicateInvoiceNumberException($model->getInvoiceNumber());
@@ -459,6 +470,9 @@ final class ServiceInvoice
         if (null === $template) {
             throw new \Exception('Cannot create invoice model without template');
         }
+
+        // prevent that changes on the template will be persisted
+        $this->invoiceRepository->preventTemplateUpdate($template);
 
         if (null === $template->getLanguage()) {
             $template->setLanguage(Constants::DEFAULT_LOCALE);
@@ -567,7 +581,22 @@ final class ServiceInvoice
         }
 
         uasort($customerEntries, function ($a, $b) {
-            return strcmp($a['customer']->getName(), $b['customer']->getName());
+            $customerA = $a['customer'] ?? null;
+            $customerB = $b['customer'] ?? null;
+            $nameA = ($customerA instanceof Customer) ? $customerA->getName() : null;
+            $nameB = ($customerB instanceof Customer) ? $customerB->getName() : null;
+
+            if ($nameA === null && $nameB === null) {
+                $result = 0;
+            } elseif ($nameA === null && $nameB !== null) {
+                $result = 1;
+            } elseif ($nameA !== null && $nameB === null) {
+                $result = -1;
+            } else {
+                $result = strcmp($nameA, $nameB);
+            }
+
+            return $result;
         });
 
         foreach ($customerEntries as $id => $settings) {
@@ -576,6 +605,10 @@ final class ServiceInvoice
             $model = $this->createModelWithoutEntries($customerQuery);
             $model->addEntries($settings['entries']);
             $this->prepareModelQueryDates($model);
+
+            if ($model->getCalculator()->getTotal() < 0.0) {
+                continue;
+            }
 
             $models[] = $model;
         }

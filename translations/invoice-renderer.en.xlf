@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="7mEUv6C" resname="help.upload">
         <source>help.upload</source>
-        <target>Attention: existing files will be overwritten. Allowed file types are: DOCX, ODS, XLSX.</target>
+        <target>Attention: existing files will be overwritten. Allowed file types are: %extensions%.</target>
       </trans-unit>
       <!-- Optgroups -->
       <trans-unit id="E5BwZHT" resname="programmatic">
@@ -28,8 +28,8 @@
         <target>Microsoft Excel (XLS)</target>
       </trans-unit>
       <trans-unit id="QqvUWFt" resname="Ods">
-        <source>Ods</source>
-        <target>Open Office (Spreadsheet)</target>
+        <source>Open Office (ODS - Spreadsheet)</source>
+        <target state="translated">Open Office (ODS - Spreadsheet)</target>
       </trans-unit>
       <trans-unit id="sjwwrr8" resname="Xlsx">
         <source>Microsoft Excel (XLSX)</source>
@@ -64,9 +64,9 @@
         <source>timesheet</source>
         <target>Timesheet</target>
       </trans-unit>
-      <trans-unit id="M82JFjR" resname="freelancer">
-        <source>freelancer</source>
-        <target>Single service date</target>
+      <trans-unit id="M82JFjR" resname="freelancer" approved="yes">
+        <source>Single service date</source>
+        <target state="final">Single service date</target>
       </trans-unit>
       <trans-unit id="XUbhXLF" resname="open-spreadsheet">
         <source>open-spreadsheet</source>

@@ -29,13 +29,14 @@ class DoctorController extends AbstractController
      * Some are not a hard requiremenet, but some functions might not work as expected.
      */
     public const REQUIRED_EXTENSIONS = [
+        'gd',
         'intl',
         'json',
         'mbstring',
         'pdo',
+        'xml',
+        'xsl',
         'zip',
-        'gd',
-        'xml'
     ];
 
     /**
@@ -267,6 +268,7 @@ class DoctorController extends AbstractController
             'post_max_size',
             'sys_temp_dir',
             'date.timezone',
+            'session.gc_maxlifetime',
         ];
 
         $settings = [];

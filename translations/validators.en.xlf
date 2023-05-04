@@ -31,12 +31,16 @@
         <target>This value is not a valid role.</target>
       </trans-unit>
       <trans-unit id="CLHaByy" resname="End date must not be earlier then start date.">
-        <source>End date must not be earlier then start date.</source>
-        <target>End date must not be earlier then start date.</target>
+        <source>The end date must not be before the start date.</source>
+        <target state="translated">The end date must not be before the start date.</target>
       </trans-unit>
       <trans-unit id="ePrqiLM" resname="The begin date cannot be in the future.">
         <source>The begin date cannot be in the future.</source>
         <target>The begin date cannot be in the future.</target>
+      </trans-unit>
+      <trans-unit id="Jz1y3yB" resname="Duration cannot be zero.">
+        <source>Duration cannot be zero.</source>
+        <target>An empty duration is not allowed.</target>
       </trans-unit>
       <trans-unit id="1V6BsD_" resname="You must select at least one user or team.">
         <source>You must select at least one user or team.</source>
@@ -61,6 +65,10 @@
       <trans-unit id="1oKCOa5" resname="The budget is completely used.">
         <source>The budget is completely used.</source>
         <target>The budget is used up. Of the available %budget%, %used% has been booked so far, %free% can still be used.</target>
+      </trans-unit>
+      <trans-unit id="dcPei9G" resname="Sorry, the budget is used up.">
+        <source>Sorry, the budget is used up.</source>
+        <target>Sorry, the budget is used up.</target>
       </trans-unit>
       <trans-unit id="6rO8GZ1" resname="Maximum duration of {{ value }} hours exceeded.">
         <source>Maximum duration of {{ value }} hours exceeded.</source>

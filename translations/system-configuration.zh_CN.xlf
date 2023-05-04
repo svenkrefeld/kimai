@@ -2,9 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="zh-CN" datatype="plaintext" original="system-configuration.en.xlf">
     <body>
-      <trans-unit id="ycErWZK" resname="timesheet">
+      <trans-unit id="lt2Y2LO" resname="timesheet">
         <source>Time tracking</source>
-        <target>时间跟踪</target>
+        <target>时间追踪</target>
       </trans-unit>
       <trans-unit id="PLggHn." resname="theme">
         <source>theme</source>
@@ -269,6 +269,58 @@
       <trans-unit id="40i4Xlr" resname="label.timesheet.duration_increment">
         <source>label.timesheet.duration_increment</source>
         <target>持续时间的分钟选择</target>
+      </trans-unit>
+      <trans-unit id="aUc3uU1" resname="help.theme.color_choices">
+        <source>Comma-separated list of HTML color-codes. Color names can be set by prefixing the color code with a name and the "|" delimiter, e.g: White|#ffffff,Black|#000000.</source>
+        <target>以逗号分隔的HTML颜色代码列表。颜色名称可以通过在颜色代码前加上名称和"|"分隔符来设置，例如。White|#ffffff,Black|#000000。</target>
+      </trans-unit>
+      <trans-unit id="x3AfnWn" resname="label.timesheet.time_increment">
+        <source>label.timesheet.time_increment</source>
+        <target>分钟选择从&amp; 到</target>
+      </trans-unit>
+      <trans-unit id="tNxm3eg" resname="off">
+        <source>off</source>
+        <target>关</target>
+      </trans-unit>
+      <trans-unit id="h4bhOny" resname="label.timesheet.rules.long_running_duration">
+        <source>label.timesheet.rules.long_running_duration</source>
+        <target>在拒绝保存之前，记录的最大持续时间（分钟）（0=停用）</target>
+      </trans-unit>
+      <trans-unit id="ZUTc3eH" resname="label.calendar.dragdrop_amount">
+        <source>label.calendar.dragdrop_amount</source>
+        <target>用于拖放的条目数量（0=停用）</target>
+      </trans-unit>
+      <trans-unit id="9C1qkmD" resname="increment_rounding">
+        <source>increment_rounding</source>
+        <target>使用四舍五入规则的配置值</target>
+      </trans-unit>
+      <trans-unit id="jLG6z.w" resname="label.timesheet.rules.break_warning_duration">
+        <source>label.timesheet.rules.break_warning_duration</source>
+        <target>在显示 "休息警告 "之前，记录的最大持续时间（分钟）（0=停用）</target>
+      </trans-unit>
+      <trans-unit id="QxQOG3e" resname="label.quick_entry.recent_activity_weeks">
+        <source>label.quick_entry.recent_activity_weeks</source>
+        <target state="translated">接管过去 X 周的条目（空或始终为 0）</target>
+      </trans-unit>
+      <trans-unit id="7Efrrn5" resname="label.quick_entry.minimum_rows">
+        <source>label.quick_entry.minimum_rows</source>
+        <target state="translated">最小行数</target>
+      </trans-unit>
+      <trans-unit id="g1q7hKi" resname="label.timesheet.rules.allow_zero_duration">
+        <source>label.timesheet.rules.allow_zero_duration</source>
+        <target state="translated">允许持续时间为空的条目</target>
+      </trans-unit>
+      <trans-unit id="MXabpD7" resname="label.calendar.title_pattern">
+        <source>label.calendar.title_pattern</source>
+        <target state="translated">显示日历条目的标题</target>
+      </trans-unit>
+      <trans-unit id="eiQKW2A" resname="label.calendar.dragdrop_data">
+        <source>Copies data when adding via drag and drop</source>
+        <target state="translated">通过拖放添加时复制文件</target>
+      </trans-unit>
+      <trans-unit id="MXasdfgbpD7" resname="label.copy_teams_on_create" approved="no">
+        <source>label.copy_teams_on_create</source>
+        <target state="translated">创建新条目时从登录用户接管团队</target>
       </trans-unit>
     </body>
   </file>

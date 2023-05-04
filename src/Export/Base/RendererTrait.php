@@ -11,6 +11,7 @@ namespace App\Export\Base;
 
 use App\Activity\ActivityStatisticService;
 use App\Invoice\InvoiceItemInterface;
+use App\Model\TimesheetCountedStatistic;
 use App\Project\ProjectStatisticService;
 use App\Repository\Query\TimesheetQuery;
 
@@ -28,6 +29,7 @@ trait RendererTrait
             $customerId = 'none';
             $projectId = 'none';
             $activityId = 'none';
+            $userId = 'none';
             $customer = null;
             $project = null;
             $activity = null;
@@ -44,6 +46,10 @@ trait RendererTrait
                 $activityId = $exportItem->getActivity()->getId();
             }
 
+            if (null !== ($user = $exportItem->getUser())) {
+                $userId = $user->getId();
+            }
+
             $id = $customerId . '_' . $projectId;
             $type = $exportItem->getType();
             $category = $exportItem->getCategory();
@@ -51,7 +57,9 @@ trait RendererTrait
             if (!isset($summary[$id])) {
                 $summary[$id] = [
                     'customer' => '',
+                    'customer_item' => null,
                     'project' => '',
+                    'project_item' => null,
                     'activities' => [],
                     'currency' => $currency,
                     'rate' => 0,
@@ -59,11 +67,14 @@ trait RendererTrait
                     'duration' => 0,
                     'type' => [],
                     'types' => [],
+                    'users' => []
                 ];
 
                 if ($project !== null) {
                     $summary[$id]['customer'] = $customer->getName();
+                    $summary[$id]['customer_item'] = $customer;
                     $summary[$id]['project'] = $project->getName();
+                    $summary[$id]['project_item'] = $project;
                 }
             }
 
@@ -90,11 +101,30 @@ trait RendererTrait
                     'rate' => 0,
                     'rate_internal' => 0,
                     'duration' => 0,
+                    'users' => []
                 ];
 
                 if ($activity !== null) {
                     $summary[$id]['activities'][$activityId]['activity'] = $activity->getName();
+                    $summary[$id]['activities'][$activityId]['activity_item'] = $activity;
                 }
+            }
+
+            if (!isset($summary[$id]['users'][$userId])) {
+                $summary[$id]['users'][$userId] = [
+                    'user' => $user,
+                    'rate' => 0,
+                    'rate_internal' => 0,
+                    'duration' => 0,
+                ];
+            }
+            if (!isset($summary[$id]['activities'][$activityId]['users'][$userId])) {
+                $summary[$id]['activities'][$activityId]['users'][$userId] = [
+                    'user' => $user,
+                    'rate' => 0,
+                    'rate_internal' => 0,
+                    'duration' => 0,
+                ];
             }
 
             $duration = $exportItem->getDuration();
@@ -102,26 +132,35 @@ trait RendererTrait
                 $duration = 0;
             }
 
-            $summary[$id]['rate'] += $exportItem->getRate();
-            $summary[$id]['type'][$type]['rate'] += $exportItem->getRate();
-            $summary[$id]['types'][$type][$category]['rate'] += $exportItem->getRate();
-
+            $rate = $exportItem->getRate();
+            $internalRate = $rate;
             if (method_exists($exportItem, 'getInternalRate')) {
-                $summary[$id]['rate_internal'] += $exportItem->getInternalRate();
-                $summary[$id]['type'][$type]['rate_internal'] += $exportItem->getInternalRate();
-                $summary[$id]['types'][$type][$category]['rate_internal'] += $exportItem->getInternalRate();
-            } else {
-                $summary[$id]['rate_internal'] += $exportItem->getRate();
-                $summary[$id]['type'][$type]['rate_internal'] += $exportItem->getRate();
-                $summary[$id]['types'][$type][$category]['rate_internal'] += $exportItem->getRate();
+                $internalRate = $exportItem->getInternalRate();
             }
 
+            // rate
+            $summary[$id]['rate'] += $rate;
+            $summary[$id]['type'][$type]['rate'] += $rate;
+            $summary[$id]['types'][$type][$category]['rate'] += $rate;
+            $summary[$id]['users'][$userId]['rate'] += $rate;
+            $summary[$id]['activities'][$activityId]['rate'] += $rate;
+            $summary[$id]['activities'][$activityId]['users'][$userId]['rate'] += $rate;
+
+            // internal rate
+            $summary[$id]['rate_internal'] += $internalRate;
+            $summary[$id]['type'][$type]['rate_internal'] += $internalRate;
+            $summary[$id]['types'][$type][$category]['rate_internal'] += $internalRate;
+            $summary[$id]['users'][$userId]['rate_internal'] += $internalRate;
+            $summary[$id]['activities'][$activityId]['rate_internal'] += $internalRate;
+            $summary[$id]['activities'][$activityId]['users'][$userId]['rate_internal'] += $internalRate;
+
+            // duration
             $summary[$id]['duration'] += $duration;
             $summary[$id]['type'][$type]['duration'] += $duration;
             $summary[$id]['types'][$type][$category]['duration'] += $duration;
-
-            $summary[$id]['activities'][$activityId]['rate'] += $exportItem->getRate();
+            $summary[$id]['users'][$userId]['duration'] += $duration;
             $summary[$id]['activities'][$activityId]['duration'] += $duration;
+            $summary[$id]['activities'][$activityId]['users'][$userId]['duration'] += $duration;
         }
 
         asort($summary);
@@ -139,6 +178,7 @@ trait RendererTrait
     {
         $summary = [];
         $projects = [];
+        $empty = new TimesheetCountedStatistic();
 
         foreach ($exportItems as $exportItem) {
             $customer = null;
@@ -150,19 +190,20 @@ trait RendererTrait
                 $customer = $project->getCustomer();
                 $customerId = $customer->getId();
                 $projectId = $project->getId();
-                if ($project->hasBudgets()) {
-                    $projects[] = $project;
-                }
+                $projects[] = $project;
             }
 
             $id = $customerId . '_' . $projectId;
 
             if (!isset($summary[$id])) {
                 $summary[$id] = [
+                    'totals' => $empty->jsonSerialize(),
                     'time' => $project->getTimeBudget(),
                     'money' => $project->getBudget(),
                     'time_left' => null,
                     'money_left' => null,
+                    'time_left_total' => null,
+                    'money_left_total' => null,
                 ];
             }
         }
@@ -174,11 +215,15 @@ trait RendererTrait
         foreach ($allBudgets as $projectId => $statisticModel) {
             $project = $statisticModel->getProject();
             $id = $project->getCustomer()->getId() . '_' . $projectId;
+            $total = $statisticModel->getStatisticTotal();
+            $summary[$id]['totals'] = $total->jsonSerialize();
             if ($statisticModel->hasTimeBudget()) {
-                $summary[$id]['time_left'] = $statisticModel->getTimeBudgetOpen();
+                $summary[$id]['time_left'] = $statisticModel->getTimeBudgetOpenRelative();
+                $summary[$id]['time_left_total'] = $statisticModel->getTimeBudgetOpen();
             }
             if ($statisticModel->hasBudget()) {
-                $summary[$id]['money_left'] = $statisticModel->getBudgetOpen();
+                $summary[$id]['money_left'] = $statisticModel->getBudgetOpenRelative();
+                $summary[$id]['money_left_total'] = $statisticModel->getBudgetOpen();
             }
         }
 
@@ -218,11 +263,11 @@ trait RendererTrait
     {
         $summary = [];
         $activities = [];
+        $empty = new TimesheetCountedStatistic();
 
         foreach ($exportItems as $exportItem) {
             $customerId = 'none';
             $projectId = 'none';
-            $customer = null;
             $project = null;
             $activity = null;
 
@@ -234,9 +279,7 @@ trait RendererTrait
                 continue;
             }
 
-            if ($activity->hasBudgets()) {
-                $activities[] = $activity;
-            }
+            $activities[] = $activity;
 
             if (null !== ($project = $exportItem->getProject())) {
                 $projectId = $project->getId();
@@ -253,10 +296,13 @@ trait RendererTrait
 
             if (!isset($summary[$id][$activityId])) {
                 $summary[$id][$activityId] = [
+                    'totals' => $empty->jsonSerialize(),
                     'time' => $activity->getTimeBudget(),
                     'money' => $activity->getBudget(),
                     'time_left' => null,
                     'money_left' => null,
+                    'time_left_total' => null,
+                    'money_left_total' => null,
                 ];
             }
         }
@@ -268,11 +314,15 @@ trait RendererTrait
         foreach ($allBudgets as $activityId => $statisticModel) {
             $project = $statisticModel->getActivity()->getProject();
             $id = $project->getCustomer()->getId() . '_' . $project->getId();
+            $total = $statisticModel->getStatisticTotal();
+            $summary[$id][$activityId]['totals'] = $total->jsonSerialize();
             if ($statisticModel->hasTimeBudget()) {
-                $summary[$id][$activityId]['time_left'] = $statisticModel->getTimeBudgetOpen();
+                $summary[$id][$activityId]['time_left'] = $statisticModel->getTimeBudgetOpenRelative();
+                $summary[$id][$activityId]['time_left_total'] = $statisticModel->getTimeBudgetOpen();
             }
             if ($statisticModel->hasBudget()) {
-                $summary[$id][$activityId]['money_left'] = $statisticModel->getBudgetOpen();
+                $summary[$id][$activityId]['money_left'] = $statisticModel->getBudgetOpenRelative();
+                $summary[$id][$activityId]['money_left_total'] = $statisticModel->getBudgetOpen();
             }
         }
 

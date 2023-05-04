@@ -10,6 +10,7 @@
 namespace App\Repository;
 
 use App\Entity\Activity;
+use App\Entity\ActivityMeta;
 use App\Entity\Project;
 use App\Entity\Team;
 use App\Entity\Timesheet;
@@ -33,6 +34,8 @@ use Pagerfanta\Pagerfanta;
  */
 class ActivityRepository extends EntityRepository
 {
+    use RepositorySearchTrait;
+
     /**
      * @param mixed $id
      * @param null $lockMode
@@ -135,7 +138,7 @@ class ActivityRepository extends EntityRepository
             $stats->setCounter($timesheetResult['amount']);
             $stats->setRecordDuration($timesheetResult['duration']);
             $stats->setRecordRate($timesheetResult['rate']);
-            $stats->setRecordInternalRate($timesheetResult['internal_rate']);
+            $stats->setInternalRate($timesheetResult['internal_rate']);
         }
 
         $qb = $this->getEntityManager()->createQueryBuilder();
@@ -283,12 +286,28 @@ class ActivityRepository extends EntityRepository
         if ($query->isGlobalsOnly()) {
             $mainQuery->add($qb->expr()->isNull('a.project'));
         } elseif ($query->hasProjects()) {
-            $mainQuery->add(
-                $qb->expr()->orX(
-                    $qb->expr()->isNull('a.project'),
-                    $qb->expr()->in('a.project', ':project')
-                )
+            $orX = $qb->expr()->orX(
+                $qb->expr()->in('a.project', ':project')
             );
+
+            $includeGlobals = true;
+            // projects have a setting to disallow global activities, and we check for it only
+            // if we query for exactly one project (usually used in dropdown queries)
+            if (\count($query->getProjects()) === 1) {
+                $project = $query->getProjects()[0];
+                if (!$project instanceof Project) {
+                    $project = $this->getEntityManager()->getRepository(Project::class)->find($project);
+                }
+                if ($project instanceof Project) {
+                    $includeGlobals = $project->isGlobalActivities();
+                }
+            }
+
+            if ($includeGlobals) {
+                $orX->add($qb->expr()->isNull('a.project'));
+            }
+
+            $mainQuery->add($orX);
             $qb->setParameter('project', $query->getProjects());
         }
 
@@ -378,7 +397,21 @@ class ActivityRepository extends EntityRepository
             );
 
             if (!$query->isExcludeGlobals()) {
-                $orX->add($qb->expr()->isNull('a.project'));
+                $includeGlobals = true;
+                // projects have a setting to disallow global activities, and we check for it only
+                // if we query for exactly one project (usually used in dropdown queries)
+                if (\count($query->getProjects()) === 1) {
+                    $project = $query->getProjects()[0];
+                    if (!$project instanceof Project) {
+                        $project = $this->getEntityManager()->getRepository(Project::class)->find($project);
+                    }
+                    if ($project instanceof Project) {
+                        $includeGlobals = $project->isGlobalActivities();
+                    }
+                }
+                if ($includeGlobals) {
+                    $orX->add($qb->expr()->isNull('a.project'));
+                }
             }
 
             $where->add($orX);
@@ -394,38 +427,27 @@ class ActivityRepository extends EntityRepository
 
         $this->addPermissionCriteria($qb, $query->getCurrentUser(), $query->getTeams(), $query->isGlobalsOnly());
 
-        if ($query->hasSearchTerm()) {
-            $searchAnd = $qb->expr()->andX();
-            $searchTerm = $query->getSearchTerm();
-
-            foreach ($searchTerm->getSearchFields() as $metaName => $metaValue) {
-                $qb->leftJoin('a.meta', 'meta');
-                $searchAnd->add(
-                    $qb->expr()->andX(
-                        $qb->expr()->eq('meta.name', ':metaName'),
-                        $qb->expr()->like('meta.value', ':metaValue')
-                    )
-                );
-                $qb->setParameter('metaName', $metaName);
-                $qb->setParameter('metaValue', '%' . $metaValue . '%');
-            }
-
-            if ($searchTerm->hasSearchTerm()) {
-                $searchAnd->add(
-                    $qb->expr()->orX(
-                        $qb->expr()->like('a.name', ':searchTerm'),
-                        $qb->expr()->like('a.comment', ':searchTerm')
-                    )
-                );
-                $qb->setParameter('searchTerm', '%' . $searchTerm->getSearchTerm() . '%');
-            }
-
-            if ($searchAnd->count() > 0) {
-                $qb->andWhere($searchAnd);
-            }
-        }
+        $this->addSearchTerm($qb, $query);
 
         return $qb;
+    }
+
+    private function getMetaFieldClass(): string
+    {
+        return ActivityMeta::class;
+    }
+
+    private function getMetaFieldName(): string
+    {
+        return 'activity';
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getSearchableFields(): array
+    {
+        return ['a.name', 'a.comment'];
     }
 
     public function countActivitiesForQuery(ActivityQuery $query): int

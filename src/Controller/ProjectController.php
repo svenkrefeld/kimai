@@ -38,6 +38,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\Query\ActivityQuery;
 use App\Repository\Query\ProjectQuery;
 use App\Repository\TeamRepository;
+use App\Utils\Context;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -166,7 +167,7 @@ final class ProjectController extends AbstractController
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             try {
-                $this->projectService->saveNewProject($project);
+                $this->projectService->saveNewProject($project, new Context($this->getUser()));
                 $this->flashSuccess('action.update.success');
 
                 return $this->redirectToRoute('project_details', ['id' => $project->getId()]);
@@ -333,7 +334,7 @@ final class ProjectController extends AbstractController
             $rates = $rateRepository->getRatesForProject($project);
         }
 
-        if ($this->isGranted('budget', $project)) {
+        if ($this->isGranted('budget', $project) || $this->isGranted('time', $project)) {
             $stats = $statisticService->getBudgetStatisticModel($project, $now);
         }
 
@@ -563,6 +564,7 @@ final class ProjectController extends AbstractController
             'currency' => $currency,
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
             'include_budget' => $this->isGranted('budget', $project),
+            'include_time' => $this->isGranted('time', $project),
             'time_increment' => 15,
         ]);
     }

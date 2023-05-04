@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="nb-NO" datatype="plaintext" original="messages.en.xlf">
+  <file source-language="en" target-language="nb-NO" datatype="plaintext" original="validators.en.xlf">
     <body>
       <trans-unit id="rmH78_V" resname="At least one team leader must be assigned to the team.">
         <source>At least one team leader must be assigned to the team.</source>
@@ -77,6 +77,14 @@
       <trans-unit id="0o.pH3X" resname="This period is locked, please choose a later date.">
         <source>This period is locked. Please choose a later date.</source>
         <target state="needs-translation">Denne perioden er låst. Velg en senere dato.</target>
+      </trans-unit>
+      <trans-unit id="Jz1y3yB" resname="Duration cannot be zero.">
+        <source>Duration cannot be zero.</source>
+        <target state="needs-translation">Varighet må angis.</target>
+      </trans-unit>
+      <trans-unit id="dcPei9G" resname="Sorry, the budget is used up.">
+        <source>Sorry, the budget is used up.</source>
+        <target state="translated">Budsjettet er oppbrukt.</target>
       </trans-unit>
     </body>
   </file>

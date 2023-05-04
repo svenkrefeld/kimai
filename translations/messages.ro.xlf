@@ -32,10 +32,7 @@
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>
-                    Aceste date vor fi, de asemenea, șterse!
-                    Sau poti selecta o intrare către care vor fi transferate toate datele:
-                </target>
+        <target>Aceste date vor fi, de asemenea, șterse! Sau poti selecta o intrare către care vor fi transferate toate datele:</target>
       </trans-unit>
       <trans-unit id="COyxNde" resname="delete.not_in_use">
         <source>delete.not_in_use</source>
@@ -1197,7 +1194,7 @@
         <source>label.hours_24</source>
         <target>24 de ore</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Actualizat la</target>
       </trans-unit>
@@ -1209,9 +1206,25 @@
         <source>The directory “%dir%” does not exist and could not be created.</source>
         <target>Directorul „%dir%” nu există și nu a putut fi creat.</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target state="translated">Afișarea intrărilor în listele de selecție</target>
+      </trans-unit>
+      <trans-unit id="U_D.NIy" resname="automatic">
+        <source>automatic</source>
+        <target state="translated">Automat</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Textul facturii</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">Permiteți activități globale</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">Se afișează indiferent de "tip de buget"</target>
       </trans-unit>
     </body>
   </file>

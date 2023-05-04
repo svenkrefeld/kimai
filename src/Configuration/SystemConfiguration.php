@@ -86,6 +86,11 @@ class SystemConfiguration implements SystemBundleConfiguration
         return (array) $this->find('saml.roles.mapping');
     }
 
+    public function isSamlRolesResetOnLogin(): bool
+    {
+        return (bool) $this->find('saml.roles.resetOnLogin');
+    }
+
     public function getSamlConnection(): array
     {
         return (array) $this->find('saml.connection');
@@ -175,6 +180,11 @@ class SystemConfiguration implements SystemBundleConfiguration
         return (int) $this->find('calendar.dragdrop_amount');
     }
 
+    public function isCalendarDragAndDropCopyData(): bool
+    {
+        return (bool) $this->find('calendar.dragdrop_data');
+    }
+
     // ========== Customer configurations ==========
 
     public function getCustomerDefaultTimezone(): ?string
@@ -235,6 +245,11 @@ class SystemConfiguration implements SystemBundleConfiguration
     public function isTimesheetAllowFutureTimes(): bool
     {
         return (bool) $this->find('timesheet.rules.allow_future_times');
+    }
+
+    public function isTimesheetAllowZeroDuration(): bool
+    {
+        return (bool) $this->find('timesheet.rules.allow_zero_duration');
     }
 
     public function isTimesheetAllowOverbookingBudget(): bool
@@ -407,5 +422,12 @@ class SystemConfiguration implements SystemBundleConfiguration
     public function isAllowTagCreation(): bool
     {
         return (bool) $this->find('theme.tags_create');
+    }
+
+    // ========== Projects ==========
+
+    public function isProjectCopyTeamsOnCreate(): bool
+    {
+        return $this->find('project.copy_teams_on_create') === true;
     }
 }

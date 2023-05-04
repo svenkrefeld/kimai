@@ -14,10 +14,11 @@ use App\Entity\Customer;
 use App\Entity\Invoice;
 use App\Entity\InvoiceTemplate;
 use App\Entity\MetaTableTypeInterface;
+use App\Event\InvoiceCreatedMultipleEvent;
 use App\Event\InvoiceDocumentsEvent;
 use App\Event\InvoiceMetaDefinitionEvent;
 use App\Event\InvoiceMetaDisplayEvent;
-use App\Export\Spreadsheet\AnnotatedObjectExporter;
+use App\Export\Spreadsheet\EntityWithMetaFieldsExporter;
 use App\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
 use App\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Form\InvoiceDocumentUploadForm;
@@ -43,6 +44,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Twig\Environment;
 
 /**
  * Controller used to create invoices and manage invoice templates.
@@ -167,14 +169,14 @@ final class InvoiceController extends AbstractController
                 $query->setCustomers([$customer]);
                 $model = $this->service->createModel($query);
 
-                return $this->service->renderInvoiceWithModel($model, $this->dispatcher);
+                return $this->service->renderInvoiceWithModel($model, $this->dispatcher, true);
             } catch (Exception $ex) {
                 $this->logException($ex);
-                $this->flashError('action.update.error', ['%reason%' => 'Failed generating invoice preview: ' . $ex->getMessage()]);
+                $this->flashError('action.update.error', ['%reason%' => $ex->getMessage()]);
             }
+        } else {
+            $this->flashFormError($form);
         }
-
-        $this->flashFormError($form);
 
         return $this->redirectToRoute('invoice');
     }
@@ -358,7 +360,7 @@ final class InvoiceController extends AbstractController
      * @Route(path="/export", name="invoice_export", methods={"GET"})
      * @Security("is_granted('view_invoice')")
      */
-    public function exportAction(Request $request, AnnotatedObjectExporter $exporter)
+    public function exportAction(Request $request, EntityWithMetaFieldsExporter $exporter)
     {
         $query = new InvoiceArchiveQuery();
         $query->setCurrentUser($this->getUser());
@@ -369,7 +371,11 @@ final class InvoiceController extends AbstractController
 
         $entries = $this->invoiceRepository->getInvoicesForQuery($query);
 
-        $spreadsheet = $exporter->export(Invoice::class, $entries);
+        $spreadsheet = $exporter->export(
+            Invoice::class,
+            $entries,
+            new InvoiceMetaDisplayEvent($query, InvoiceMetaDisplayEvent::INVOICE)
+        );
         $writer = new BinaryFileResponseWriter(new XlsxWriter(), 'kimai-invoices');
 
         return $writer->getFileResponse($spreadsheet);
@@ -404,7 +410,7 @@ final class InvoiceController extends AbstractController
      * @Route(path="/document_upload", name="admin_invoice_document_upload", methods={"GET", "POST"})
      * @Security("is_granted('upload_invoice_template')")
      */
-    public function uploadDocumentAction(Request $request, string $projectDirectory, InvoiceDocumentRepository $documentRepository)
+    public function uploadDocumentAction(Request $request, string $projectDirectory, InvoiceDocumentRepository $documentRepository, Environment $twig, SystemConfiguration $systemConfiguration)
     {
         $dir = $documentRepository->getUploadDirectory();
         $invoiceDir = $dir;
@@ -413,6 +419,7 @@ final class InvoiceController extends AbstractController
         if ($invoiceDir[0] !== '/') {
             $invoiceDir = $projectDirectory . DIRECTORY_SEPARATOR . $dir;
         }
+        $invoiceDir = rtrim($invoiceDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         $used = [];
         foreach ($this->templateRepository->findAll() as $template) {
@@ -468,23 +475,56 @@ final class InvoiceController extends AbstractController
                 /** @var UploadedFile $uploadedFile */
                 $uploadedFile = $form->get('document')->getData();
 
-                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = transliterator_transliterate(
-                    'Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()',
-                    $originalFilename
-                );
+                $originalName = $uploadedFile->getClientOriginalName();
+                $safeFilename = null;
+                $extension = null;
+                $success = true;
 
-                $extension = $uploadedFile->guessExtension();
+                $allowed = InvoiceDocumentUploadForm::EXTENSIONS_NO_TWIG;
+                if ((bool) $systemConfiguration->find('invoice.upload_twig') === true) {
+                    $allowed = InvoiceDocumentUploadForm::EXTENSIONS;
+                }
 
-                $newFilename = substr($safeFilename, 0, 20) . '.' . $extension;
+                foreach ($allowed as $ext) {
+                    $len = \strlen($ext);
+                    if (substr_compare($originalName, $ext, -$len) === 0) {
+                        $extension = $ext;
+                        $withoutExtension = str_replace($ext, '', $originalName);
+                        $safeFilename = transliterator_transliterate(InvoiceDocumentUploadForm::FILENAME_RULE, $withoutExtension);
+                        break;
+                    }
+                }
 
-                try {
-                    $uploadedFile->move($invoiceDir, $newFilename);
+                if ($safeFilename === null || $extension === null) {
+                    $success = false;
+                    $this->flashError('Invalid file given');
+                } else {
+                    $newFilename = substr($safeFilename, 0, 20) . $extension;
+
+                    try {
+                        $uploadedFile->move($invoiceDir, $newFilename);
+
+                        // if this is a twig file, we directly try to compile the template
+                        if (stripos($newFilename, '.twig') !== false) {
+                            try {
+                                $twig->enableAutoReload();
+                                $twig->load('@invoice/' . $newFilename);
+                                $twig->disableAutoReload();
+                            } catch (Exception $ex) {
+                                unlink($invoiceDir . $newFilename);
+                                $success = false;
+                                $this->flashException($ex, 'File was deleted, as Twig template is broken: ' . $ex->getMessage());
+                            }
+                        }
+                    } catch (Exception $ex) {
+                        $this->flashException($ex, 'action.upload.error');
+                    }
+                }
+
+                if ($success) {
                     $this->flashSuccess('action.update.success');
 
                     return $this->redirectToRoute('admin_invoice_document_upload');
-                } catch (Exception $ex) {
-                    $this->flashException($ex, 'action.upload.error');
                 }
             }
         }
@@ -520,13 +560,17 @@ final class InvoiceController extends AbstractController
 
         foreach ($documentRepository->findBuiltIn() as $doc) {
             if ($doc->getId() === $id) {
-                throw new \Exception('Document is built-in and cannot be deleted');
+                $this->flashError('Document is built-in and cannot be deleted.');
+
+                return $this->redirectToRoute('admin_invoice_document_upload');
             }
         }
 
         foreach ($this->templateRepository->findAll() as $template) {
             if ($template->getRenderer() === $id) {
-                throw new \Exception('Document is used and cannot be deleted');
+                $this->flashError('Document is used and cannot be deleted.');
+
+                return $this->redirectToRoute('admin_invoice_document_upload');
             }
         }
 
@@ -615,6 +659,8 @@ final class InvoiceController extends AbstractController
 
             if (\count($invoices) === 1) {
                 return $this->redirectToRoute('admin_invoice_list', ['id' => $invoices[0]->getId()]);
+            } elseif (\count($invoices) > 1) {
+                $this->dispatcher->dispatch(new InvoiceCreatedMultipleEvent($invoices));
             }
 
             return $this->redirectToRoute('admin_invoice_list');
@@ -666,6 +712,7 @@ final class InvoiceController extends AbstractController
             'action' => $this->generateUrl('invoice', []),
             'method' => 'GET',
             'include_user' => $this->isGranted('view_other_timesheet'),
+            'include_export' => $this->isGranted('edit_export_other_timesheet'),
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
             'attr' => [
                 'id' => 'invoice-print-form'

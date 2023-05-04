@@ -13,6 +13,7 @@ use App\Entity\Customer;
 use App\Entity\Project;
 use App\Form\Type\CustomerType;
 use App\Form\Type\DateTimePickerType;
+use App\Form\Type\YesNoType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -30,6 +31,7 @@ class ProjectEditForm extends AbstractType
     {
         $customer = null;
         $id = null;
+        $options['currency'] = null;
 
         if (isset($options['data'])) {
             /** @var Project $entry */
@@ -67,6 +69,10 @@ class ProjectEditForm extends AbstractType
                 'label' => 'label.description',
                 'required' => false,
             ])
+            ->add('invoiceText', TextareaType::class, [
+                'label' => 'label.invoiceText',
+                'required' => false,
+            ])
             ->add('orderNumber', TextType::class, [
                 'label' => 'label.orderNumber',
                 'required' => false,
@@ -90,7 +96,11 @@ class ProjectEditForm extends AbstractType
                 'placeholder' => (null === $id && null === $customer) ? '' : false,
                 'customers' => $customer,
                 'query_builder_for_user' => true,
-            ]);
+            ])
+            ->add('globalActivities', YesNoType::class, [
+                'label' => 'label.globalActivities',
+            ])
+        ;
 
         $this->addCommonFields($builder, $options);
     }
@@ -108,6 +118,7 @@ class ProjectEditForm extends AbstractType
             'currency' => Customer::DEFAULT_CURRENCY,
             'date_format' => null,
             'include_budget' => false,
+            'include_time' => false,
             'timezone' => date_default_timezone_get(),
             'time_increment' => 1,
             'attr' => [

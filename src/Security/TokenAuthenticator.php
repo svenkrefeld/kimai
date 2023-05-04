@@ -24,7 +24,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     public const HEADER_USERNAME = 'X-AUTH-USER';
     public const HEADER_TOKEN = 'X-AUTH-TOKEN';
-    public const HEADER_JAVASCRIPT = 'X-AUTH-SESSION';
 
     private $encoderFactory;
 
@@ -47,7 +46,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         // only try to use this authenticator, when the URL contains the /api/ path
         if (strpos($request->getRequestUri(), '/api/') !== false) {
             // javascript requests can set a header to disable this authenticator and use the existing session
-            return !$request->headers->has(self::HEADER_JAVASCRIPT);
+            return $request->headers->has(self::HEADER_USERNAME) && $request->headers->has(self::HEADER_TOKEN);
         }
 
         return false;

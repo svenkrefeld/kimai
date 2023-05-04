@@ -11,8 +11,12 @@ namespace App\Controller;
 
 use App\Calendar\CalendarService;
 use App\Configuration\SystemConfiguration;
+use App\Entity\User;
+use App\Form\CalendarForm;
 use App\Timesheet\TrackingModeService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -24,20 +28,51 @@ use Symfony\Component\Routing\Annotation\Route;
 class CalendarController extends AbstractController
 {
     private $calendarService;
+    private $configuration;
+    private $service;
 
-    public function __construct(CalendarService $calendarService)
+    public function __construct(CalendarService $calendarService, SystemConfiguration $configuration, TrackingModeService $service)
     {
         $this->calendarService = $calendarService;
+        $this->configuration = $configuration;
+        $this->service = $service;
     }
 
     /**
      * @Route(path="/", name="calendar", methods={"GET"})
+     * @Route(path="/{profile}", name="calendar_user", methods={"GET"})
      */
-    public function userCalendar(SystemConfiguration $configuration, TrackingModeService $service)
+    public function userCalendar(Request $request): Response
     {
-        $mode = $service->getActiveMode();
+        $form = null;
+        $profile = $this->getUser();
+
+        if ($this->isGranted('view_other_timesheet')) {
+            $form = $this->createFormForGetRequest(CalendarForm::class, ['user' => $profile], [
+                'action' => $this->generateUrl('calendar'),
+            ]);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $values = $form->getData();
+                if ($values['user'] instanceof User) {
+                    $profile = $values['user'];
+                }
+            }
+
+            $form = $form->createView();
+
+            // hide if the current user is the only available one
+            if (\count($form->offsetGet('user')->vars['choices']) < 2) {
+                $form = null;
+                $profile = $this->getUser();
+            }
+        }
+
+        $mode = $this->service->getActiveMode();
         $factory = $this->getDateTimeFactory();
-        $defaultStart = $factory->createDateTime($configuration->getTimesheetDefaultBeginTime());
+        $defaultStart = $factory->createDateTime($this->configuration->getTimesheetDefaultBeginTime());
 
         $config = $this->calendarService->getConfiguration();
 
@@ -46,16 +81,18 @@ class CalendarController extends AbstractController
 
         if ($mode->canEditBegin()) {
             try {
-                $dragAndDrop = $this->calendarService->getDragAndDropResources($this->getUser());
+                $dragAndDrop = $this->calendarService->getDragAndDropResources($profile);
             } catch (\Exception $ex) {
                 $this->logException($ex);
             }
         }
 
         return $this->render('calendar/user.html.twig', [
+            'form' => $form,
+            'user' => $profile,
             'config' => $config,
             'dragAndDrop' => $dragAndDrop,
-            'google' => $this->calendarService->getGoogleSources($this->getUser()),
+            'google' => $this->calendarService->getGoogleSources($profile),
             'now' => $factory->createDateTime(),
             'defaultStartTime' => $defaultStart->format('h:i:s'),
             'is_punch_mode' => $isPunchMode,

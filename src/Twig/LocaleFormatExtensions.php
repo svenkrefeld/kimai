@@ -29,6 +29,10 @@ final class LocaleFormatExtensions extends AbstractExtension
     private $security;
 
     /**
+     * @var bool|null
+     */
+    private $fdowSunday = null;
+    /**
      * @var LocaleFormats|null
      */
     private $localeFormats;
@@ -65,6 +69,7 @@ final class LocaleFormatExtensions extends AbstractExtension
             new TwigFilter('hour24', [$this, 'hour24']),
             new TwigFilter('duration', [$this, 'duration']),
             new TwigFilter('chart_duration', [$this, 'durationChart']),
+            new TwigFilter('chart_money', [$this, 'moneyChart']),
             new TwigFilter('duration_decimal', [$this, 'durationDecimal']),
             new TwigFilter('money', [$this, 'money']),
             new TwigFilter('currency', [$this, 'currency']),
@@ -77,14 +82,7 @@ final class LocaleFormatExtensions extends AbstractExtension
     public function getTests()
     {
         return [
-            new TwigTest('weekend', function ($dateTime) {
-                if (!$dateTime instanceof \DateTime) {
-                    return false;
-                }
-                $day = (int) $dateTime->format('w');
-
-                return ($day === 0 || $day === 6);
-            }),
+            new TwigTest('weekend', [$this, 'isWeekend']),
             new TwigTest('today', function ($dateTime) {
                 if (!$dateTime instanceof \DateTime) {
                     return false;
@@ -147,6 +145,35 @@ final class LocaleFormatExtensions extends AbstractExtension
         }
 
         return $this->locale;
+    }
+
+    /**
+     * @param DateTime $dateTime
+     * @return bool
+     */
+    public function isWeekend($dateTime): bool
+    {
+        if (!$dateTime instanceof \DateTime) {
+            return false;
+        }
+
+        $day = (int) $dateTime->format('w');
+
+        if ($this->fdowSunday === null) {
+            /** @var User|null $user */
+            $user = $this->security->getUser();
+            if ($user !== null) {
+                $this->fdowSunday = $user->isFirstDayOfWeekSunday();
+            } else {
+                $this->fdowSunday = false;
+            }
+        }
+
+        if ($this->fdowSunday) {
+            return ($day === 5 || $day === 6);
+        }
+
+        return ($day === 0 || $day === 6);
     }
 
     /**
@@ -315,6 +342,11 @@ final class LocaleFormatExtensions extends AbstractExtension
     public function durationChart($duration): string
     {
         return number_format(($duration / 3600), 2, '.', '');
+    }
+
+    public function moneyChart($money): string
+    {
+        return number_format($money, 2, '.', '');
     }
 
     /**

@@ -119,6 +119,7 @@ class BaseQueryTest extends TestCase
         $team = new Team();
         self::assertInstanceOf(BaseQuery::class, $sut->setTeams([$team]));
         self::assertEquals(1, \count($sut->getTeams()));
+        /* @phpstan-ignore-next-line  */
         self::assertSame($team, $sut->getTeams()[0]);
     }
 
@@ -341,10 +342,8 @@ class BaseQueryTest extends TestCase
         $dateRange->setEnd($end);
 
         self::assertSame($begin, $sut->getDateRange()->getBegin());
-        /* @phpstan-ignore-next-line */
         self::assertSame($begin, $sut->getBegin());
         self::assertSame($end, $sut->getDateRange()->getEnd());
-        /* @phpstan-ignore-next-line */
         self::assertSame($end, $sut->getEnd());
     }
 }

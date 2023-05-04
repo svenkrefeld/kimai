@@ -1257,7 +1257,7 @@
         <source>error.directory_protected</source>
         <target>Ο φάκελος «%dir%» έχει προστασία εγγραφής.</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Ενημερώθηκε την</target>
       </trans-unit>
@@ -1269,13 +1269,25 @@
         <source>invoice_document.max_reached</source>
         <target>Επιτεύχθη τo μέγιστο όριο %max% των τιμολογίων. Μπορείτε να προσθέσετε περισότερρα εφόσον αφαιρέσεται κάποιο.</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target state="translated">Προβολή των καταχωρίσεων στις λίστες επιλογών</target>
       </trans-unit>
       <trans-unit id="U_D.NIy" resname="automatic">
         <source>automatic</source>
         <target>Αυτόματα</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Κείμενο Τιμολογίου</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">Επέτρεψε καθολικές ενέργειες</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">Εμφάνιση ανεξαρτήτως από"τύπο-προυπολογισμού"</target>
       </trans-unit>
     </body>
   </file>

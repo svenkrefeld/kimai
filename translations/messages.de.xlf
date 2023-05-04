@@ -120,7 +120,7 @@
         <source>modal.dirty</source>
         <target>Das Formular wurde geändert. Bitte klicken Sie „Speichern“, um die Änderungen zu sichern oder „Schließen“, um abzubrechen.</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target>Darstellung der Einträge in Auswahllisten</target>
       </trans-unit>
@@ -292,6 +292,10 @@
       <trans-unit id="4cEApe1" resname="label.description">
         <source>label.description</source>
         <target>Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target>Rechnungstext</target>
       </trans-unit>
       <trans-unit id="ysOvPSq" resname="label.name">
         <source>label.name</source>
@@ -1197,6 +1201,10 @@
         <source>label.globalsOnly</source>
         <target>Nur globale</target>
       </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target>Globale Tätigkeiten erlauben</target>
+      </trans-unit>
       <trans-unit id="2Ek7sXu" resname="label.batch_meta_fields">
         <source>label.batch_meta_fields</source>
         <target>Zusätzliche Felder</target>
@@ -1216,6 +1224,10 @@
       <trans-unit id="Wq.h4nD" resname="label.includeBudgetType_month">
         <source>label.includeBudgetType_month</source>
         <target>Einträge mit „Monats-Budget“ anzeigen</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target>Unabhängig vom „Budget-Typ“ anzeigen</target>
       </trans-unit>
       <trans-unit id="nVulc7." resname="label.includeBudgetType_full">
         <source>label.includeBudgetType_full</source>
@@ -1280,7 +1292,7 @@
         <source>label.hours_24</source>
         <target>24 Stunden</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>Aktualisiert am</target>
       </trans-unit>

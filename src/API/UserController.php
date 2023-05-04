@@ -217,7 +217,7 @@ final class UserController extends BaseApiController
         $form = $this->createForm(UserApiCreateForm::class, $user, [
             'include_roles' => $this->isGranted('roles', $user),
             'include_active_flag' => true,
-            'include_preferences' => $this->isGranted('preferences', $user),
+            'include_preferences' => true,
         ]);
 
         $form->submit($request->request->all());
@@ -226,10 +226,16 @@ final class UserController extends BaseApiController
             $password = $this->encoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
+            if ($user->getPlainApiToken() !== null) {
+                $user->setApiToken($this->encoder->encodePassword($user, $user->getPlainApiToken()));
+            }
+
             $this->repository->saveUser($user);
 
             $view = new View($user, 200);
             $view->getContext()->setGroups(self::GROUPS_ENTITY);
+
+            $user->eraseCredentials();
 
             return $this->viewHandler->handle($view);
         }

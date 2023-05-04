@@ -68,13 +68,13 @@ class InvoiceTemplateForm extends AbstractType
             ])
             ->add('vat', NumberType::class, [
                 'label' => 'label.tax_rate',
-                'scale' => 2,
+                'scale' => 3,
             ])
             ->add('renderer', InvoiceRendererType::class)
             ->add('calculator', InvoiceCalculatorType::class)
             ->add('numberGenerator', InvoiceNumberGeneratorType::class)
             ->add('language', LanguageType::class, [
-                'required' => false,
+                'required' => true,
             ])
             ->add('decimalDuration', YesNoType::class, [
                 'label' => 'label.decimalDuration'

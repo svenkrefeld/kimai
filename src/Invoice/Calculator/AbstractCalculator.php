@@ -48,7 +48,7 @@ abstract class AbstractCalculator
      */
     public function getSubtotal(): float
     {
-        $amount = 0;
+        $amount = 0.00;
         foreach ($this->model->getEntries() as $entry) {
             $amount += $entry->getRate();
         }
@@ -110,7 +110,7 @@ abstract class AbstractCalculator
     {
         $time = 0;
         foreach ($this->model->getEntries() as $entry) {
-            if (null === $entry->getFixedRate() && null !== $entry->getDuration()) {
+            if (null !== $entry->getDuration()) {
                 $time += $entry->getDuration();
             }
         }

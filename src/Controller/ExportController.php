@@ -9,6 +9,7 @@
 
 namespace App\Controller;
 
+use App\Export\Base\DispositionInlineInterface;
 use App\Export\ExportItemInterface;
 use App\Export\ServiceExport;
 use App\Export\TooManyItemsExportException;
@@ -117,10 +118,14 @@ class ExportController extends AbstractController
             throw $this->createNotFoundException('Unknown export renderer');
         }
 
+        // display file inline if supported and `markAsExported` is not set
+        if ($renderer instanceof DispositionInlineInterface && !$query->isMarkAsExported()) {
+            $renderer->setDispositionInline(true);
+        }
+
         $entries = $this->getEntries($query);
         $response = $renderer->render($entries, $query);
 
-        // TODO check entries if user is allowed to update export state - see https://github.com/kevinpapst/kimai2/issues/1473
         if ($query->isMarkAsExported()) {
             $this->export->setExported($entries);
         }
@@ -163,6 +168,7 @@ class ExportController extends AbstractController
         return $this->createForm(ExportToolbarForm::class, $query, [
             'action' => $this->generateUrl('export', []),
             'include_user' => $this->isGranted('view_other_timesheet'),
+            'include_export' => $this->isGranted('edit_export_other_timesheet'),
             'method' => $method,
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
             'attr' => [

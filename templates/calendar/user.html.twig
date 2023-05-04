@@ -10,9 +10,18 @@
 
 {% block main %}
     <div class="row">
-        {% set hasDragAndDrop = (config.dragDropAmount > 0 and dragAndDrop is not empty and (dragAndDrop|filter(s => s.entries|length > 0)|length > 0)) %}
-        {% if hasDragAndDrop %}
+        {% set hasTwoColumns = (config.dragDropAmount > 0 and dragAndDrop is not empty and (dragAndDrop|filter(s => s.entries|length > 0)|length > 0)) or form is not null %}
+        {% if hasTwoColumns %}
         <div class="hidden-xs col-sm-5 col-md-4 col-lg-3 no-print">
+            {% if form is not null %}
+                {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
+                    {% block box_body %}
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        {{ form_end(form) }}
+                    {% endblock %}
+                {% endembed %}
+            {% endif %}
             {% for source in dragAndDrop|filter(s => s.entries|length > 0) %}
                 {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
                     {% block box_title %}{{ source.title|trans }}{% endblock %}
@@ -35,7 +44,7 @@
         </div>
         {% endif %}
 
-        <div class="col-xs-12 {% if hasDragAndDrop %}col-sm-7 col-md-8 col-lg-9 col-print-12{% endif %}">
+        <div class="col-xs-12 {% if hasTwoColumns %}col-sm-7 col-md-8 col-lg-9 col-print-12{% endif %}">
             {% embed '@AdminLTE/Widgets/box-widget.html.twig' %}
                 {% block box_body_class %}no-padding{% endblock %}
                 {% block box_body %}
@@ -58,9 +67,30 @@
 
 {% block javascripts %}
     {% set calendarSelector = '#timesheet_calendar' %}
+    {% set createParams = '' %}
+    {% set createRoute = 'timesheet_create' %}
+    {% set editRoute = 'timesheet_edit' %}
+    {% set canDelete = is_granted('delete_own_timesheet') %}
+    {% set canCreate = is_granted('create_own_timesheet') %}
+    {% set canEdit = is_granted('edit_own_timesheet') %}
+    {% set isForeignEdit = false %}
+    {% if user != app.user %}
+        {% set isForeignEdit = true %}
+        {% set createParams = '&user=' ~ user.id %}
+        {% set createRoute = 'admin_timesheet_create' %}
+        {% set editRoute = 'admin_timesheet_edit' %}
+        {% set canDelete = is_granted('delete_other_timesheet') %}
+        {% set canCreate = is_granted('create_other_timesheet') %}
+        {% set canEdit = is_granted('edit_other_timesheet') %}
+    {% endif %}
+
     {{ parent() }}
     <script>
         activatePopover();
+
+        document.addEventListener('kimai.initialized', function() {
+            KimaiReloadPageWidget.create('kimai.systemConfigUpdate', true);
+        });
 
         document.addEventListener('kimai.timesheetUpdate', function() {
             jQuery('{{ calendarSelector }}').fullCalendar('refetchEvents');
@@ -98,9 +128,37 @@
             if (color == null) {
                 color = defaultColor;
             }
+
+            let title = apiItem.activity.name;
+
+            let description = '';
+            if (apiItem.description !== null && apiItem.description !== '') {
+                description = '{{ constant('\\App\\Form\\Type\\CalendarTitlePatternType::SPACER') }}' + apiItem.description;
+            }
+
+            {% if config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_PROJECT') %}
+                title = apiItem.project.name;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_CUSTOMER') %}
+                title = apiItem.project.customer.name;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_DESCRIPTION') %}
+                title = apiItem.description;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_ACTIVITY_DESCRIPTION') %}
+                title = apiItem.activity.name + description;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_PROJECT_DESCRIPTION') %}
+                title = apiItem.project.name + description;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_CUSTOMER_DESCRIPTION') %}
+                title = apiItem.project.customer.name + description;
+            {% elseif config.entryTitlePattern == constant('\\App\\Form\\Type\\CalendarTitlePatternType::PATTERN_PROJECT_CUSTOMER') %}
+                title = apiItem.project.name + '{{ constant('\\App\\Form\\Type\\CalendarTitlePatternType::SPACER') }}' + apiItem.project.customer.name;
+            {% endif %}
+
+            if (title === '' || title === null) {
+                title = apiItem.activity.name;
+            }
+
             return {
                 id: apiItem.id,
-                title: apiItem.activity.name,
+                title: title,
                 description: apiItem.description,
                 start: apiItem.begin,
                 end: apiItem.end,
@@ -207,7 +265,7 @@
                 googleCalendarApiKey: '{{ google.apiKey }}',
                 {% endif %}
                 header    : {
-                    left  : 'prev,next today{% if is_granted('delete_own_timesheet') %} deleteButton{% endif %}',
+                    left  : 'prev,next today{% if canDelete %} deleteButton{% endif %}',
                     center: 'title',
                     right : 'month,agendaWeek,agendaDay'
                 },
@@ -231,7 +289,7 @@
                 height: 'auto',
                 nowIndicator: true,
                 now: '{{ now|date_format('c') }}',
-                {# see https://github.com/kevinpapst/kimai2/issues/2155 #}
+                {# see https://github.com/kimai/kimai/issues/2155 #}
                 timezone: '{{ app.user.timezone == 'UTC' ? 'GMT' : app.user.timezone }}',
                 weekends: {% if config.showWeekends %}true{% else %}false{% endif %},
                 businessHours: {
@@ -251,6 +309,9 @@
                     let source = entry.parentElement;
                     let plainData = entry.dataset.entry;
                     let data = JSON.parse(plainData);
+                    {% if isForeignEdit and canCreate %}
+                        data.user = {{ user.id }};
+                    {% endif %}
                     let urlReplacer = JSON.parse(source.dataset.routeReplacer);
                     let apiUrl = source.dataset.route;
 
@@ -317,7 +378,7 @@
                         events: function(start, end, timezone, callback) {
                             let from = moment(start.format()).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS);
                             let to = moment(end.format()).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS);
-                            API.get('{{ path('get_timesheets') }}?size=1000&full=true&begin='+from+'&end='+to, {}, function(result) {
+                            API.get('{{ path('get_timesheets') }}?user={{ user.id }}&size=1000&full=true&begin='+from+'&end='+to, {}, function(result) {
                                 let apiEvents = [];
                                 for (const record of result) {
                                     apiEvents.push(convertApiTimesheetToCalendar(record));
@@ -406,7 +467,7 @@
                     $element.data('ids', event.id + ' ' + ids);
                     $element.text(DATES.formatSeconds(duration));
                 },
-                {% if not is_punch_mode and is_granted('create_own_timesheet') %}
+                {% if not is_punch_mode and canCreate %}
                     dayClick: function(date, jsEvent, view) {
                         {#
                            Day-clicks are always triggered, unless a selection was created.
@@ -417,7 +478,7 @@
                             return;
                         }
 
-                        let createUrl = '{{ path('timesheet_create') }}?begin=' + date.format();
+                        let createUrl = '{{ path(createRoute) }}?begin=' + date.format() + '{{ createParams|raw }}';
                         kimai.getPlugin('modal').openUrlInModal(createUrl);
                     },
                     selectable: true,
@@ -429,17 +490,17 @@
                             #}
                             return;
                         }
-                        let createUrl = '{{ path('timesheet_create') }}' + '?from=' + start.format() + '&to=' + end.format();
+                        let createUrl = '{{ path(createRoute) }}' + '?from=' + start.format() + '&to=' + end.format() + '{{ createParams|raw }}';
                         kimai.getPlugin('modal').openUrlInModal(createUrl);
                     },
                 {% endif %}
-                {% if is_granted('edit_own_timesheet') %}
+                {% if canEdit %}
                     eventClick: function(eventObj, jsEvent, view) {
                         if (eventObj.source.ajaxSettings !== undefined) {
                             jsEvent.preventDefault();
                             return;
                         }
-                        let editUrl = '{{ path('timesheet_edit', {id: '-XX-'}) }}'.replace('-XX-', eventObj.id);
+                        let editUrl = '{{ path(editRoute, {id: '-XX-'}) }}'.replace('-XX-', eventObj.id);
                         kimai.getPlugin('modal').openUrlInModal(editUrl);
                     },
                     {% if not is_punch_mode %}
@@ -449,7 +510,7 @@
                         },
                         eventDragStop: function(event, jsEvent, ui, view) {
                             activatePopover();
-                            {% if is_granted('delete_own_timesheet') %}
+                            {% if canDelete %}
                                 var trash = jQuery('.fc-deleteButton-button');
                                 var offset = trash.offset();
 

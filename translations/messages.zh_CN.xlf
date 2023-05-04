@@ -35,10 +35,7 @@
       </trans-unit>
       <trans-unit id="vDd3alC" resname="admin_entity.delete_confirm">
         <source>admin_entity.delete_confirm</source>
-        <target>
-                    该项数据也将被删除!
-                    或者，您可以选择一项条目将所有数据传输过去：
-                </target>
+        <target>该项数据也将被删除! 或者，您可以选择一项条目将所有数据传输过去：</target>
       </trans-unit>
       <trans-unit id="COyxNde" resname="delete.not_in_use">
         <source>delete.not_in_use</source>
@@ -62,7 +59,7 @@
       </trans-unit>
       <trans-unit id="J258iS6" resname="update_multiple">
         <source>update_multiple</source>
-        <target>%action% %count%  条目?</target>
+        <target>%action% %count% 条目?</target>
       </trans-unit>
       <!--
               Login / Security
@@ -487,7 +484,7 @@
             -->
       <trans-unit id="39AtPxQ" resname="label.number">
         <source>label.number</source>
-        <target>账户</target>
+        <target state="translated">账户</target>
       </trans-unit>
       <trans-unit id="7jfRn_1" resname="label.company">
         <source>label.company</source>
@@ -826,7 +823,7 @@
       </trans-unit>
       <trans-unit id="uFZA7Uf" resname="label.invoice_bank_account">
         <source>label.invoice_bank_account</source>
-        <target>银行账户</target>
+        <target state="translated">银行账户</target>
       </trans-unit>
       <!--
               Export
@@ -1151,7 +1148,7 @@
       </trans-unit>
       <trans-unit id=".ndupSK" resname="registration.check_email">
         <source>registration.check_email</source>
-        <target>一封电子邮件已发送至 %email%。它包含一个激活链接，您必须单击该链接才能激活您的帐户。</target>
+        <target state="translated">一封电子邮件已发送至 %email%。它包含一个激活链接，您必须单击该链接才能激活您的账户。</target>
       </trans-unit>
       <trans-unit id="O5w1jzb" resname="file">
         <source>file</source>
@@ -1213,7 +1210,7 @@
         <source>label.type</source>
         <target>类别</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target>更新于</target>
       </trans-unit>
@@ -1269,9 +1266,25 @@
         <source>invoice_document.max_reached</source>
         <target>已达到%max%发票单据的最大金额。删除一个后，可以添加更多。</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
         <target state="translated">显示选择列表中的条目</target>
+      </trans-unit>
+      <trans-unit id="U_D.NIy" resname="automatic">
+        <source>automatic</source>
+        <target>自动化</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">发票文本</target>
+      </trans-unit>
+      <trans-unit id="G9hBaDJ" resname="label.globalActivities">
+        <source>label.globalActivities</source>
+        <target state="translated">允许全局活动</target>
+      </trans-unit>
+      <trans-unit id="8mTf0eZ" resname="label.budgetIndependent">
+        <source>label.budgetIndependent</source>
+        <target state="translated">无论 "预算类型 "如何都显示</target>
       </trans-unit>
     </body>
   </file>

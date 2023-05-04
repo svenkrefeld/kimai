@@ -849,9 +849,7 @@
       </trans-unit>
       <trans-unit id="WVU_S.A" resname="recent.activities">
         <source>recent.activities</source>
-        <target>
-                    Herstart een van uw laatste activiteiten
-                </target>
+        <target>Herstart een van uw laatste activiteiten</target>
       </trans-unit>
       <trans-unit id="SLV47Uu" resname="recent.activities.format">
         <source>recent.activities.format</source>
@@ -1192,9 +1190,9 @@
         <source>stats.userActiveFinancialYear</source>
         <target>Actieve gebruikers dit boekjaar</target>
       </trans-unit>
-      <trans-unit id="Yxxu2tG" resname="label.choice_pattern">
+      <trans-unit id="DpdNns0" resname="label.choice_pattern">
         <source>Display of entries in selection lists</source>
-        <target state="needs-translation">Display of entries in selection lists</target>
+        <target state="translated">Weergave van vermeldingen in selectie lijst</target>
       </trans-unit>
       <trans-unit id="75kjTF9" resname="calendar.drag_and_drop.delete">
         <source>calendar.drag_and_drop.delete</source>
@@ -1222,11 +1220,11 @@
       </trans-unit>
       <trans-unit id="C2TGff0" resname="error.directory_protected">
         <source>error.directory_protected</source>
-        <target state="needs-translation">Directory "%dir%" is write protected.</target>
+        <target state="translated">Map "%dir%" is beschermd tegen schrijven.</target>
       </trans-unit>
       <trans-unit id="GzWKgBk" resname="error.directory_missing">
         <source>The directory “%dir%” does not exist and could not be created.</source>
-        <target state="needs-translation">The directory “%dir%” does not exist and could not be created.</target>
+        <target state="translated">De map “%dir%” bestaat niet en kon niet worden aangemaakt.</target>
       </trans-unit>
       <trans-unit id="Wq.h4nD" resname="label.includeBudgetType_month">
         <source>label.includeBudgetType_month</source>
@@ -1264,13 +1262,21 @@
         <source>label.hours_24</source>
         <target state="needs-translation">24 hours</target>
       </trans-unit>
-      <trans-unit id="PCEFPeg" resname="updated_at">
+      <trans-unit id="IPHM4iP" resname="updated_at">
         <source>Updated at</source>
         <target state="needs-translation">Updated at</target>
       </trans-unit>
       <trans-unit id="nlwMf5w" resname="invoice_document.max_reached">
         <source>invoice_document.max_reached</source>
         <target state="needs-translation">Reached maximum amount of %max% invoice documents. You can add more after removing one.</target>
+      </trans-unit>
+      <trans-unit id="U_D.NIy" resname="automatic">
+        <source>automatic</source>
+        <target state="translated">Automatisch</target>
+      </trans-unit>
+      <trans-unit id="74pEVx1" resname="label.invoiceText">
+        <source>label.invoiceText</source>
+        <target state="translated">Factuur text</target>
       </trans-unit>
     </body>
   </file>

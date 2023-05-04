@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="nb-NO" datatype="plaintext" original="system-configuration.en.xlf">
     <body>
-      <trans-unit id="ycErWZK" resname="timesheet">
+      <trans-unit id="lt2Y2LO" resname="timesheet">
         <source>Time tracking</source>
         <target>Tidsregistrering</target>
       </trans-unit>
@@ -297,6 +297,30 @@
       <trans-unit id="ZUTc3eH" resname="label.calendar.dragdrop_amount">
         <source>label.calendar.dragdrop_amount</source>
         <target state="needs-translation">Mengde oppføringer for dra-og-slipp (0 = avskrudd)</target>
+      </trans-unit>
+      <trans-unit id="g1q7hKi" resname="label.timesheet.rules.allow_zero_duration">
+        <source>label.timesheet.rules.allow_zero_duration</source>
+        <target>Tillat tidsoppføringer uten varighet</target>
+      </trans-unit>
+      <trans-unit id="QxQOG3e" resname="label.quick_entry.recent_activity_weeks">
+        <source>label.quick_entry.recent_activity_weeks</source>
+        <target state="needs-translation">Ta over oppføringer fra de siste X ukene (tom eller 0 siden begynnelsen)</target>
+      </trans-unit>
+      <trans-unit id="7Efrrn5" resname="label.quick_entry.minimum_rows">
+        <source>label.quick_entry.minimum_rows</source>
+        <target>Min. antall rader</target>
+      </trans-unit>
+      <trans-unit id="MXabpD7" resname="label.calendar.title_pattern">
+        <source>label.calendar.title_pattern</source>
+        <target>Vis kalenderoppføringsnavn</target>
+      </trans-unit>
+      <trans-unit id="eiQKW2A" resname="label.calendar.dragdrop_data">
+        <source>Copies data when adding via drag and drop</source>
+        <target state="needs-translation">Kopierer data når lagt til via dra-og-slipp</target>
+      </trans-unit>
+      <trans-unit id="MXasdfgbpD7" resname="label.copy_teams_on_create" approved="no">
+        <source>label.copy_teams_on_create</source>
+        <target state="needs-translation">Ta over lag fra innlogget bruker ved opprettelse av nye oppføringer</target>
       </trans-unit>
     </body>
   </file>

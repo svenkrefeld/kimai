@@ -2,7 +2,7 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="pt" datatype="plaintext" original="system-configuration.en.xlf">
     <body>
-      <trans-unit id="ycErWZK" resname="timesheet">
+      <trans-unit id="lt2Y2LO" resname="timesheet">
         <source>Time tracking</source>
         <target>Rastreamento de tempo</target>
       </trans-unit>
@@ -297,6 +297,30 @@
       <trans-unit id="zeOPuh6" resname="label.quick_entry.recent_activities">
         <source>label.quick_entry.recent_activities</source>
         <target>Quantidade de entradas retomadas das semanas anteriores</target>
+      </trans-unit>
+      <trans-unit id="MXabpD7" resname="label.calendar.title_pattern">
+        <source>label.calendar.title_pattern</source>
+        <target>Mostra os títulos das entradas do calendário</target>
+      </trans-unit>
+      <trans-unit id="g1q7hKi" resname="label.timesheet.rules.allow_zero_duration">
+        <source>label.timesheet.rules.allow_zero_duration</source>
+        <target state="translated">Permitir entradas de tempo com uma duração vazia</target>
+      </trans-unit>
+      <trans-unit id="QxQOG3e" resname="label.quick_entry.recent_activity_weeks">
+        <source>label.quick_entry.recent_activity_weeks</source>
+        <target state="translated">Assumir as entradas das últimas X semanas (vazias ou 0 para sempre)</target>
+      </trans-unit>
+      <trans-unit id="7Efrrn5" resname="label.quick_entry.minimum_rows">
+        <source>label.quick_entry.minimum_rows</source>
+        <target state="translated">Número mínimo de linhas</target>
+      </trans-unit>
+      <trans-unit id="eiQKW2A" resname="label.calendar.dragdrop_data">
+        <source>Copies data when adding via drag and drop</source>
+        <target state="translated">Copia os dados ao adicionar via arrastar e largar</target>
+      </trans-unit>
+      <trans-unit id="MXasdfgbpD7" resname="label.copy_teams_on_create" approved="no">
+        <source>label.copy_teams_on_create</source>
+        <target state="translated">Assumir equipas do utilizador conectado ao criar entradas</target>
       </trans-unit>
     </body>
   </file>

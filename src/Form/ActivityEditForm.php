@@ -33,6 +33,7 @@ class ActivityEditForm extends AbstractType
         $customer = null;
         $new = true;
         $isGlobal = false;
+        $options['currency'] = null;
 
         if (isset($options['data'])) {
             /** @var Activity $entry */
@@ -58,6 +59,10 @@ class ActivityEditForm extends AbstractType
             ])
             ->add('comment', TextareaType::class, [
                 'label' => 'label.description',
+                'required' => false,
+            ])
+            ->add('invoiceText', TextareaType::class, [
+                'label' => 'label.invoiceText',
                 'required' => false,
             ])
         ;
@@ -93,6 +98,7 @@ class ActivityEditForm extends AbstractType
             'customer' => false,
             'currency' => Customer::DEFAULT_CURRENCY,
             'include_budget' => false,
+            'include_time' => false,
             'attr' => [
                 'data-form-event' => 'kimai.activityUpdate'
             ],

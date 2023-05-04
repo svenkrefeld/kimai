@@ -35,25 +35,30 @@
             {% block box_body %}
                 {{ form_errors(form) }}
                 {% if form.searchTerm is defined %}
-                    {{ form_row(form.searchTerm) }}
+                    {{ form_row(form.searchTerm, {'row_attr': {'class': 'invoice_search_form_row_searchTerm'}}) }}
                 {% endif %}
-                {{ form_row(form.daterange) }}
-                {{ form_row(form.customers) }}
-                {{ form_row(form.projects) }}
+                {{ form_row(form.daterange, {'row_attr': {'class': 'invoice_search_form_row_daterange'}}) }}
+                {{ form_row(form.customers, {'row_attr': {'class': 'invoice_search_form_row_customers'}}) }}
+                {{ form_row(form.projects, {'row_attr': {'class': 'invoice_search_form_row_projects'}}) }}
                 {% if form.activities is defined %}
-                    {{ form_row(form.activities) }}
+                    {{ form_row(form.activities, {'row_attr': {'class': 'invoice_search_form_row_activities'}}) }}
                 {% endif %}
                 {% if form.tags is defined %}
-                    {{ form_row(form.tags) }}
+                    {{ form_row(form.tags, {'row_attr': {'class': 'invoice_search_form_row_tags'}}) }}
                 {% endif %}
                 {% if form.users is defined %}
-                    {{ form_row(form.users) }}
+                    {{ form_row(form.users, {'row_attr': {'class': 'invoice_search_form_row_users'}}) }}
+                {% endif %}
+                {% if form.teams is defined %}
+                    {{ form_row(form.teams, {'row_attr': {'class': 'invoice_search_form_row_teams'}}) }}
                 {% endif %}
                 {% if form.exported is defined %}
-                    {{ form_row(form.exported) }}
+                    {{ form_row(form.exported, {'row_attr': {'class': 'invoice_search_form_row_exported'}}) }}
                 {% endif %}
-                {{ form_row(form.template) }}
-                {{ form_row(form.markAsExported) }}
+                {{ form_row(form.template, {'row_attr': {'class': 'invoice_search_form_row_template'}}) }}
+                {% if form.markAsExported is defined %}
+                    {{ form_row(form.markAsExported, {'row_attr': {'class': 'invoice_search_form_row_markAsExported'}}) }}
+                {% endif %}
             {% endblock %}
             {% block box_footer%}
                 {{ search.searchButton(form) }}
@@ -64,12 +69,21 @@
         {{ widgets.callout('danger', 'http_error_403.suggestion'|trans({}, 'exceptions')) }}
     {% endif %}
 
+    {% set totalDuration = 0 %}
+    {% set totalRates = {} %}
+
     {% if searched %}
         {% set showEmpty = true %}
         {% for model in models %}
             {% if showEmpty %}
                 {% set showEmpty = model.calculator is empty or model.calculator.entries is empty %}
             {% endif %}
+            {% set totalDuration = totalDuration + model.calculator.timeWorked %}
+            {% set customerCurrency = model.customer.currency %}
+            {% if totalRates[customerCurrency] is not defined %}
+                {% set totalRates = totalRates|merge({(customerCurrency): 0.00}) %}
+            {% endif %}
+            {% set totalRates = totalRates|merge({(customerCurrency): totalRates[customerCurrency] + model.calculator.total}) %}
         {% endfor %}
         {% if showEmpty %}
             {{ widgets.nothing_found() }}
@@ -82,6 +96,10 @@
             {% import '@AdminLTE/Macros/buttons.html.twig' as button %}
             {% block box_title %}
                 {{ 'button.preview'|trans }}: {{ 'invoices'|trans }}
+                {{ widgets.label(totalDuration|duration, 'gray') }}
+                {% for totalCurrency, totalRate in totalRates %}
+                    {{ widgets.label(totalRate|money(totalCurrency), 'gray') }}
+                {% endfor %}
             {% endblock %}
             {% block box_body_class %}no-padding{% endblock %}
             {% block box_footer %}
@@ -105,11 +123,15 @@
                             {% set currency = model.currency %}
                             <tr>
                                 <td>
-                                    {{ widgets.label_customer(model.customer) }}
+                                    {% if is_granted('view', model.customer) %}
+                                        <a class="link-black" href="{{ path('customer_details', {id: model.customer.id}) }}">{{ widgets.label_customer(model.customer) }}</a>
+                                    {% else %}
+                                        {{ widgets.label_customer(model.customer) }}
+                                    {% endif %}
                                 </td>
                                 <td class="w-min text-center">
-                                    {{ widgets.action_button('print', {'url': '#', 'onclick': 'return singleInvoice(this)', 'title': 'button.preview'|trans, 'target': '_blank', 'class': 'btn btn-sm', 'attr': {'data-customer': model.customer.id, 'data-template': model.template.id, 'data-href': path('invoice_preview', {'customer': model.customer.id, 'token': csrf_token('invoice.preview')})}}) }}
-                                    {{ widgets.action_button('save', {'url': '#', 'onclick': 'return singleInvoice(this)', 'title': 'action.save'|trans, 'class': 'btn btn-sm', 'attr': {'data-customer': model.customer.id, 'data-template': model.template.id, 'data-href': path('invoice_create', {'customer': model.customer.id, 'template': model.template.id, 'token': csrf_token('invoice.create')})}}, 'success') }}
+                                    {{ widgets.action_button('print', {'url': '#', 'onclick': 'return singleInvoice(this, true)', 'title': 'button.preview'|trans, 'target': '_blank', 'class': 'btn btn-sm', 'attr': {'data-customer': model.customer.id, 'data-template': model.template.id, 'data-href': path('invoice_preview', {'customer': model.customer.id, 'token': csrf_token('invoice.preview')})}}) }}
+                                    {{ widgets.action_button('save', {'url': '#', 'onclick': 'return singleInvoice(this, false)', 'title': 'action.save'|trans, 'class': 'btn btn-sm', 'attr': {'data-customer': model.customer.id, 'data-template': model.template.id, 'data-href': path('invoice_create', {'customer': model.customer.id, 'template': model.template.id, 'token': csrf_token('invoice.create')})}}, 'success') }}
                                 </td>
                                 <td class="w-min text-right hidden-xs">
                                     {{ model.calculator.timeWorked|duration(isDecimal) }}
@@ -159,11 +181,19 @@
                             <tr>
                                 <td class="{{ tables.data_table_column_class(tableName, columns, 'date') }}">{{ entry.begin|date_short }}</td>
                                 <td class="{{ tables.data_table_column_class(tableName, columns, 'project') }}">
-                                    {{ widgets.label_project(entry.project) }}
+                                    {% if is_granted('view', entry.project) %}
+                                        <a class="link-black" href="{{ path('project_details', {id: entry.project.id}) }}">{{ widgets.label_project(entry.project) }}</a>
+                                    {% else %}
+                                        {{ widgets.label_project(entry.project) }}
+                                    {% endif %}
                                     {% if entry.activity is not null %}
                                     <br>
                                     <small>
-                                        {{ widgets.label_activity(entry.activity) }}
+                                        {% if is_granted('view', entry.activity) %}
+                                            <a class="link-black" href="{{ path('activity_details', {id: entry.activity.id}) }}">{{ widgets.label_activity(entry.activity) }}</a>
+                                        {% else %}
+                                            {{ widgets.label_activity(entry.activity) }}
+                                        {% endif %}
                                     </small>
                                     {% endif %}
                                 </td>
@@ -211,13 +241,22 @@
 
     <script type="text/javascript">
 
-        function singleInvoice(link)
+        function singleInvoice(link, preview)
         {
             const formPlugin = kimai.getPlugin('form');
             const overwrites = {'customers[]': link.dataset['customer'], 'template': link.dataset['template']};
             const uri = formPlugin.convertFormDataToQueryString(document.getElementById('{{ formId }}'), overwrites);
+            const invoiceUrl = link.dataset['href'] + '?' + uri;
 
-            link.href = link.dataset['href'] + '?' + uri;
+            if (!preview) {
+                link.classList.toggle('disabled');
+                link.href = 'javascript: void(0)';
+
+                document.location = invoiceUrl;
+                return false;
+            }
+
+            link.href = invoiceUrl;
 
             return true;
         }
@@ -227,9 +266,12 @@
             const formPlugin = kimai.getPlugin('form');
             const uri = formPlugin.convertFormDataToQueryString(document.getElementById('{{ formId }}'));
 
-            link.href = '{{ path('invoice') }}?token={{ csrf_token('invoice.create') }}&createInvoice=true&' + uri;
+            link.classList.toggle('disabled');
+            link.href = 'javascript: void(0)';
 
-            return true;
+            document.location = '{{ path('invoice') }}?token={{ csrf_token('invoice.create') }}&createInvoice=true&' + uri;
+
+            return false;
         }
 
         document.addEventListener('kimai.initialized', function() {

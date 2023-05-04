@@ -18,10 +18,7 @@ use App\Export\ServiceExport;
 use App\Form\Model\MultiUserTimesheet;
 use App\Form\TimesheetAdminEditForm;
 use App\Form\TimesheetMultiUserEditForm;
-use App\Repository\ActivityRepository;
-use App\Repository\ProjectRepository;
 use App\Repository\Query\TimesheetQuery;
-use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
@@ -83,9 +80,9 @@ class TimesheetTeamController extends TimesheetAbstractController
      * @Route(path="/create", name="admin_timesheet_create", methods={"GET", "POST"})
      * @Security("is_granted('create_other_timesheet')")
      */
-    public function createAction(Request $request, ProjectRepository $projectRepository, ActivityRepository $activityRepository, TagRepository $tagRepository): Response
+    public function createAction(Request $request): Response
     {
-        return $this->create($request, 'timesheet-team/edit.html.twig', $projectRepository, $activityRepository, $tagRepository);
+        return $this->create($request, 'timesheet-team/edit.html.twig');
     }
 
     /**
@@ -119,7 +116,7 @@ class TimesheetTeamController extends TimesheetAbstractController
                 $tags = [];
                 /** @var Tag $tag */
                 foreach ($entry->getTags() as $tag) {
-                    $tag->removeTimesheet($entry);
+                    $entry->addTag($tag);
                     $tags[] = $tag;
                 }
 

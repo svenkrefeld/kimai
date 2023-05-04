@@ -17,11 +17,11 @@ class Constants
     /**
      * The current release version
      */
-    public const VERSION = '1.19';
+    public const VERSION = '1.30.10';
     /**
      * The current release: major * 10000 + minor * 100 + patch
      */
-    public const VERSION_ID = 11900;
+    public const VERSION_ID = 13010;
     /**
      * The current release status, either "stable" or "dev"
      */
@@ -37,7 +37,7 @@ class Constants
     /**
      * Used in multiple views
      */
-    public const GITHUB = 'https://github.com/kevinpapst/kimai2/';
+    public const GITHUB = 'https://github.com/kimai/kimai/';
     /**
      * Homepage, used in multiple views
      */

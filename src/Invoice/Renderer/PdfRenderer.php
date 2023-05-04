@@ -10,15 +10,20 @@
 namespace App\Invoice\Renderer;
 
 use App\Entity\InvoiceDocument;
+use App\Export\Base\DispositionInlineInterface;
+use App\Export\Base\DispositionInlineTrait;
+use App\Export\ExportContext;
 use App\Invoice\InvoiceFilename;
 use App\Invoice\InvoiceModel;
+use App\Utils\FileHelper;
 use App\Utils\HtmlToPdfConverter;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Twig\Environment;
 
-final class PdfRenderer extends AbstractTwigRenderer
+final class PdfRenderer extends AbstractTwigRenderer implements DispositionInlineInterface
 {
+    use DispositionInlineTrait;
+
     /**
      * @var HtmlToPdfConverter
      */
@@ -37,20 +42,29 @@ final class PdfRenderer extends AbstractTwigRenderer
 
     public function render(InvoiceDocument $document, InvoiceModel $model): Response
     {
-        $content = $this->renderTwigTemplate($document, $model);
+        $filename = new InvoiceFilename($model);
 
-        $content = $this->converter->convertToPdf($content, [
-            'setAutoTopMargin' => 'pad',
-            'setAutoBottomMargin' => 'pad',
-            'margin_top' => 12,
-            'margin_bottom' => 8,
-        ]);
+        $context = new ExportContext();
+        $context->setOption('filename', $filename->getFilename());
+        $context->setOption('setAutoTopMargin', 'pad');
+        $context->setOption('setAutoBottomMargin', 'pad');
+        $context->setOption('margin_top', '12');
+        $context->setOption('margin_bottom', '8');
 
-        $filename = (string) new InvoiceFilename($model);
+        $content = $this->renderTwigTemplate($document, $model, ['pdfContext' => $context]);
+        $content = $this->converter->convertToPdf($content, $context->getOptions());
+
+        $filename = $context->getOption('filename');
+        if (empty($filename)) {
+            $filename = new InvoiceFilename($model);
+            $filename = $filename->getFilename();
+        }
 
         $response = new Response($content);
 
-        $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename . '.pdf');
+        $filename = FileHelper::convertToAsciiFilename($filename);
+
+        $disposition = $response->headers->makeDisposition($this->getDisposition(), $filename . '.pdf');
 
         $response->headers->set('Content-Type', 'application/pdf');
         $response->headers->set('Content-Disposition', $disposition);

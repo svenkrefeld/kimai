@@ -16,6 +16,7 @@ use App\Entity\ProjectRate;
 use App\Entity\RateInterface;
 use App\Entity\Team;
 use App\Entity\Timesheet;
+use App\Entity\TimesheetMeta;
 use App\Entity\User;
 use App\Model\Statistic\Day;
 use App\Model\Statistic\Month;
@@ -41,6 +42,8 @@ use Pagerfanta\Pagerfanta;
  */
 class TimesheetRepository extends EntityRepository
 {
+    use RepositorySearchTrait;
+
     public const STATS_QUERY_DURATION = 'duration';
     public const STATS_QUERY_RATE = 'rate';
     public const STATS_QUERY_USER = 'users';
@@ -52,7 +55,7 @@ class TimesheetRepository extends EntityRepository
     public const STATS_QUERY_MONTHLY = 'monthly';
 
     /**
-     * Fetches the raw data of an timesheet, to allow comparison eg. of submitted and previously stored data.
+     * Fetches the raw data of a timesheet, to allow comparison e.g. of submitted and previously stored data.
      *
      * @param Timesheet $id
      * @return array
@@ -63,6 +66,8 @@ class TimesheetRepository extends EntityRepository
         $qb
             ->select([
                 't.rate',
+                't.begin',
+                't.end',
                 't.duration',
                 't.hourlyRate',
                 't.billable',
@@ -323,9 +328,11 @@ class TimesheetRepository extends EntityRepository
         }
 
         if (\is_array($select)) {
+            /* @phpstan-ignore-next-line  */
             return $qb->getQuery()->getOneOrNullResult();
         }
 
+        /** @phpstan-ignore-next-line  */
         $result = $qb->getQuery()->getSingleScalarResult();
 
         return empty($result) ? 0 : $result;
@@ -1001,33 +1008,7 @@ class TimesheetRepository extends EntityRepository
 
         $requiresTeams = $this->addPermissionCriteria($qb, $query->getCurrentUser(), $query->getTeams());
 
-        if ($query->hasSearchTerm()) {
-            $searchAnd = $qb->expr()->andX();
-            $searchTerm = $query->getSearchTerm();
-
-            foreach ($searchTerm->getSearchFields() as $metaName => $metaValue) {
-                $qb->leftJoin('t.meta', 'meta');
-                $searchAnd->add(
-                    $qb->expr()->andX(
-                        $qb->expr()->eq('meta.name', ':metaName'),
-                        $qb->expr()->like('meta.value', ':metaValue')
-                    )
-                );
-                $qb->setParameter('metaName', $metaName);
-                $qb->setParameter('metaValue', '%' . $metaValue . '%');
-            }
-
-            if ($searchTerm->hasSearchTerm()) {
-                $searchAnd->add(
-                    $qb->expr()->like('t.description', ':searchTerm')
-                );
-                $qb->setParameter('searchTerm', '%' . $searchTerm->getSearchTerm() . '%');
-            }
-
-            if ($searchAnd->count() > 0) {
-                $qb->andWhere($searchAnd);
-            }
-        }
+        $this->addSearchTerm($qb, $query);
 
         if ($requiresCustomer || $requiresProject || $requiresTeams) {
             $qb->leftJoin('t.project', 'p');
@@ -1046,6 +1027,24 @@ class TimesheetRepository extends EntityRepository
         }
 
         return $qb;
+    }
+
+    private function getMetaFieldClass(): string
+    {
+        return TimesheetMeta::class;
+    }
+
+    private function getMetaFieldName(): string
+    {
+        return 'timesheet';
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getSearchableFields(): array
+    {
+        return ['t.description'];
     }
 
     /**
@@ -1201,6 +1200,11 @@ class TimesheetRepository extends EntityRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
+        $qb
+            ->select($qb->expr()->count('t.id'))
+            ->from(Timesheet::class, 't')
+        ;
+
         $or = $qb->expr()->orX(
             $qb->expr()->between(':begin', 't.begin', 't.end')
         );
@@ -1221,8 +1225,7 @@ class TimesheetRepository extends EntityRepository
         $begin = clone $timesheet->getBegin();
         $begin->add(new DateInterval('PT1S'));
 
-        $qb->select($qb->expr()->count('t.id'))
-            ->from(Timesheet::class, 't')
+        $qb
             ->andWhere($qb->expr()->eq('t.user', ':user'))
             ->andWhere($qb->expr()->isNotNull('t.end'))
             ->andWhere($or)
