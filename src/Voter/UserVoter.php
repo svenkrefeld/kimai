@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * A voter to check permissions on user profiles.
+ *
+ * @extends Voter<string, User>
  */
 final class UserVoter extends Voter
 {
@@ -25,6 +27,7 @@ final class UserVoter extends Voter
         'roles',
         'teams',
         'password',
+        '2fa',
         'delete',
         'preferences',
         'api-token',
@@ -32,19 +35,11 @@ final class UserVoter extends Voter
         'view_team_member',
     ];
 
-    private $permissionManager;
-
-    public function __construct(RolePermissionManager $permissionManager)
+    public function __construct(private RolePermissionManager $permissionManager)
     {
-        $this->permissionManager = $permissionManager;
     }
 
-    /**
-     * @param string $attribute
-     * @param mixed $subject
-     * @return bool
-     */
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!($subject instanceof User)) {
             return false;
@@ -57,13 +52,7 @@ final class UserVoter extends Voter
         return true;
     }
 
-    /**
-     * @param string $attribute
-     * @param User $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
@@ -91,6 +80,11 @@ final class UserVoter extends Voter
             if (!$subject->isInternalUser()) {
                 return false;
             }
+        }
+
+        if ($attribute === '2fa') {
+            // can only be activated by the logged-in user for himself or by a super-admin
+            return $subject->getId() === $user->getId() || $user->isSuperAdmin();
         }
 
         $permission = $attribute;

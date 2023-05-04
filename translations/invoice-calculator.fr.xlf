@@ -2,8 +2,8 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="fr" datatype="plaintext" original="invoice-calculator.en.xlf">
     <body>
-      <trans-unit id="1inO2IF" resname="label.invoice_calculator">
-        <source>label.invoice_calculator</source>
+      <trans-unit id="MviRJeB" resname="invoice_calculator">
+        <source>invoice_calculator</source>
         <target>Calcul du total</target>
       </trans-unit>
       <trans-unit id="N6juwc4" resname="default">
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="BPiZbad" resname="user">
         <source>user</source>
-        <target>Groupe d'utilisateurs - une entrée par utilisateur</target>
+        <target state="translated">Utilisateur : une entrée par utilisateur</target>
       </trans-unit>
       <trans-unit id="BlGGO.X" resname="activity">
         <source>activity</source>
@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="JEIQ5IQ" resname="project">
         <source>project</source>
-        <target>Projet : une entrée par projet</target>
+        <target state="translated">Projet : une entrée par projet</target>
       </trans-unit>
       <trans-unit id="iFDs7Zh" resname="weekly">
         <source>weekly</source>

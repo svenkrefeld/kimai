@@ -17,22 +17,10 @@ use App\Utils\FileHelper;
 
 final class ExportFilename
 {
-    /**
-     * @var string
-     */
-    private $filename;
-    /**
-     * @var Customer|null
-     */
-    private $customer;
-    /**
-     * @var Project|null
-     */
-    private $project;
-    /**
-     * @var User|null
-     */
-    private $user;
+    private ?string $filename = null;
+    private ?Customer $customer = null;
+    private ?Project $project = null;
+    private ?User $user = null;
 
     public function __construct(TimesheetQuery $query)
     {
@@ -67,7 +55,7 @@ final class ExportFilename
         return FileHelper::convertToAsciiFilename($filename);
     }
 
-    public function getFilename()
+    public function getFilename(): string
     {
         if ($this->filename === null) {
             $filename = date('Ymd');
@@ -103,7 +91,7 @@ final class ExportFilename
         return $this->filename;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getFilename();
     }

@@ -9,14 +9,15 @@
 
 namespace App\Export\Spreadsheet\CellFormatter;
 
+use PhpOffice\PhpSpreadsheet\Cell\CellAddress;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ArrayFormatter implements CellFormatterInterface
+final class ArrayFormatter implements CellFormatterInterface
 {
     public function setFormattedValue(Worksheet $sheet, int $column, int $row, $value): void
     {
         if (null === $value) {
-            $sheet->setCellValueByColumnAndRow($column, $row, '');
+            $sheet->setCellValue(CellAddress::fromColumnAndRow($column, $row), '');
 
             return;
         }
@@ -25,6 +26,6 @@ class ArrayFormatter implements CellFormatterInterface
             throw new \InvalidArgumentException('Unsupported value given, only array is supported');
         }
 
-        $sheet->setCellValueByColumnAndRow($column, $row, implode(';', $value));
+        $sheet->setCellValue(CellAddress::fromColumnAndRow($column, $row), implode(';', $value));
     }
 }

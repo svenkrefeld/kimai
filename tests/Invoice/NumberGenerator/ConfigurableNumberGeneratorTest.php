@@ -9,26 +9,24 @@
 
 namespace App\Tests\Invoice\NumberGenerator;
 
-use App\Configuration\SystemConfiguration;
 use App\Entity\Customer;
 use App\Entity\User;
 use App\Invoice\NumberGenerator\ConfigurableNumberGenerator;
 use App\Repository\InvoiceRepository;
 use App\Tests\Invoice\DebugFormatter;
 use App\Tests\Mocks\InvoiceModelFactoryFactory;
+use App\Tests\Mocks\SystemConfigurationFactory;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \App\Invoice\NumberGenerator\ConfigurableNumberGenerator
+ * @covers \App\Utils\NumberGenerator
  */
 class ConfigurableNumberGeneratorTest extends TestCase
 {
-    private function getSut(string $format, int $counter = 1)
+    private function getSut(string $format, int $counter = 1): ConfigurableNumberGenerator
     {
-        $config = $this->createMock(SystemConfiguration::class);
-        $config->expects($this->any())
-            ->method('find')
-            ->willReturn($format);
+        $config = SystemConfigurationFactory::createStub(['invoice' => ['number_format' => $format]]);
 
         $repository = $this->createMock(InvoiceRepository::class);
         $repository
@@ -55,7 +53,10 @@ class ConfigurableNumberGeneratorTest extends TestCase
         return new ConfigurableNumberGenerator($repository, $config);
     }
 
-    public function getTestData()
+    /**
+     * @return array<int, array<int, string|\DateTime|int>>
+     */
+    public function getTestData(): array
     {
         $invoiceDate = new \DateTime();
 
@@ -145,10 +146,9 @@ class ConfigurableNumberGeneratorTest extends TestCase
     /**
      * @dataProvider getTestData
      */
-    public function testGetInvoiceNumber(string $format, string $expectedInvoiceNumber, \DateTime $invoiceDate, int $counter = 1)
+    public function testGetInvoiceNumber(string $format, string $expectedInvoiceNumber, \DateTime $invoiceDate, int $counter = 1): void
     {
-        $customer = new Customer();
-        $customer->setName('Acme company');
+        $customer = new Customer('Acme company');
         $customer->setNumber('0815');
 
         $user = $this->createMock(User::class);
@@ -166,39 +166,10 @@ class ConfigurableNumberGeneratorTest extends TestCase
         $this->assertEquals('default', $sut->getId());
     }
 
-    public function getMissingFieldTestData()
-    {
-        return [
-            ['{Y}/{cnumber}_{ccy,3}', 'Customer has no number, replacer {cnumber} failed evaluation.'],
-            ['{Y}/{cname}_{ccy,3}', 'Customer has no name, replacer {cname} failed evaluation.'],
-        ];
-    }
-
     /**
-     * @dataProvider getMissingFieldTestData
+     * @return array<int, array<int, string|\DateTime>>
      */
-    public function testCustomerHasMissingField(string $format, string $message)
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage($message);
-
-        $user = $this->createMock(User::class);
-        $user->method('getId')->willReturn(13);
-        $user->method('getAccountNumber')->willReturn('0815');
-
-        $customer = new Customer();
-
-        $sut = $this->getSut($format);
-        $model = (new InvoiceModelFactoryFactory($this))->create()->createModel(new DebugFormatter());
-        $model->setInvoiceDate(new \DateTime());
-        $model->setCustomer($customer);
-        $model->setUser($user);
-        $sut->setModel($model);
-
-        $sut->getInvoiceNumber();
-    }
-
-    public function getInvalidTestData()
+    public function getInvalidTestData(): array
     {
         $invoiceDate = new \DateTime();
 
@@ -223,7 +194,7 @@ class ConfigurableNumberGeneratorTest extends TestCase
     /**
      * @dataProvider getInvalidTestData
      */
-    public function testInvalidGetInvoiceNumber(string $format, \DateTime $invoiceDate, string $brokenPart)
+    public function testInvalidGetInvoiceNumber(string $format, \DateTime $invoiceDate, string $brokenPart): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('Unknown %s found', $brokenPart));
@@ -231,7 +202,43 @@ class ConfigurableNumberGeneratorTest extends TestCase
         $sut = $this->getSut($format);
         $model = (new InvoiceModelFactoryFactory($this))->create()->createModel(new DebugFormatter());
         $model->setInvoiceDate($invoiceDate);
-        $model->setCustomer(new Customer());
+        $model->setCustomer(new Customer('foo'));
+        $sut->setModel($model);
+
+        $sut->getInvoiceNumber();
+    }
+
+    /**
+     * @return array<int, array<int, string>>
+     */
+    public function getMissingFieldTestData(): array
+    {
+        return [
+            ['{Y}/{cnumber}_{ccy,3}', 'Customer has no number, replacer {cnumber} failed evaluation'],
+            ['{Y}/{cname}_{ccy,3}', 'Customer has no name, replacer {cname} failed evaluation'],
+        ];
+    }
+
+    /**
+     * @dataProvider getMissingFieldTestData
+     */
+    public function testCustomerHasMissingField(string $format, string $message): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($message);
+
+        $user = $this->createMock(User::class);
+        $user->method('getId')->willReturn(13);
+        $user->method('getAccountNumber')->willReturn('0815');
+
+        $customer = new Customer('');
+        $customer->setName(null);
+
+        $sut = $this->getSut($format);
+        $model = (new InvoiceModelFactoryFactory($this))->create()->createModel(new DebugFormatter());
+        $model->setInvoiceDate(new \DateTime());
+        $model->setCustomer($customer);
+        $model->setUser($user);
         $sut->setModel($model);
 
         $sut->getInvoiceNumber();

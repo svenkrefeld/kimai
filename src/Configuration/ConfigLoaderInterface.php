@@ -9,13 +9,13 @@
 
 namespace App\Configuration;
 
-use App\Entity\Configuration;
-
+/**
+ * @internal
+ */
 interface ConfigLoaderInterface
 {
     /**
-     * @param null|string $prefix
-     * @return Configuration[]
+     * @return array<string, string|null>
      */
-    public function getConfiguration(?string $prefix = null): array;
+    public function getConfigurations(): array;
 }

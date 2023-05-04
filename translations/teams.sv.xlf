@@ -1,11 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="sv" datatype="plaintext" original="teams.en.xlf">
     <body>
-      <trans-unit id="kgxAl_x" resname="teams.title">
-        <source>teams.title</source>
-        <target state="translated">Arbetslag</target>
-      </trans-unit>
       <trans-unit id="A_4Fc7c" resname="teams.project_access">
         <source>teams.project_access</source>
         <target state="translated">Tillåt åtkomst till projekt</target>
@@ -33,6 +29,10 @@
       <trans-unit id="FC4DW27" resname="team.activity_visibility_inherited">
         <source>team.activity_visibility_inherited</source>
         <target>Detta projekt har begränsad åtkomst eftersom lagrättigheter är satta för projektet och/eller kunden.</target>
+      </trans-unit>
+      <trans-unit id="6g81kYY" approved="no" resname="team.member">
+        <source>team.member</source>
+        <target state="translated">Medlem</target>
       </trans-unit>
     </body>
   </file>

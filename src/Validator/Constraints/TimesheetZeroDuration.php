@@ -13,13 +13,13 @@ final class TimesheetZeroDuration extends TimesheetConstraint
 {
     public const ZERO_DURATION_ERROR = 'kimai-timesheet-zero-duration-01';
 
-    protected static $errorNames = [
+    protected const ERROR_NAMES = [
         self::ZERO_DURATION_ERROR => 'Duration cannot be zero.',
     ];
 
-    public $message = 'Duration cannot be zero.';
+    public string $message = 'Duration cannot be zero.';
 
-    public function getTargets()
+    public function getTargets(): string|array
     {
         return self::CLASS_CONSTRAINT;
     }

@@ -20,26 +20,20 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class InvoiceDocumentUploadForm extends AbstractType
+final class InvoiceDocumentUploadForm extends AbstractType
 {
     public const EXTENSIONS = ['.html.twig', '.pdf.twig', '.docx', '.xlsx', '.ods'];
     public const EXTENSIONS_NO_TWIG = ['.docx', '.xlsx', '.ods'];
     public const FILENAME_RULE = 'Any-Latin; Latin-ASCII; [^A-Za-z0-9_\-] remove; Lower()';
 
-    private $repository;
-    private $systemConfiguration;
-    private $extensions = [];
+    /** @var array<string> */
+    private array $extensions = [];
 
-    public function __construct(InvoiceDocumentRepository $repository, SystemConfiguration $systemConfiguration)
+    public function __construct(private InvoiceDocumentRepository $repository, private SystemConfiguration $systemConfiguration)
     {
-        $this->repository = $repository;
-        $this->systemConfiguration = $systemConfiguration;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->extensions = self::EXTENSIONS_NO_TWIG;
         $extensions = 'DOCX, ODS, XLSX';
@@ -61,7 +55,7 @@ class InvoiceDocumentUploadForm extends AbstractType
 
         $builder
             ->add('document', FileType::class, [
-                'label' => 'label.invoice_renderer',
+                'label' => 'invoice_renderer',
                 'translation_domain' => 'invoice-renderer',
                 'help' => 'help.upload',
                 'help_translation_parameters' => ['%extensions%' => $extensions],
@@ -78,7 +72,7 @@ class InvoiceDocumentUploadForm extends AbstractType
         ;
     }
 
-    public function validateDocument($value, ExecutionContextInterface $context)
+    public function validateDocument($value, ExecutionContextInterface $context): void
     {
         if (!($value instanceof UploadedFile)) {
             return;
@@ -111,7 +105,7 @@ class InvoiceDocumentUploadForm extends AbstractType
             }
         }
 
-        if ($extension === null) {
+        if ($extension === null || $nameWithoutExtension === null) {
             $context->buildViolation('This invoice document cannot be used, allowed file extensions are: %extensions%')
                 ->setParameters(['%extensions%' => implode(', ', $this->extensions)])
                 ->setTranslationDomain('validators')
@@ -140,10 +134,7 @@ class InvoiceDocumentUploadForm extends AbstractType
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'csrf_protection' => true,

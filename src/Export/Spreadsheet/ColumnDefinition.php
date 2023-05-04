@@ -11,14 +11,12 @@ namespace App\Export\Spreadsheet;
 
 final class ColumnDefinition
 {
-    private $label;
-    private $type;
     private $accessor;
 
-    public function __construct(string $label, string $type, callable $accessor)
+    private string $translationDomain = 'messages';
+
+    public function __construct(private string $label, private string $type, callable $accessor)
     {
-        $this->label = $label;
-        $this->type = $type;
         $this->accessor = $accessor;
     }
 
@@ -35,5 +33,15 @@ final class ColumnDefinition
     public function getAccessor(): callable
     {
         return $this->accessor;
+    }
+
+    public function getTranslationDomain(): string
+    {
+        return $this->translationDomain;
+    }
+
+    public function setTranslationDomain(string $translationDomain): void
+    {
+        $this->translationDomain = $translationDomain;
     }
 }

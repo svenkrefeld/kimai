@@ -38,45 +38,14 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class TimesheetService
 {
-    /**
-     * @var TimesheetRepository
-     */
-    private $repository;
-    /**
-     * @var SystemConfiguration
-     */
-    private $configuration;
-    /**
-     * @var TrackingModeService
-     */
-    private $trackingModeService;
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $dispatcher;
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $auth;
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
     public function __construct(
-        SystemConfiguration $configuration,
-        TimesheetRepository $repository,
-        TrackingModeService $service,
-        EventDispatcherInterface $dispatcher,
-        AuthorizationCheckerInterface $security,
-        ValidatorInterface $validator
+        private SystemConfiguration $configuration,
+        private TimesheetRepository $repository,
+        private TrackingModeService $trackingModeService,
+        private EventDispatcherInterface $dispatcher,
+        private AuthorizationCheckerInterface $auth,
+        private ValidatorInterface $validator
     ) {
-        $this->configuration = $configuration;
-        $this->repository = $repository;
-        $this->trackingModeService = $service;
-        $this->dispatcher = $dispatcher;
-        $this->auth = $security;
-        $this->validator = $validator;
     }
 
     /**
@@ -158,13 +127,16 @@ final class TimesheetService
             $this->repository->save($timesheet);
             $this->dispatcher->dispatch(new TimesheetCreatePostEvent($timesheet));
 
-            // TODO really stop always or only if $timesheet->getEnd() === null
-            try {
-                $this->stopActiveEntries($timesheet);
-            } catch (ValidationFailedException $vex) {
-                // could happen for timesheets that were started in the future (end before begin)
-                throw new ValidationFailedException($vex->getViolations(), 'Cannot stop running timesheet');
+            if ($timesheet->isRunning()) {
+                try {
+                    $this->stopActiveEntries($timesheet);
+                } catch (ValidationFailedException $vex) {
+                    // could happen for timesheets that were started in the future (end before begin)
+                    // or if you try to create a new timesheet while an old one is running for too long
+                    throw new ValidationFailedException($vex->getViolations(), 'Cannot stop running timesheet');
+                }
             }
+
             $this->repository->commit();
         } catch (\Exception $ex) {
             $this->repository->rollback();
@@ -183,16 +155,6 @@ final class TimesheetService
      */
     public function updateTimesheet(Timesheet $timesheet): Timesheet
     {
-        // FIXME stop active entries upon update
-        // there is at least one edge case which leads to a problem:
-        // if you do not allow overlapping entries, you cannot restart a timesheet by removing the
-        // end date if another timesheet is running, because the check for existing timesheets will always trigger
-        /*
-        if ($timesheet->getEnd() === null) {
-            $this->stopActiveEntries($timesheet);
-        }
-        */
-
         $this->fixTimezone($timesheet);
 
         $this->dispatcher->dispatch(new TimesheetUpdatePreEvent($timesheet));

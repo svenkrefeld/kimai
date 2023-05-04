@@ -11,27 +11,16 @@ namespace App\Utils;
 
 final class SearchTerm
 {
-    /**
-     * @var string
-     */
-    private $originalTerm;
-    /**
-     * @var string
-     */
-    private $term;
+    private string $originalTerm;
+    private string $term;
     /**
      * @var string[]
      */
-    private $fields = [];
+    private array $fields;
 
     public function __construct(string $searchTerm)
     {
         $this->originalTerm = $searchTerm;
-        $this->parse($searchTerm);
-    }
-
-    private function parse(string $searchTerm)
-    {
         $terms = explode(' ', $searchTerm);
         $fields = [];
         $finalTerm = [];
@@ -83,7 +72,7 @@ final class SearchTerm
         return $this->originalTerm;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->originalTerm;
     }

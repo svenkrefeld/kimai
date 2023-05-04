@@ -15,6 +15,9 @@ use App\Security\RolePermissionManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+/**
+ * @extends Voter<string, Team>
+ */
 final class TeamVoter extends Voter
 {
     /**
@@ -26,19 +29,11 @@ final class TeamVoter extends Voter
         'delete',
     ];
 
-    private $permissionManager;
-
-    public function __construct(RolePermissionManager $permissionManager)
+    public function __construct(private RolePermissionManager $permissionManager)
     {
-        $this->permissionManager = $permissionManager;
     }
 
-    /**
-     * @param string $attribute
-     * @param Team $subject
-     * @return bool
-     */
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!($subject instanceof Team)) {
             return false;
@@ -51,13 +46,7 @@ final class TeamVoter extends Voter
         return true;
     }
 
-    /**
-     * @param string $attribute
-     * @param Team $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

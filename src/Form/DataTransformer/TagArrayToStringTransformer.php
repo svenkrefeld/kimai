@@ -14,16 +14,10 @@ use App\Repository\TagRepository;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-class TagArrayToStringTransformer implements DataTransformerInterface
+final class TagArrayToStringTransformer implements DataTransformerInterface
 {
-    /**
-     * @var TagRepository
-     */
-    private $tagRepository;
-
-    public function __construct(TagRepository $tagRepository)
+    public function __construct(private TagRepository $tagRepository)
     {
-        $this->tagRepository = $tagRepository;
     }
 
     /**
@@ -32,7 +26,7 @@ class TagArrayToStringTransformer implements DataTransformerInterface
      * @param Tag[]|null $tags
      * @return string
      */
-    public function transform($tags)
+    public function transform(mixed $tags): mixed
     {
         if (empty($tags)) {
             return '';
@@ -50,7 +44,7 @@ class TagArrayToStringTransformer implements DataTransformerInterface
      * @return Tag[]
      * @throws TransformationFailedException
      */
-    public function reverseTransform($stringOfTags)
+    public function reverseTransform(mixed $stringOfTags): mixed
     {
         // check for empty tag list
         if ('' === $stringOfTags || null === $stringOfTags) {
@@ -66,7 +60,7 @@ class TagArrayToStringTransformer implements DataTransformerInterface
 
         foreach ($newNames as $name) {
             $tag = new Tag();
-            $tag->setName($name);
+            $tag->setName(mb_substr($name, 0, 100));
             $tags[] = $tag;
 
             // new tags persist automatically thanks to the cascade={"persist"}

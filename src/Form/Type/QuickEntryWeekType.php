@@ -9,6 +9,7 @@
 
 namespace App\Form\Type;
 
+use App\Entity\User;
 use App\Model\QuickEntryModel;
 use App\Validator\Constraints\QuickEntryTimesheet;
 use DateTime;
@@ -22,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Valid;
 
-class QuickEntryWeekType extends AbstractType
+final class QuickEntryWeekType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -129,8 +130,12 @@ class QuickEntryWeekType extends AbstractType
                     return $transformValue;
                 }
 
+                $user = $transformValue->getUser();
+                if ($user === null && $options['user'] instanceof User) {
+                    $user = $options['user'];
+                }
                 foreach ($transformValue->getTimesheets() as $timesheet) {
-                    $timesheet->setUser($transformValue->getUser() ?? $options['user']);
+                    $timesheet->setUser($user);
                     $timesheet->setProject($project);
                     $timesheet->setActivity($activity);
                 }

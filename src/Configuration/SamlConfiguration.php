@@ -9,16 +9,10 @@
 
 namespace App\Configuration;
 
-/**
- * @CloudRequired
- */
 final class SamlConfiguration implements SamlConfigurationInterface
 {
-    private $configuration;
-
-    public function __construct(SystemConfiguration $configuration)
+    public function __construct(private SystemConfiguration $configuration)
     {
-        $this->configuration = $configuration;
     }
 
     public function isActivated(): bool
@@ -29,6 +23,11 @@ final class SamlConfiguration implements SamlConfigurationInterface
     public function getTitle(): string
     {
         return $this->configuration->getSamlTitle();
+    }
+
+    public function getProvider(): string
+    {
+        return $this->configuration->getSamlProvider();
     }
 
     public function getAttributeMapping(): array

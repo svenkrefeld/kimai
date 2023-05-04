@@ -6,6 +6,10 @@
         <source>stop</source>
         <target>Stop</target>
       </trans-unit>
+      <trans-unit id="QCf1FUG" resname="reload">
+        <source>reload</source>
+        <target>Reload</target>
+      </trans-unit>
       <trans-unit id="PEgjRvN" resname="back">
         <source>back</source>
         <target>Back</target>
@@ -101,6 +105,18 @@
       <trans-unit id="38M3a4J" resname="filter">
         <source>filter</source>
         <target>Filter data</target>
+      </trans-unit>
+      <trans-unit id="pJzNT.n" resname="vcard">
+        <source>vcard</source>
+        <target>Business card</target>
+      </trans-unit>
+      <trans-unit id="2cMESs." resname="widget_add">
+        <source>Add widget</source>
+        <target>Add widget</target>
+      </trans-unit>
+      <trans-unit id="YCc5UoO" resname="widget_remove">
+        <source>Remove widget</source>
+        <target>Remove widget</target>
       </trans-unit>
     </body>
   </file>

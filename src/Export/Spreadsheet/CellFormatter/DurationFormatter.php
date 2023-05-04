@@ -9,9 +9,10 @@
 
 namespace App\Export\Spreadsheet\CellFormatter;
 
+use PhpOffice\PhpSpreadsheet\Cell\CellAddress;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class DurationFormatter implements CellFormatterInterface
+final class DurationFormatter implements CellFormatterInterface
 {
     public const DURATION_FORMAT = '[hh]:mm';
 
@@ -25,7 +26,7 @@ class DurationFormatter implements CellFormatterInterface
             throw new \InvalidArgumentException('Unsupported value given, only int is supported');
         }
 
-        $sheet->setCellValueByColumnAndRow($column, $row, sprintf('=%s/86400', $value));
-        $sheet->getStyleByColumnAndRow($column, $row)->getNumberFormat()->setFormatCode(self::DURATION_FORMAT);
+        $sheet->setCellValue(CellAddress::fromColumnAndRow($column, $row), sprintf('=%s/86400', $value));
+        $sheet->getStyle(CellAddress::fromColumnAndRow($column, $row))->getNumberFormat()->setFormatCode(self::DURATION_FORMAT);
     }
 }

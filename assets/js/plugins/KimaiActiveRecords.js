@@ -13,112 +13,185 @@ import KimaiPlugin from '../KimaiPlugin';
 
 export default class KimaiActiveRecords extends KimaiPlugin {
 
-    constructor(selector, selectorEmpty) {
+    constructor()
+    {
         super();
-        this.selector = selector;
-        this.selectorEmpty = selectorEmpty;
+        this._selector = '.ticktac-menu';
+        this._selectorEmpty = '.ticktac-menu-empty';
     }
 
-    getId() {
+    /**
+     * @returns {string}
+     */
+    getId()
+    {
         return 'active-records';
     }
 
-    init() {
-        this.menu = document.querySelector(this.selector);
-
+    init()
+    {
         // the menu can be hidden if user has no permissions to see it
-        if (this.menu === null) {
+        if (document.querySelector(this._selector) === null) {
             return;
         }
 
-        this.attributes = this.menu.dataset;
+        const handleUpdate = () => {
+            this.reloadActiveRecords();
+        };
 
-        const self = this;
-        const handle = function() { self.reloadActiveRecords(); };
+        document.addEventListener('kimai.timesheetUpdate', handleUpdate);
+        document.addEventListener('kimai.timesheetDelete', handleUpdate);
+        document.addEventListener('kimai.activityUpdate', handleUpdate);
+        document.addEventListener('kimai.activityDelete', handleUpdate);
+        document.addEventListener('kimai.projectUpdate', handleUpdate);
+        document.addEventListener('kimai.projectDelete', handleUpdate);
+        document.addEventListener('kimai.customerUpdate', handleUpdate);
+        document.addEventListener('kimai.customerDelete', handleUpdate);
 
+        // -----------------------------------------------------------------------
+        // handle duration in the visible UI
+        this._updateBrowserTitle = !!this.getConfiguration('updateBrowserTitle');
+
+        // deactivated direct duration update, becuase it is unclear
+        // this._updateDuration();
+        const handle = () => {
+            this._updateDuration();
+        };
+        this._updatesHandler = setInterval(handle, 10000);
         document.addEventListener('kimai.timesheetUpdate', handle);
-        document.addEventListener('kimai.timesheetDelete', handle);
-        document.addEventListener('kimai.activityUpdate', handle);
-        document.addEventListener('kimai.activityDelete', handle);
-        document.addEventListener('kimai.projectUpdate', handle);
-        document.addEventListener('kimai.projectDelete', handle);
-        document.addEventListener('kimai.customerUpdate', handle);
-        document.addEventListener('kimai.customerDelete', handle);
+        document.addEventListener('kimai.reloadedContent', handle);
     }
 
-    _toggleMenu(hasEntries) {
-        this.menu.style.display = hasEntries ? 'inline-block' : 'none';
-        if (!hasEntries) {
-            // make sure that template entries in the menu are removed, otherwise they
-            // might still be shown in the browsers title
-            for (let record of this.menu.querySelectorAll('[data-since]')) {
-                record.dataset['since'] = '';
+    // TODO we could unregister all handler and listener
+    // _unregisterHandler() {
+    //     clearInterval(this._updatesHandler);
+    // }
+
+    /**
+     * Updates the duration of all running entries, both in the ticktac menus and in the listing pages.
+     *
+     * @private
+     */
+    _updateDuration()
+    {
+        // needs to search in document, to find all running entries, both in "ticktac" and listing pages
+        const activeRecords = document.querySelectorAll('[data-since]:not([data-since=""])');
+
+        if (activeRecords.length === 0) {
+            if (this._updateBrowserTitle) {
+                if (document.body.dataset['title'] === undefined) {
+                    this._updateBrowserTitle = false;
+                } else {
+                    document.title = document.body.dataset['title'];
+                }
             }
+            return;
         }
 
-        const menuEmpty = document.querySelector(this.selectorEmpty);
-        if (menuEmpty !== null) {
+        const DATE = this.getDateUtils();
+        let durations = [];
+
+        for (const record of activeRecords) {
+            const duration = DATE.formatDuration(record.dataset['since']);
+            // only use the ones from the menu for the title
+            if (record.dataset['replacer'] !== undefined && record.dataset['title'] !== null && duration !== '?') {
+                durations.push(duration);
+            }
+            // but update all on the page (running entries in list pages)
+            record.textContent = duration;
+        }
+
+        if (durations.length === 0) {
+            return;
+        }
+
+        if (this._updateBrowserTitle) {
+            // only show the first found record, even if we have more
+            document.title = durations.shift();
+        }
+    }
+
+    /**
+     * Adapts the ticktac menus according to the given entries (amount and duration).
+     * Does not influence listing pages, as those refresh themselves.
+     *
+     * @param {array} entries
+     * @private
+     */
+    _setEntries(entries)
+    {
+        const hasEntries = entries.length > 0;
+
+        // these contain the "start" button
+        for (let menuEmpty of document.querySelectorAll(this._selectorEmpty)) {
             menuEmpty.style.display = !hasEntries ? 'inline-block' : 'none';
         }
-    }
 
-    setEntries(entries) {
-        this._toggleMenu(entries.length > 0);
-
-        const template = this.menu.querySelector('[data-template="active-record"]');
-
-        const label = this.menu.querySelector('a > span.label');
-        if (label !== null) {
-            label.innerText = entries.length === 0 ? '' : entries.length;
-        }
-
-        if (entries.length === 0) {
-            return;
-        }
-
-        if (template === null) {
-            this._replaceInNode(this.menu, entries[0]);
-        } else {
-            const container = template.parentElement;
-            container.innerHTML = '';
-
-            for (let timesheet of entries) {
-                const newNode = template.cloneNode(true);
-                container.appendChild(this._replaceInNode(newNode, timesheet));
+        // and they contain the "stop" button
+        for (let menu of document.querySelectorAll(this._selector)) {
+            menu.style.display = hasEntries ? 'inline-block' : 'none';
+            if (!hasEntries) {
+                // make sure that template entries in the menu are removed, otherwise they
+                // might still be shown in the browsers title
+                for (let record of menu.querySelectorAll('[data-since]')) {
+                    record.dataset['since'] = '';
+                }
             }
+
+            const stop = menu.querySelector('.ticktac-stop');
+
+            if (!hasEntries) {
+                if (stop) {
+                    stop.accesskey = null;
+                }
+                continue;
+            }
+
+            if (stop) {
+                stop.accesskey = 's';
+            }
+            this._replaceInNode(menu, entries[0]);
         }
 
-        this.getContainer().getPlugin('timesheet-duration').updateRecords();
+        this._updateDuration();
     }
 
-    _replaceInNode(node, timesheet) {
-        const date = this.getContainer().getPlugin('date');
+    /**
+     * @param {HTMLElement} node
+     * @param {object} timesheet
+     * @private
+     */
+    _replaceInNode(node, timesheet)
+    {
+        const date = this.getDateUtils();
         const allReplacer = node.querySelectorAll('[data-replacer]');
-        for (let node of allReplacer) {
-            const replacerName = node.dataset['replacer'];
+        for (let link of allReplacer) {
+            const replacerName = link.dataset['replacer'];
             if (replacerName === 'url') {
-                node.href = this.attributes['href'].replace('000', timesheet.id);
+                link.dataset['href'] = node.dataset['href'].replace('000', timesheet.id);
             } else if (replacerName === 'activity') {
-                node.innerText = timesheet.activity.name;
+                link.innerText = timesheet.activity.name;
             } else if (replacerName === 'project') {
-                node.innerText = timesheet.project.name;
+                link.innerText = timesheet.project.name;
             } else if (replacerName === 'customer') {
-                node.innerText = timesheet.project.customer.name;
+                link.innerText = timesheet.project.customer.name;
             } else if (replacerName === 'duration') {
-                node.dataset['since'] = timesheet.begin;
-                node.innerText = date.formatDuration(timesheet.duration);
+                link.dataset['since'] = timesheet.begin;
+                link.innerText = date.formatDuration(timesheet.duration);
             }
         }
-
-        return node;
     }
 
-    reloadActiveRecords() {
-        const self = this;
-        const API= this.getContainer().getPlugin('api');
+    reloadActiveRecords()
+    {
+        /** @type {KimaiAPI} API */
+        const API = this.getContainer().getPlugin('api');
 
-        API.get(this.attributes['api'], {}, function(result) {
-            self.setEntries(result);
+        // TODO using the first found "ticktac" menu is working, but can be done better
+        const apiUrl = document.querySelector(this._selector).dataset['api'];
+
+        API.get(apiUrl, {}, (result) => {
+            this._setEntries(result);
         });
     }
 

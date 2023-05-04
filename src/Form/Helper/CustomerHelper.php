@@ -21,12 +21,10 @@ final class CustomerHelper
     public const PATTERN_SPACER = '{spacer}';
     public const SPACER = ' - ';
 
-    private $configuration;
-    private $pattern;
+    private ?string $pattern = null;
 
-    public function __construct(SystemConfiguration $configuration)
+    public function __construct(private SystemConfiguration $configuration)
     {
-        $this->configuration = $configuration;
     }
 
     public function getChoicePattern(): string
@@ -52,8 +50,13 @@ final class CustomerHelper
         $name = str_replace(self::PATTERN_NUMBER, $customer->getNumber() ?? '', $name);
         $name = str_replace(self::PATTERN_COMPANY, $customer->getCompany() ?? '', $name);
 
-        $name = ltrim($name, self::SPACER);
-        $name = rtrim($name, self::SPACER);
+        while (str_starts_with($name, self::SPACER)) {
+            $name = substr($name, \strlen(self::SPACER));
+        }
+
+        while (str_ends_with($name, self::SPACER)) {
+            $name = substr($name, 0, -\strlen(self::SPACER));
+        }
 
         if ($name === '' || $name === self::SPACER) {
             $name = $customer->getName();

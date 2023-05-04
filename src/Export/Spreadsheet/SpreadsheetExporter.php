@@ -16,6 +16,7 @@ use App\Export\Spreadsheet\CellFormatter\DateFormatter;
 use App\Export\Spreadsheet\CellFormatter\DateTimeFormatter;
 use App\Export\Spreadsheet\CellFormatter\DurationFormatter;
 use App\Export\Spreadsheet\CellFormatter\TimeFormatter;
+use PhpOffice\PhpSpreadsheet\Cell\CellAddress;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -25,18 +26,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SpreadsheetExporter
 {
     /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
      * @var CellFormatterInterface[]
      */
     private $formatter = [];
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private TranslatorInterface $translator)
     {
-        $this->translator = $translator;
-
         $this->registerCellFormatter('datetime', new DateTimeFormatter());
         $this->registerCellFormatter('date', new DateFormatter());
         $this->registerCellFormatter('time', new TimeFormatter());
@@ -45,7 +40,7 @@ class SpreadsheetExporter
         $this->registerCellFormatter('array', new ArrayFormatter());
     }
 
-    public function registerCellFormatter(string $type, CellFormatterInterface $formatter)
+    public function registerCellFormatter(string $type, CellFormatterInterface $formatter): void
     {
         $this->formatter[$type] = $formatter;
     }
@@ -71,7 +66,7 @@ class SpreadsheetExporter
         $recordsHeaderRow = 1;
 
         foreach ($columns as $settings) {
-            $sheet->setCellValueByColumnAndRow($recordsHeaderColumn++, $recordsHeaderRow, $this->translator->trans($settings->getLabel()));
+            $sheet->setCellValue(CellAddress::fromColumnAndRow($recordsHeaderColumn++, $recordsHeaderRow), $this->translator->trans($settings->getLabel(), [], $settings->getTranslationDomain()));
         }
 
         $entryHeaderRow = $recordsHeaderRow + 1;
@@ -83,7 +78,7 @@ class SpreadsheetExporter
                 $value = \call_user_func($settings->getAccessor(), $entry);
 
                 if (!\array_key_exists($settings->getType(), $this->formatter)) {
-                    $sheet->setCellValueByColumnAndRow($entryHeaderColumn, $entryHeaderRow, $value);
+                    $sheet->setCellValue(CellAddress::fromColumnAndRow($entryHeaderColumn, $entryHeaderRow), $value);
                 } else {
                     $formatter = $this->formatter[$settings->getType()];
                     $formatter->setFormattedValue($sheet, $entryHeaderColumn, $entryHeaderRow, $value);

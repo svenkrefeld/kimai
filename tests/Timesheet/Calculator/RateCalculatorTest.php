@@ -48,7 +48,7 @@ class RateCalculatorTest extends TestCase
         $record->setUser($this->getTestUser());
 
         $sut = new RateCalculator(new RateService([], $this->getRateRepositoryMock()));
-        $sut->calculate($record);
+        $sut->calculate($record, []);
         $this->assertEquals(50, $record->getRate());
     }
 
@@ -64,7 +64,7 @@ class RateCalculatorTest extends TestCase
         $record->setUser($this->getTestUser());
 
         $sut = new RateCalculator(new RateService([], $this->getRateRepositoryMock()));
-        $sut->calculate($record);
+        $sut->calculate($record, []);
         $this->assertEquals(10, $record->getRate());
     }
 
@@ -76,25 +76,25 @@ class RateCalculatorTest extends TestCase
         yield 'a6' => [0.5,     6.72,   1800,   1,      13.44,  null,   null,   null,   null,   false,   null,   null,   false,   null,   null,   false];
         yield 'a8' => [0.0,     1,      0,      0,      0,      0,      0,      0,      1,      true,    0,      null,   true,    0,      null,   true];
         // rate: 1.5 => timesheet hourly rate , internal: 2.5 => activity hourly rate (30 min)
-        yield 'b1' => [1.5,     2.5,    1800,   1,      1,      3,      null,   5,      null,   false,   7,      null,   false,   9,      null,   false];
-        yield 'b2' => [2.5,     2.5,    1800,   1,      1,      null,   null,   5,      null,   false,   7,      null,   false,   9,      null,   false];
+        yield 'b1' => [1.5,     0.5,    1800,   1,      1,      3,      null,   5,      null,   false,   7,      null,   false,   9,      null,   false];
+        yield 'b2' => [2.5,     4.5,    1800,   1,      9,      null,   null,   5,      null,   false,   7,      null,   false,   9,      null,   false];
         yield 'b3' => [3.5,     6.5,    1800,   1,      1,      null,   null,   null,   null,   false,   7,      13,     false,   9,      9,      false];
         yield 'b4' => [4.5,     6.5,    1800,   1,      15,     null,   null,   null,   null,   false,   null,   null,   false,   9,      13,     false];
         // rate: 2.0 => timesheet fixed rate , internal: 3.0 => activity fixed rate
-        yield 'b5' => [2.0,     3.0,    1800,   1,      1,      null,   2,      3,      null,   true,    4,      null,   true,    5,      null,   true];
-        yield 'b6' => [3.0,     3.0,    1800,   1,      1,      null,   null,   3,      null,   true,    4,      null,   true,    5,      null,   true];
-        yield 'b7' => [4.0,     4.0,    1800,   1,      1,      null,   null,   null,   null,   false,   4,      null,   true,    5,      null,   true];
-        yield 'b8' => [3.0,     3.0,    1800,   1,      1,      null,   null,   3,      null,   true,    null,   null,   false,   5,      null,   true];
+        yield 'b5' => [2.0,     1.0,    1800,   1,      1,      null,   2,      3,      null,   true,    4,      null,   true,    5,      null,   true];
+        yield 'b6' => [3.0,     3.0,    1800,   1,      3,      null,   null,   3,      null,   true,    4,      null,   true,    5,      null,   true];
+        yield 'b7' => [4.0,     7.0,    1800,   1,      7,      null,   null,   null,   null,   false,   4,      null,   true,    5,      null,   true];
+        yield 'b8' => [3.0,     4.7,    1800,   1,      4.7,    null,   null,   3,      null,   true,    null,   null,   false,   5,      null,   true];
         // rate: 2.0 => timesheet fixed rate , internal: 5.0 => customer hourly rate
-        yield 'b9' => [2.0,     5.0,    1800,   1,      1,      null,   2,      null,   null,   false,   null,   null,   false,   5,      null,   true];
+        yield 'b9' => [2.0,     71.0,   1800,   1,      71,     null,   2,      null,   null,   false,   null,   null,   false,   5,      null,   true];
         // rate: 5.0 => timesheet hourly rate , internal: 7.5 => user internal rate (30 min)
         yield 'c0' => [5.0,     7.5,    1800,   100,    15,     10,     null,   null,   null,   false,   null,   null,   false,   null,   null,   false];
         // internal: 10 because no rule applies and as fallback the users internal rate is used
         yield 'd0' => [10,      100,    1800,   100,    100,    null,   10,     null,   null,   false,   null,   null,   false,   null,   null,   false];
-        yield 'e0' => [10,      10,     1800,   100,    100,    null,   null,   20,     null,   false,   null,   null,   false,   null,   null,   false];
+        yield 'e0' => [10,      50,     1800,   100,    100,    null,   null,   20,     null,   false,   null,   null,   false,   null,   null,   false];
         yield 'f0' => [20,      78,     1800,   100,    100,    null,   null,   20,     78,     true,    null,   null,   false,   null,   null,   false];
         yield 'g0' => [15,      11.5,   1800,   100,    100,    null,   null,   null,   null,   false,   30,     23,     false,   null,   null,   false];
-        yield 'h0' => [30,      30,     1800,   100,    100,    null,   null,   null,   null,   false,   30,     null,   true,    null,   null,   false];
+        yield 'h0' => [30,      100,    1800,   100,    100,    null,   null,   null,   null,   false,   30,     null,   true,    null,   null,   false];
         yield 'i0' => [20,      13.5,   1800,   100,    100,    null,   null,   null,   null,   false,   null,   null,   false,   40,     27,     false];
         yield 'j0' => [40,      84,     1800,   100,    45,     null,   null,   null,   null,   false,   null,   null,   false,   40,     84,     true];
         // make sure the last fallback for the internal rate is the users hourly rate
@@ -123,7 +123,7 @@ class RateCalculatorTest extends TestCase
         $customerInternal,
         $customerIsFixed
     ) {
-        $customer = new Customer();
+        $customer = new Customer('foo');
 
         $project = new Project();
         $project->setCustomer($customer);
@@ -175,7 +175,7 @@ class RateCalculatorTest extends TestCase
         }
 
         $sut = new RateCalculator(new RateService([], $this->getRateRepositoryMock($rates)));
-        $sut->calculate($timesheet);
+        $sut->calculate($timesheet, []);
         $this->assertEquals($expectedRate, $timesheet->getRate());
         $this->assertEquals($expectedInternalRate, $timesheet->getInternalRate());
     }
@@ -184,13 +184,8 @@ class RateCalculatorTest extends TestCase
     {
         $user = new User();
 
-        $pref = new UserPreference();
-        $pref->setName(UserPreference::HOURLY_RATE);
-        $pref->setValue($rate);
-
-        $prefInt = new UserPreference();
-        $prefInt->setName(UserPreference::INTERNAL_RATE);
-        $prefInt->setValue($internalRate);
+        $pref = new UserPreference(UserPreference::HOURLY_RATE, $rate);
+        $prefInt = new UserPreference(UserPreference::INTERNAL_RATE, $internalRate);
 
         $user->setPreferences([$pref, $prefInt]);
 
@@ -209,7 +204,7 @@ class RateCalculatorTest extends TestCase
         $this->assertEquals(0, $record->getRate());
 
         $sut = new RateCalculator(new RateService([], $this->getRateRepositoryMock()));
-        $sut->calculate($record);
+        $sut->calculate($record, []);
         $this->assertEquals(0, $record->getRate());
     }
 
@@ -235,7 +230,7 @@ class RateCalculatorTest extends TestCase
         $record->setEnd($end);
 
         $sut = new RateCalculator(new RateService($rules, $this->getRateRepositoryMock()));
-        $sut->calculate($record);
+        $sut->calculate($record, []);
 
         $this->assertEquals($expectedRate, $record->getRate());
     }

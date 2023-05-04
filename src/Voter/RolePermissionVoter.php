@@ -9,7 +9,6 @@
 
 namespace App\Voter;
 
-use App\Entity\Activity;
 use App\Entity\User;
 use App\Security\RolePermissionManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -17,22 +16,16 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * A voter to check the free-configurable permission from "kimai.permissions".
+ *
+ * @extends Voter<string, null>
  */
 final class RolePermissionVoter extends Voter
 {
-    private $permissionManager;
-
-    public function __construct(RolePermissionManager $permissionManager)
+    public function __construct(private RolePermissionManager $permissionManager)
     {
-        $this->permissionManager = $permissionManager;
     }
 
-    /**
-     * @param string $attribute
-     * @param mixed $subject
-     * @return bool
-     */
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         // we only work on single strings that have no subject
         if (null !== $subject) {
@@ -42,13 +35,7 @@ final class RolePermissionVoter extends Voter
         return $this->permissionManager->isRegisteredPermission($attribute);
     }
 
-    /**
-     * @param string $attribute
-     * @param Activity $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

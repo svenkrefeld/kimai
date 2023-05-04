@@ -21,15 +21,8 @@ use DateTime;
 
 abstract class AbstractUserReportController extends AbstractController
 {
-    protected $statisticService;
-    private $projectRepository;
-    private $activityRepository;
-
-    public function __construct(TimesheetStatisticService $statisticService, ProjectRepository $projectRepository, ActivityRepository $activityRepository)
+    public function __construct(protected TimesheetStatisticService $statisticService, private ProjectRepository $projectRepository, private ActivityRepository $activityRepository)
     {
-        $this->statisticService = $statisticService;
-        $this->projectRepository = $projectRepository;
-        $this->activityRepository = $activityRepository;
     }
 
     protected function canSelectUser(): bool
@@ -120,6 +113,24 @@ abstract class AbstractUserReportController extends AbstractController
             $data[$project->getId()]['project'] = $project;
         }
 
-        return $data;
+        $customers = [];
+        foreach ($data as $id => $row) {
+            $customerId = (string) $row['project']->getCustomer()->getId();
+            if (!\array_key_exists($customerId, $customers)) {
+                $customers[$customerId] = [
+                    'customer' => $row['project']->getCustomer(),
+                    'projects' => [],
+                    'duration' => 0,
+                    'rate' => 0.0,
+                    'internalRate' => 0.0,
+                ];
+            }
+            $customers[$customerId]['projects'][$id] = $row;
+            $customers[$customerId]['duration'] += $row['duration'];
+            $customers[$customerId]['rate'] += $row['rate'];
+            $customers[$customerId]['internalRate'] += $row['internalRate'];
+        }
+
+        return $customers;
     }
 }

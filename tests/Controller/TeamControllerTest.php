@@ -12,8 +12,6 @@ namespace App\Tests\Controller;
 use App\Entity\Team;
 use App\Entity\User;
 use App\Tests\DataFixtures\TeamFixtures;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 /**
@@ -21,17 +19,17 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
  */
 class TeamControllerTest extends ControllerBaseTest
 {
-    public function testIsSecure()
+    public function testIsSecure(): void
     {
         $this->assertUrlIsSecured('/admin/teams/');
     }
 
-    public function testIsSecureForRole()
+    public function testIsSecureForRole(): void
     {
         $this->assertUrlIsSecuredForRole(User::ROLE_TEAMLEAD, '/admin/teams/');
     }
 
-    public function testIndexAction()
+    public function testIndexAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
         $em = $this->getEntityManager();
@@ -41,18 +39,15 @@ class TeamControllerTest extends ControllerBaseTest
 
         $this->assertAccessIsGranted($client, '/admin/teams/');
         $this->assertPageActions($client, [
-            'search' => '#',
-            'create' => $this->createUrl('/admin/teams/create'),
-            'help' => 'https://www.kimai.org/documentation/teams.html'
+            'create modal-ajax-form' => $this->createUrl('/admin/teams/create'),
         ]);
         $this->assertHasDataTable($client);
         $this->assertDataTableRowCount($client, 'datatable_admin_teams', 6);
     }
 
-    public function testIndexActionWithSearchTermQuery()
+    public function testIndexActionWithSearchTermQuery(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-        $em = $this->getEntityManager();
         $fixture = new TeamFixtures();
         $fixture->setAmount(5);
         $fixture->setCallback(function (Team $team) {
@@ -72,7 +67,7 @@ class TeamControllerTest extends ControllerBaseTest
         $this->assertDataTableRowCount($client, 'datatable_admin_teams', 5);
     }
 
-    public function testCreateAction()
+    public function testCreateAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
         $this->assertAccessIsGranted($client, '/admin/teams/create');
@@ -86,13 +81,14 @@ class TeamControllerTest extends ControllerBaseTest
         $values['team_edit_form']['members'][0]['teamlead'] = 1;
         $client->request($form->getMethod(), $form->getUri(), $values, $form->getPhpFiles());
 
-        $this->assertIsRedirect($client, '/edit');
-        $client->followRedirect();
+        $location = $this->assertIsModalRedirect($client, '/edit');
+        $this->requestPure($client, $location);
+
         $this->assertHasFlashSuccess($client);
         $this->assertHasCustomerAndProjectPermissionBoxes($client);
     }
 
-    protected function assertHasCustomerAndProjectPermissionBoxes(HttpKernelBrowser $client)
+    protected function assertHasCustomerAndProjectPermissionBoxes(HttpKernelBrowser $client): void
     {
         $content = $client->getResponse()->getContent();
         $this->assertStringContainsString('Grant access to customers', $content);
@@ -101,7 +97,7 @@ class TeamControllerTest extends ControllerBaseTest
         $this->assertEquals(1, $client->getCrawler()->filter('form[name=team_project_form]')->count());
     }
 
-    public function testEditAction()
+    public function testEditAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
 
@@ -123,11 +119,10 @@ class TeamControllerTest extends ControllerBaseTest
         $this->assertEquals('Test Team 2', $editForm->get('team_edit_form[name]')->getValue());
     }
 
-    public function testEditMemberAction()
+    public function testEditMemberAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
 
-        $em = $this->getEntityManager();
         $fixture = new TeamFixtures();
         $fixture->setAmount(2);
         $this->importFixture($fixture);
@@ -145,81 +140,19 @@ class TeamControllerTest extends ControllerBaseTest
         $this->assertEquals('Test Team 2', $editForm->get('team_edit_form[name]')->getValue());
     }
 
-    public function testEditCustomerAccessAction()
+    public function testDuplicateAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
 
-        /** @var EntityManager $em */
-        $em = $this->getEntityManager();
-
-        $fixture = new TeamFixtures();
-        $fixture->setAmount(2);
-        $fixture->setAddCustomer(false);
-        $this->importFixture($fixture);
-
-        $team = $em->getRepository(Team::class)->find(1);
-        self::assertEquals(0, \count($team->getCustomers()));
-
-        $this->assertAccessIsGranted($client, '/admin/teams/1/edit');
-        $form = $client->getCrawler()->filter('form[name=team_customer_form]')->form();
-
-        /** @var ChoiceFormField $customer */
-        $customer = $form->get('team_customer_form[customers][0]');
-        $customer->tick();
+        $this->request($client, '/admin/teams/1/duplicate');
+        $form = $client->getCrawler()->filter('form[name=team_edit_form]')->form();
 
         $client->submit($form);
-        $this->assertIsRedirect($client, $this->createUrl('/admin/teams/1/edit'));
 
-        $team = $em->getRepository(Team::class)->find(1);
-        self::assertEquals(1, \count($team->getCustomers()));
-    }
+        $location = $this->assertIsModalRedirect($client);
+        $this->requestPure($client, $location);
 
-    public function testEditProjectAccessAction()
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-
-        /** @var EntityManager $em */
-        $em = $this->getEntityManager();
-
-        $fixture = new TeamFixtures();
-        $fixture->setAmount(2);
-        $fixture->setAddCustomer(false);
-        $this->importFixture($fixture);
-
-        $team = $em->getRepository(Team::class)->find(1);
-        self::assertEquals(0, \count($team->getProjects()));
-
-        $this->assertAccessIsGranted($client, '/admin/teams/1/edit');
-        $form = $client->getCrawler()->filter('form[name=team_project_form]')->form();
-
-        /** @var ChoiceFormField $customer */
-        $customer = $form->get('team_project_form[projects]');
-        $customer->select([1]);
-
-        $client->submit($form);
-        $this->assertIsRedirect($client, $this->createUrl('/admin/teams/1/edit'));
-
-        $team = $em->getRepository(Team::class)->find(1);
-        self::assertEquals(1, \count($team->getProjects()));
-    }
-
-    public function testDuplicateAction()
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-
-        $token = self::$container->get('security.csrf.token_manager')->getToken('team.duplicate');
-
-        $this->request($client, '/admin/teams/1/duplicate/' . $token);
-        $this->assertIsRedirect($client, '/edit');
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('#team_edit_form_name');
-        self::assertEquals(1, $node->count());
-        self::assertEquals('Test team [COPY]', $node->attr('value'));
-    }
-
-    public function testDuplicateActionWithInvalidCsrf()
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-        $this->assertInvalidCsrfToken($client, '/admin/teams/1/duplicate/rsetdzfukgli78t6r5uedtjfzkugl', $this->createUrl('/admin/teams/1/edit'));
+        $editForm = $client->getCrawler()->filter('form[name=team_edit_form]')->form();
+        $this->assertEquals('Test team (1)', $editForm->get('team_edit_form[name]')->getValue());
     }
 }

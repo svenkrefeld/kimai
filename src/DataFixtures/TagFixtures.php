@@ -23,17 +23,13 @@ use Faker\Factory;
  *
  * @codeCoverageIgnore
  */
-class TagFixtures extends Fixture
+final class TagFixtures extends Fixture
 {
     public const MIN_TAGS = 50;
     public const MAX_TAGS = 2000;
-
     public const BATCH_SIZE = 100;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
         $amount = rand(self::MIN_TAGS, self::MAX_TAGS);
@@ -43,37 +39,37 @@ class TagFixtures extends Fixture
             $tag = new Tag();
 
             $tagName = null;
-            if ($i % 18 == 0) {
-                $tagName = $faker->firstName;
-            } elseif ($i % 7 == 0) {
-                $tagName = $faker->lastName;
-            } elseif ($i % 5 == 0) {
-                $tagName = $faker->city;
-            } elseif ($i % 4 == 0) {
-                $tagName = $faker->word;
-            } elseif ($i % 3 == 0) {
-                $tagName = $faker->streetName;
-            } elseif ($i % 2 == 0) {
-                $tagName = $faker->colorName;
+            if ($i % 18 === 0) {
+                $tagName = $faker->firstName();
+            } elseif ($i % 7 === 0) {
+                $tagName = $faker->lastName();
+            } elseif ($i % 5 === 0) {
+                $tagName = $faker->city();
+            } elseif ($i % 4 === 0) {
+                $tagName = $faker->word();
+            } elseif ($i % 3 === 0) {
+                $tagName = $faker->streetName();
+            } elseif ($i % 2 === 0) {
+                $tagName = $faker->colorName();
             } else {
                 $tagName = $faker->text(rand(5, 10));
             }
 
-            if (\in_array($tagName, $existing)) {
+            if (\in_array(mb_strtolower($tagName), $existing, true)) {
                 continue;
             }
 
-            $existing[] = $tagName;
-            $tag->setName($tagName);
+            $existing[] = mb_strtolower($tagName);
+            $tag->setName(mb_substr($tagName, 0, 100));
 
             $manager->persist($tag);
 
             if ($i % self::BATCH_SIZE === 0) {
                 $manager->flush();
-                $manager->clear(Tag::class);
+                $manager->clear();
             }
         }
         $manager->flush();
-        $manager->clear(Tag::class);
+        $manager->clear();
     }
 }

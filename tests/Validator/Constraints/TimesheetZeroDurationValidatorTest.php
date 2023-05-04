@@ -10,8 +10,8 @@
 namespace App\Tests\Validator\Constraints;
 
 use App\Configuration\ConfigLoaderInterface;
-use App\Configuration\SystemConfiguration;
 use App\Entity\Timesheet;
+use App\Tests\Mocks\SystemConfigurationFactory;
 use App\Validator\Constraints\TimesheetZeroDuration;
 use App\Validator\Constraints\TimesheetZeroDurationValidator;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -21,18 +21,19 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 /**
  * @covers \App\Validator\Constraints\TimesheetZeroDuration
  * @covers \App\Validator\Constraints\TimesheetZeroDurationValidator
+ * @extends ConstraintValidatorTestCase<TimesheetZeroDurationValidator>
  */
 class TimesheetZeroDurationValidatorTest extends ConstraintValidatorTestCase
 {
-    protected function createValidator()
+    protected function createValidator(): TimesheetZeroDurationValidator
     {
         return $this->createMyValidator(false);
     }
 
-    protected function createMyValidator(bool $allowZeroDuration = false)
+    protected function createMyValidator(bool $allowZeroDuration = false): TimesheetZeroDurationValidator
     {
         $loader = $this->createMock(ConfigLoaderInterface::class);
-        $config = new SystemConfiguration($loader, [
+        $config = SystemConfigurationFactory::create($loader, [
             'timesheet' => [
                 'rules' => [
                     'allow_zero_duration' => $allowZeroDuration,
@@ -54,7 +55,7 @@ class TimesheetZeroDurationValidatorTest extends ConstraintValidatorTestCase
     {
         $this->expectException(UnexpectedTypeException::class);
 
-        $this->validator->validate(new NotBlank(), new TimesheetZeroDuration(['message' => 'Duration cannot be zero.']));
+        $this->validator->validate(new NotBlank(), new TimesheetZeroDuration(['message' => 'Duration cannot be zero.'])); // @phpstan-ignore-line
     }
 
     private function prepareTimesheet()

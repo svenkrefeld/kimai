@@ -32,7 +32,7 @@ class InvoiceItemDefaultHydratorTest extends TestCase
         $this->assertEntryStructure($result, $metaFields);
 
         $result = $sut->hydrate($model->getCalculator()->getEntries()[1]);
-        $metaFields = ['entry.meta.foo-timesheet2'];
+        $metaFields = ['entry.meta.foo-timesheet', 'entry.meta.foo-timesheet2'];
         $this->assertEntryStructure($result, $metaFields);
     }
 
@@ -67,6 +67,7 @@ class InvoiceItemDefaultHydratorTest extends TestCase
             'entry.user_id',
             'entry.user_name',
             'entry.user_alias',
+            'entry.user_display',
             'entry.user_title',
             'entry.activity',
             'entry.activity_id',

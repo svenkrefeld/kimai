@@ -21,17 +21,32 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Custom form field type to edit entity meta fields.
  */
-class MetaFieldsCollectionType extends AbstractType
+final class MetaFieldsCollectionType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) {
+            function (FormEvent $event) use ($options) {
                 /** @var ArrayCollection<MetaTableTypeInterface> $collection */
                 $collection = $event->getData();
                 foreach ($collection as $collectionItem) {
                     $collection->removeElement($collectionItem);
+
+                    if (!($collectionItem instanceof MetaTableTypeInterface)) {
+                        continue;
+                    }
+
+                    // prevents unconfigured values from showing up in the form
+                    if (null === $collectionItem->getType()) {
+                        continue;
+                    }
+
+                    if ($options['fields_required'] !== null) {
+                        // TODO required select-fields can receive an empty value
+                        $collectionItem->setIsRequired((bool) $options['fields_required']);
+                    }
+
                     $collection->set($collectionItem->getName(), $collectionItem);
                 }
             },
@@ -40,21 +55,21 @@ class MetaFieldsCollectionType extends AbstractType
         );
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'entry_type' => EntityMetaDefinitionType::class,
             'entry_options' => ['label' => false],
             'allow_add' => false,
             'allow_delete' => false,
+            'fields_required' => null,
             'label' => false,
         ]);
+
+        $resolver->setAllowedTypes('fields_required', ['null', 'bool']);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getParent()
+    public function getParent(): string
     {
         return CollectionType::class;
     }

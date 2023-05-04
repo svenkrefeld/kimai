@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
  */
 class TimesheetTest extends TestCase
 {
-    public function testDefaultValues()
+    public function testDefaultValues(): void
     {
         $sut = new Timesheet();
         self::assertEquals('timesheet', $sut->getType());
@@ -36,6 +36,9 @@ class TimesheetTest extends TestCase
         self::assertTrue($sut->isBillable());
         self::assertNull($sut->getModifiedAt());
         self::assertSame(0, $sut->getDuration());
+        self::assertSame(0, $sut->getDuration(true));
+        self::assertSame(0, $sut->getDuration(false));
+        self::assertNull($sut->getCalculatedDuration());
         self::assertNull($sut->getUser());
         self::assertNull($sut->getActivity());
         self::assertNull($sut->getProject());
@@ -55,10 +58,9 @@ class TimesheetTest extends TestCase
         self::assertInstanceOf(Collection::class, $sut->getMetaFields());
         self::assertEquals(0, $sut->getMetaFields()->count());
         self::assertNull($sut->getMetaField('foo'));
-        self::assertNull($sut->getMetaFieldValue('foo'));
     }
 
-    public function testValueCanBeNull()
+    public function testValueCanBeNull(): void
     {
         $sut = new Timesheet();
         self::assertEquals(0, $sut->getDuration());
@@ -73,10 +75,9 @@ class TimesheetTest extends TestCase
         self::assertNull($sut->getInternalRate());
     }
 
-    protected function getEntity()
+    protected function getEntity(): Timesheet
     {
-        $customer = new Customer();
-        $customer->setName('Test Customer');
+        $customer = new Customer('Test Customer');
 
         $project = new Project();
         $project->setName('Test Project');
@@ -94,7 +95,7 @@ class TimesheetTest extends TestCase
         return $entity;
     }
 
-    public function testTags()
+    public function testTags(): void
     {
         $sut = new Timesheet();
         $tag = new Tag();
@@ -117,7 +118,7 @@ class TimesheetTest extends TestCase
         $this->assertEmpty($sut->getTags());
     }
 
-    public function testMetaFields()
+    public function testMetaFields(): void
     {
         $sut = new Timesheet();
         $meta = new TimesheetMeta();
@@ -128,7 +129,6 @@ class TimesheetTest extends TestCase
         self::assertSame($result, $meta);
         self::assertEquals('test', $result->getType());
         self::assertEquals('bar2', $result->getValue());
-        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $meta2 = new TimesheetMeta();
         $meta2->setName('foo')->setValue('bar')->setType('test2');
@@ -139,7 +139,6 @@ class TimesheetTest extends TestCase
         $result = $sut->getMetaField('foo');
         self::assertSame($result, $meta);
         self::assertEquals('test2', $result->getType());
-        self::assertEquals('bar2', $sut->getMetaFieldValue('foo'));
 
         $sut->setMetaField((new TimesheetMeta())->setName('blub')->setIsVisible(true));
         $sut->setMetaField((new TimesheetMeta())->setName('blab')->setIsVisible(true));
@@ -147,7 +146,7 @@ class TimesheetTest extends TestCase
         self::assertCount(2, $sut->getVisibleMetaFields());
     }
 
-    public function testBillable()
+    public function testBillable(): void
     {
         $sut = new Timesheet();
         self::assertTrue($sut->isBillable());
@@ -157,27 +156,7 @@ class TimesheetTest extends TestCase
         self::assertTrue($sut->isBillable());
     }
 
-    public function testResetRates()
-    {
-        $sut = new Timesheet();
-        self::assertSame(0.00, $sut->getRate());
-        self::assertNull($sut->getFixedRate());
-        self::assertNull($sut->getInternalRate());
-        self::assertNull($sut->getHourlyRate());
-
-        $sut->setRate(123.45);
-        $sut->setFixedRate(42.32);
-        $sut->setInternalRate(212);
-        $sut->setHourlyRate(123);
-        $sut->resetRates();
-
-        self::assertSame(0.00, $sut->getRate());
-        self::assertNull($sut->getFixedRate());
-        self::assertNull($sut->getInternalRate());
-        self::assertNull($sut->getHourlyRate());
-    }
-
-    public function testCategory()
+    public function testCategory(): void
     {
         $sut = new Timesheet();
         self::assertInstanceOf(Timesheet::class, $sut->setCategory(Timesheet::HOLIDAY));
@@ -197,11 +176,22 @@ class TimesheetTest extends TestCase
         $sut->setCategory('foo');
     }
 
-    public function testClone()
+    public function testClone(): void
     {
         $sut = new Timesheet();
+        self::assertNull($sut->getModifiedAt());
         $sut->setExported(true);
         $sut->setDescription('Invalid timesheet category "foo" given, expected one of: work, holiday, sickness, parental, overtime');
+
+        $modifiedDate = new \DateTime();
+
+        $reflection = new \ReflectionClass($sut);
+        $property = $reflection->getProperty('modifiedAt');
+        $property->setAccessible(true);
+        $property->setValue($sut, $modifiedDate);
+        $property->setAccessible(false);
+
+        self::assertEquals($modifiedDate, $sut->getModifiedAt());
 
         $meta = new TimesheetMeta();
         $meta->setName('blabla');
@@ -219,10 +209,12 @@ class TimesheetTest extends TestCase
 
         $clone = clone $sut;
 
+        self::assertNotNull($sut->getModifiedAt());
+        self::assertNull($clone->getModifiedAt());
+
         foreach ($sut->getMetaFields() as $metaField) {
             $cloneMeta = $clone->getMetaField($metaField->getName());
             self::assertEquals($cloneMeta->getValue(), $metaField->getValue());
-            self::assertEquals($metaField->getValue(), $clone->getMetaFieldValue($metaField->getName()));
         }
         self::assertEquals($clone->getTags(), $sut->getTags());
         self::assertEquals($clone->getTags(), $sut->getTags());
@@ -231,5 +223,62 @@ class TimesheetTest extends TestCase
         self::assertEquals($clone->getBegin(), $sut->getBegin());
         self::assertEquals($clone->getEnd(), $sut->getEnd());
         self::assertFalse($clone->isExported());
+    }
+
+    public function testDuration(): void
+    {
+        $sut = new Timesheet();
+
+        self::assertSame(0, $sut->getDuration());
+        self::assertSame(0, $sut->getDuration(true));
+        self::assertSame(0, $sut->getDuration(false));
+        self::assertNull($sut->getCalculatedDuration());
+
+        $sut->setDuration(null);
+
+        self::assertNull($sut->getDuration());
+        self::assertNull($sut->getDuration(true));
+        self::assertNull($sut->getDuration(false));
+        self::assertNull($sut->getCalculatedDuration());
+
+        $begin = new \DateTime('2023-02-17 18:00:00');
+        $sut->setBegin($begin);
+
+        self::assertNull($sut->getDuration());
+        self::assertNull($sut->getDuration(true));
+        self::assertNull($sut->getDuration(false));
+        self::assertNull($sut->getCalculatedDuration());
+
+        $sut->setDuration(0);
+
+        self::assertSame(0, $sut->getDuration());
+        self::assertSame(0, $sut->getDuration(true));
+        self::assertSame(0, $sut->getDuration(false));
+        self::assertNull($sut->getCalculatedDuration());
+
+        $end = clone $begin;
+        $end->modify('+2 hours');
+        $sut->setEnd($end);
+
+        self::assertSame(0, $sut->getDuration());
+        self::assertSame(0, $sut->getDuration(true));
+        self::assertSame(0, $sut->getDuration(false));
+        self::assertEquals(7200, $sut->getCalculatedDuration());
+
+        $sut->setDuration(7200);
+
+        self::assertSame(7200, $sut->getDuration());
+        self::assertSame(7200, $sut->getDuration(true));
+        self::assertSame(7200, $sut->getDuration(false));
+        self::assertEquals(7200, $sut->getCalculatedDuration());
+
+        $end = clone $begin;
+        $end->modify('+1 hours');
+        $sut->setEnd($end);
+
+        self::assertSame(7200, $sut->getDuration());
+        self::assertSame(7200, $sut->getDuration(true));
+        self::assertSame(7200, $sut->getDuration(false));
+        self::assertEquals(3600, $sut->getCalculatedDuration());
     }
 }

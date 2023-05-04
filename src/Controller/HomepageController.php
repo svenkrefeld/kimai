@@ -9,30 +9,28 @@
 
 namespace App\Controller;
 
+use App\Configuration\LocaleService;
 use App\Entity\User;
-use App\Form\Type\InitialViewType;
-use App\Utils\LanguageService;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use App\Event\ConfigureMainMenuEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Homepage controller is a redirect controller with user specific logic.
- *
- * @Route(path="/homepage")
- * @Security("is_granted('IS_AUTHENTICATED_REMEMBERED')")
  */
-class HomepageController extends AbstractController
+#[Route(path: '/homepage')]
+#[IsGranted('IS_AUTHENTICATED_REMEMBERED')]
+final class HomepageController extends AbstractController
 {
-    /**
-     * @Route(path="", defaults={}, name="homepage", methods={"GET"})
-     */
-    public function indexAction(Request $request, LanguageService $service): Response
+    public const DEFAULT_ROUTE = 'timesheet';
+
+    #[Route(path: '', defaults: [], name: 'homepage', methods: ['GET'])]
+    public function indexAction(Request $request, LocaleService $service, EventDispatcherInterface $eventDispatcher): Response
     {
-        /** @var User $user */
         $user = $this->getUser();
-        $userRoute = $user->getPreferenceValue('login.initial_view', InitialViewType::DEFAULT_VIEW, false);
         $userLanguage = $user->getLanguage();
         $requestLanguage = $request->getLocale();
 
@@ -46,17 +44,27 @@ class HomepageController extends AbstractController
 
         // if a user somehow managed to get a wrong locale into hos account (eg. an imported user from Kimai 1)
         // make sure that he will still see a beautiful page and not a 404
-        if (!$service->isKnownLanguage($userLanguage)) {
-            $userLanguage = $service->getDefaultLanguage();
+        if (!$service->isKnownLocale($userLanguage)) {
+            $userLanguage = $service->getDefaultLocale();
         }
 
-        $routes = [
-            [$userRoute, $userLanguage],
-            [$userRoute, $requestLanguage],
-            [$userRoute, User::DEFAULT_LANGUAGE],
-            [InitialViewType::DEFAULT_VIEW, $userLanguage],
-            [InitialViewType::DEFAULT_VIEW, $requestLanguage],
-        ];
+        $routes = [];
+
+        $userRoute = $user->getPreferenceValue('login_initial_view');
+        if (\is_string($userRoute)) {
+            $event = new ConfigureMainMenuEvent();
+            $eventDispatcher->dispatch($event);
+            $menu = $event->findById($userRoute);
+            if ($menu !== null && \count($menu->getRouteArgs()) === 0 && $menu->getRoute() !== null) {
+                $userRoute = $menu->getRoute();
+            }
+            $routes[] = [$userRoute, $userLanguage];
+            $routes[] = [$userRoute, $requestLanguage];
+            $routes[] = [$userRoute, User::DEFAULT_LANGUAGE];
+        }
+
+        $routes[] = [self::DEFAULT_ROUTE, $userLanguage];
+        $routes[] = [self::DEFAULT_ROUTE, $requestLanguage];
 
         foreach ($routes as $routeSettings) {
             $route = $routeSettings[0];
@@ -69,6 +77,6 @@ class HomepageController extends AbstractController
             }
         }
 
-        return $this->redirectToRoute(InitialViewType::DEFAULT_VIEW, ['_locale' => User::DEFAULT_LANGUAGE]);
+        return $this->redirectToRoute(self::DEFAULT_ROUTE, ['_locale' => User::DEFAULT_LANGUAGE]);
     }
 }

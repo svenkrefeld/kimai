@@ -21,20 +21,20 @@ class InvoiceArchiveQuery extends BaseQuery
     use DateRangeTrait;
 
     public const INVOICE_ARCHIVE_ORDER_ALLOWED = [
-        'date', 'total_rate',
+        'date', 'invoice.number', 'status', 'total_rate'
         // TODO other fields have a problem with translation
-        // 'number', 'tax', 'payed', 'status'
+        // , 'tax', 'payed'
     ];
 
     /**
      * Filter for invoice status (by default all)
      * @var string[]
      */
-    private $status = [];
+    private array $status = [];
     /**
      * @var Customer[]
      */
-    private $customers = [];
+    private array $customers = [];
 
     public function __construct()
     {
