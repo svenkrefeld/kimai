@@ -6,4 +6,6 @@ mysql -h127.0.0.1 -uroot application < dump.sql
 
 composer install --optimize-autoloader -n
 
+bin/console kimai:install -n
+
 trap - DEBUG
