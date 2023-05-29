@@ -4783,11 +4783,6 @@ parameters:
             path: Entity/UserTest.php
 
         -
-            message: "#^Method App\\\\Tests\\\\Entity\\\\UserTest\\:\\:testColor\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Entity/UserTest.php
-
-        -
             message: "#^Method App\\\\Tests\\\\Entity\\\\UserTest\\:\\:testDatetime\\(\\) has no return type specified\\.$#"
             count: 1
             path: Entity/UserTest.php
@@ -7921,16 +7916,6 @@ parameters:
             message: "#^Method App\\\\Tests\\\\Model\\\\Statistic\\\\TimesheetTest\\:\\:testSetter\\(\\) has no return type specified\\.$#"
             count: 1
             path: Model/Statistic/TimesheetTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Model\\\\Statistic\\\\YearTest\\:\\:testDefaultValues\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Model/Statistic/YearTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Model\\\\Statistic\\\\YearTest\\:\\:testSetter\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Model/Statistic/YearTest.php
 
         -
             message: "#^Method App\\\\Tests\\\\Model\\\\TimesheetCountedStatisticTest\\:\\:testDefaultValues\\(\\) has no return type specified\\.$#"
