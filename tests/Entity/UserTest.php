@@ -41,6 +41,8 @@ class UserTest extends TestCase
         self::assertNull($user->getApiToken());
         self::assertNull($user->getPlainApiToken());
         self::assertNull($user->getPasswordRequestedAt());
+        self::assertFalse($user->hasTotpSecret());
+        self::assertNull($user->getTotpSecret());
         self::assertEquals(User::DEFAULT_LANGUAGE, $user->getLocale());
         self::assertFalse($user->hasTeamAssignment());
         self::assertFalse($user->canSeeAllData());
@@ -58,6 +60,9 @@ class UserTest extends TestCase
 
         $user->setApiToken('nbvfdswe34567ujko098765rerfghbgvfcdsert');
         self::assertEquals('nbvfdswe34567ujko098765rerfghbgvfcdsert', $user->getApiToken());
+
+        $user->setTotpSecret('ertzuio878t6rtdrjfcghvjkiu87');
+        self::assertEquals('ertzuio878t6rtdrjfcghvjkiu87', $user->getTotpSecret());
 
         $user->setPlainApiToken('https://www.gravatar.com/avatar/nbvfdswe34567ujko098765rerfghbgvfcdsert');
         self::assertEquals('https://www.gravatar.com/avatar/nbvfdswe34567ujko098765rerfghbgvfcdsert', $user->getPlainApiToken());
@@ -77,6 +82,7 @@ class UserTest extends TestCase
         self::assertEquals(0, $user->getWorkHoursSunday());
         self::assertEquals(0, $user->getHolidaysPerYear());
         self::assertFalse($user->hasWorkHourConfiguration());
+        self::assertNull($user->getPublicHolidayGroup());
     }
 
     public function testWorkContract(): void
@@ -110,6 +116,12 @@ class UserTest extends TestCase
         self::assertEquals(7600, $user->getWorkHoursForDay(new \DateTime('2023-05-12 12:00:00', new \DateTimeZone('Europe/Berlin'))));
         self::assertEquals(7700, $user->getWorkHoursForDay(new \DateTime('2023-05-13 12:00:00', new \DateTimeZone('Europe/Berlin'))));
         self::assertEquals(7800, $user->getWorkHoursForDay(new \DateTime('2023-05-14 12:00:00', new \DateTimeZone('Europe/Berlin'))));
+
+        $user->setPublicHolidayGroup('10');
+        self::assertEquals('10', $user->getPublicHolidayGroup());
+
+        $user->setPublicHolidayGroup('DE-NRW');
+        self::assertEquals('DE-NRW', $user->getPublicHolidayGroup());
     }
 
     public function testColor(): void

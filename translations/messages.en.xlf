@@ -343,6 +343,10 @@
         <source>help.visible</source>
         <target>If the setting is off, the object is not displayed in dropdown-boxes and list-views.</target>
       </trans-unit>
+      <trans-unit id="t1r372x" resname="invisible">
+        <source>invisible</source>
+        <target>Invisible</target>
+      </trans-unit>
       <trans-unit id="CvlqjtY" resname="budget">
         <source>budget</source>
         <target>Budget</target>
@@ -628,16 +632,16 @@
         <target>This document serves as proof of the hours worked.</target>
       </trans-unit>
       <trans-unit id="yXrOTI." resname="review">
-        <source>review</source>
-        <target>Review</target>
+        <source>Review</source>
+        <target state="needs-translation">Review</target>
       </trans-unit>
       <trans-unit id="mS4SSmt" resname="work_times">
         <source>work_times</source>
         <target>Working times</target>
       </trans-unit>
       <trans-unit id="iaJj4va" resname="work_times_account">
-        <source>work_times_account</source>
-        <target>Working time account</target>
+        <source>Working time account</source>
+        <target state="needs-translation">Working time account</target>
       </trans-unit>
       <trans-unit id="1btzNDa" resname="work_times_should">
         <source>work_times_should</source>
@@ -1536,6 +1540,38 @@
       <trans-unit id="M2B0gF." resname="time">
         <source>time</source>
         <target>Time</target>
+      </trans-unit>
+      <trans-unit id="95DUED0" resname="send_to">
+        <source>send_to</source>
+        <target>Send to %name%</target>
+      </trans-unit>
+      <trans-unit id="5buBUCm" resname="receive_from">
+        <source>receive_from</source>
+        <target>Receive from %name%</target>
+      </trans-unit>
+      <trans-unit id="fWuGTog" resname="public_holiday">
+        <source>public_holiday</source>
+        <target>Public holiday</target>
+      </trans-unit>
+      <trans-unit id="zlmddHB" resname="public_holidays">
+        <source>public_holidays</source>
+        <target>Public holidays</target>
+      </trans-unit>
+      <trans-unit id="u4lbYD5" resname="public_holiday.group">
+        <source>public_holiday.group</source>
+        <target>Holiday group</target>
+      </trans-unit>
+      <trans-unit id="GIgQHa4" resname="absence">
+        <source>absence</source>
+        <target>Absence</target>
+      </trans-unit>
+      <trans-unit id="4PMHpIp" resname="time_off">
+        <source>time_off</source>
+        <target>Time off</target>
+      </trans-unit>
+      <trans-unit id="N6juwc4" resname="default">
+        <source>default</source>
+        <target>Default</target>
       </trans-unit>
     </body>
   </file>

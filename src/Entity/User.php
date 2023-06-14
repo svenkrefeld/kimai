@@ -211,7 +211,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      * If not empty two-factor authentication is enabled.
      */
     #[ORM\Column(name: 'totp_secret', type: 'string', nullable: true)]
-    private ?string $totpSecret;
+    private ?string $totpSecret = null;
     #[ORM\Column(name: 'totp_enabled', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $totpEnabled = false;
     #[ORM\Column(name: 'system_account', type: 'boolean', nullable: false, options: ['default' => false])]
@@ -1109,6 +1109,11 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $this->totpSecret !== null;
     }
 
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+
     public function isTotpAuthenticationEnabled(): bool
     {
         return $this->totpEnabled;
@@ -1169,6 +1174,13 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return (int) $this->getPreferenceValue(UserPreference::WORK_HOURS_SUNDAY, 0);
     }
 
+    public function getPublicHolidayGroup(): null|string
+    {
+        $group = $this->getPreferenceValue(UserPreference::PUBLIC_HOLIDAY_GROUP);
+
+        return $group === null ? $group : (string) $group;
+    }
+
     public function getHolidaysPerYear(): int
     {
         return (int) $this->getPreferenceValue(UserPreference::HOLIDAYS_PER_YEAR, 0);
@@ -1207,6 +1219,11 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     public function setWorkHoursSunday(int $seconds): void
     {
         $this->setPreferenceValue(UserPreference::WORK_HOURS_SUNDAY, $seconds);
+    }
+
+    public function setPublicHolidayGroup(null|string $group = null): void
+    {
+        $this->setPreferenceValue(UserPreference::PUBLIC_HOLIDAY_GROUP, $group);
     }
 
     public function setHolidaysPerYear(int $holidays): void
