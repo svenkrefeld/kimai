@@ -12,9 +12,6 @@ set('repository', 'git@github.com:svenkrefeld/kimai.git');
 // Allocate tty for git clone. Default value is false.
 set('git_tty', false);
 
-set('bin/php','/usr/local/php81/bin/php -d memory_limit=-1');
-set('bin/composer', '/usr/local/php81/bin/php -d memory_limit=-1 ~/.bin/composer');
-
 set('http_user', 'hosting136608');
 set('writable_mode', 'chmod');
 
