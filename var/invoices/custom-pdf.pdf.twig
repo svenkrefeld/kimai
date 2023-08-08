@@ -71,7 +71,7 @@ mpdf-->
     <table class="addresses">
         <tr>
             <td>
-                <strong>{{ model.template }}{{ model.customer.company|default(model.customer.name) }}</strong><br>
+                <strong>{{ model.customer.company|default(model.customer.name) }}</strong><br>
                 {{ model.customer.address|nl2br }}
             </td>
             <td class="text-right">
