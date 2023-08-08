@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Fetch the latest tags from the remote repository
-git fetch --tags
+git fetch upstream --tags
 
 # Run the command and store the result in a variable
 latest_tag=$(git tag -l | sort -V | tail -1)
