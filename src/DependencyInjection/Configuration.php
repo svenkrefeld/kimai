@@ -305,7 +305,7 @@ final class Configuration implements ConfigurationInterface
                             ->defaultValue(0)
                         ->end()
                         ->integerNode('long_running_duration')
-                            ->defaultValue(600)
+                            ->defaultValue(0)
                         ->end()
                         ->booleanNode('require_activity')
                             ->defaultTrue()
@@ -789,7 +789,9 @@ final class Configuration implements ConfigurationInterface
                     ->defaultValue('Login with SAML')
                 ->end()
                 ->scalarNode('provider')
-                    ->defaultNull()
+                    // the "default" was only added, to prevent support requests by people who did not
+                    // adjust their config between 1.x and 2.0
+                    ->defaultValue('default')
                 ->end()
                 ->arrayNode('roles')
                     ->addDefaultsIfNotSet()

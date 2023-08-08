@@ -4983,11 +4983,6 @@ parameters:
             path: Event/CalendarGoogleSourceEventTest.php
 
         -
-            message: "#^Method App\\\\Tests\\\\Event\\\\ConfigureMainMenuEventTest\\:\\:testGetterAndSetter\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Event/ConfigureMainMenuEventTest.php
-
-        -
             message: "#^Method App\\\\Tests\\\\Event\\\\CustomerMetaDefinitionEventTest\\:\\:testGetterAndSetter\\(\\) has no return type specified\\.$#"
             count: 1
             path: Event/CustomerMetaDefinitionEventTest.php
@@ -6548,11 +6543,6 @@ parameters:
             path: Form/Type/TypeTestModel.php
 
         -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\AbstractCalculatorTest\\:\\:assertDescription\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/AbstractCalculatorTest.php
-
-        -
             message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\AbstractCalculatorTest\\:\\:assertDescription\\(\\) has parameter \\$addActivity with no type specified\\.$#"
             count: 1
             path: Invoice/Calculator/AbstractCalculatorTest.php
@@ -6561,141 +6551,6 @@ parameters:
             message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\AbstractCalculatorTest\\:\\:assertDescription\\(\\) has parameter \\$addProject with no type specified\\.$#"
             count: 1
             path: Invoice/Calculator/AbstractCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\AbstractCalculatorTest\\:\\:assertEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/AbstractCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\AbstractCalculatorTest\\:\\:getEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/AbstractCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ActivityInvoiceCalculatorTest\\:\\:testDescriptionByActivity\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ActivityInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ActivityInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ActivityInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ActivityInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ActivityInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\DateInvoiceCalculatorTest\\:\\:testDescriptionByTimesheet\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/DateInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\DateInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/DateInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\DateInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/DateInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\DefaultCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/DefaultCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\DefaultCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/DefaultCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\PriceInvoiceCalculatorTest\\:\\:testDescriptionByTimesheet\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/PriceInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\PriceInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/PriceInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\PriceInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/PriceInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ProjectInvoiceCalculatorTest\\:\\:testDescriptionByProject\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ProjectInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ProjectInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ProjectInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ProjectInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ProjectInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ShortInvoiceCalculatorTest\\:\\:testDescriptionByTimesheet\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ShortInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ShortInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ShortInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ShortInvoiceCalculatorTest\\:\\:testWithMixedRateTypes\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ShortInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ShortInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ShortInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\ShortInvoiceCalculatorTest\\:\\:testWithMultipleEntriesDifferentRates\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/ShortInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\UserInvoiceCalculatorTest\\:\\:testDescriptionByTimesheet\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/UserInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\UserInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/UserInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\UserInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/UserInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\WeeklyInvoiceCalculatorTest\\:\\:testDescriptionByTimesheet\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/WeeklyInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\WeeklyInvoiceCalculatorTest\\:\\:testEmptyModel\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/WeeklyInvoiceCalculatorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Calculator\\\\WeeklyInvoiceCalculatorTest\\:\\:testWithMultipleEntries\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Calculator/WeeklyInvoiceCalculatorTest.php
 
         -
             message: "#^Cannot call method getEntries\\(\\) on App\\\\Invoice\\\\CalculatorInterface\\|null\\.$#"
@@ -6758,11 +6613,6 @@ parameters:
             path: Invoice/Hydrator/InvoiceModelActivityHydratorTest.php
 
         -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelCustomerHydratorTest\\:\\:assertModelStructure\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Hydrator/InvoiceModelCustomerHydratorTest.php
-
-        -
             message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelCustomerHydratorTest\\:\\:assertModelStructure\\(\\) has parameter \\$model with no value type specified in iterable type array\\.$#"
             count: 1
             path: Invoice/Hydrator/InvoiceModelCustomerHydratorTest.php
@@ -6778,21 +6628,6 @@ parameters:
             path: Invoice/Hydrator/InvoiceModelCustomerHydratorTest.php
 
         -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelCustomerHydratorTest\\:\\:testHydrate\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Hydrator/InvoiceModelCustomerHydratorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelDefaultHydratorTest\\:\\:assertModelStructure\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Hydrator/InvoiceModelDefaultHydratorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelDefaultHydratorTest\\:\\:assertModelStructure\\(\\) has parameter \\$hasProject with no type specified\\.$#"
-            count: 1
-            path: Invoice/Hydrator/InvoiceModelDefaultHydratorTest.php
-
-        -
             message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelDefaultHydratorTest\\:\\:assertModelStructure\\(\\) has parameter \\$model with no value type specified in iterable type array\\.$#"
             count: 1
             path: Invoice/Hydrator/InvoiceModelDefaultHydratorTest.php
@@ -6804,11 +6639,6 @@ parameters:
 
         -
             message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelDefaultHydratorTest\\:\\:getNumberGeneratorSut\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/Hydrator/InvoiceModelDefaultHydratorTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\Hydrator\\\\InvoiceModelDefaultHydratorTest\\:\\:testHydrate\\(\\) has no return type specified\\.$#"
             count: 1
             path: Invoice/Hydrator/InvoiceModelDefaultHydratorTest.php
 
@@ -6866,21 +6696,6 @@ parameters:
             message: "#^Method App\\\\Tests\\\\Invoice\\\\InvoiceItemTest\\:\\:testEmptyObject\\(\\) has no return type specified\\.$#"
             count: 1
             path: Invoice/InvoiceItemTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\InvoiceModelTest\\:\\:testEmptyObject\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/InvoiceModelTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\InvoiceModelTest\\:\\:testEmptyObjectThrowsExceptionOnNumberGenerator\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/InvoiceModelTest.php
-
-        -
-            message: "#^Method App\\\\Tests\\\\Invoice\\\\InvoiceModelTest\\:\\:testSetter\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: Invoice/InvoiceModelTest.php
 
         -
             message: "#^Method App\\\\Tests\\\\Invoice\\\\NumberGenerator\\\\DateNumberGeneratorTest\\:\\:getSut\\(\\) has no return type specified\\.$#"
