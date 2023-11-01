@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# Check if there are uncommitted changes
+if [[ -n $(git status --porcelain) ]]; then
+    echo "Error: There are uncommitted changes in the Git repository. Aborting script."
+    exit 1
+fi
+
+# Continue with the rest of your script if there are no uncommitted changes
+echo "No uncommitted changes found. Continuing with the script..."
+
 # Fetch the latest tags from the remote repository
 git fetch upstream --tags
 
