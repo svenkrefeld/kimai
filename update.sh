@@ -21,6 +21,9 @@ echo "Update to latest tag: $latest_tag"
 # Checkout to the "release" branch based on the latest tag
 git checkout -b release-$latest_tag $latest_tag
 
+# Merge the main branch on the latest release
+git merge origin main
+
 # Install Composer dependencies with optimized autoloader and no interaction
 composer install --optimize-autoloader -n
 
