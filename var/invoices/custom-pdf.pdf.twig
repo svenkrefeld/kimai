@@ -154,10 +154,12 @@ mpdf-->
 
             <tr>
                 <td class="first">
+                    {{ entry.project.name }} /
+                    {% if entry.activity is not null and entry.activity.name != entry.project.name %}
+                        {{ entry.activity.name }}
+                    {% endif %}
                     {% if entry.description is not empty %}
-                        {{ entry.description|nl2br }}
-                    {% else %}
-                        {% if entry.activity is not null %}{{ entry.activity.name }} / {% endif %}{{ entry.project.name }}
+                        <br><small>{{ entry.description }}</small>
                     {% endif %}
                 </td>
                 <td class="text-right text-nowrap">{{ rate|money(currency) }}</td>
