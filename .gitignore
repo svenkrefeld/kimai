@@ -2,11 +2,14 @@
 /public/.htaccess
 /.env-*
 /.idea/
+/.migraw/
 .DS_Store
 /phpstan.sh
 
 # custom apache rules e.g. to deactivate ioncube loader
 /public/.user.ini
+
+/*.sql
 
 # for symfony local webserver
 /php.ini

@@ -27,6 +27,7 @@
         "composer-runtime-api": "^2.0",
         "azuyalabs/yasumi": "^2.6",
         "composer/semver": "^3.3",
+        "deployer/deployer": "^7.3",
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
