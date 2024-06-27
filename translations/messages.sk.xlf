@@ -2,9 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="sk" datatype="plaintext" original="messages.en.xlf">
     <body>
-      <trans-unit id="N7mikjJ" resname="time_tracking">
-        <source>time_tracking</source>
-        <target>Sledovanie času</target>
+      <trans-unit id="N7mikjJ" resname="time_tracking" xml:space="preserve">
+        <source>Time Tracking</source>
+        <target state="translated">Sledovanie času</target>
       </trans-unit>
       <trans-unit id="inmIkP6" resname="yes">
         <source>yes</source>
@@ -1022,9 +1022,9 @@
         <source>Display of entries in selection lists</source>
         <target state="translated">Zobrazenie poloziek vo vybere</target>
       </trans-unit>
-      <trans-unit id="_cY.wHP" resname="resetting.check_email">
-        <source>resetting.check_email</source>
-        <target state="translated">Bol vám zaslaný email. Obsahuje odkaz, na ktory musite kliknúť pre obnovu hesla. Poznámka : O nové heslo môžete požidat raz za %tokenLifetime% hodín. V prípade ak vám email nepríde, skontrolujte si spamovú poštu.</target>
+      <trans-unit id="_cY.wHP" resname="resetting.check_email" xml:space="preserve">
+        <source>An email has been sent with a link to reset your password. Note: You can only request a new password once every %tokenLifetime% hours. If you don't receive the email, please check your spam folder or try again.</source>
+        <target state="needs-translation">Bol vám zaslaný email. Obsahuje odkaz, na ktory musite kliknúť pre obnovu hesla. Poznámka : O nové heslo môžete požidat raz za %tokenLifetime% hodín. V prípade ak vám email nepríde, skontrolujte si spamovú poštu.</target>
       </trans-unit>
       <trans-unit id="XQ2.pq2" resname="error.too_many_entries">
         <source>error.too_many_entries</source>
@@ -1194,10 +1194,6 @@
         <source>api_password.missing_title</source>
         <target state="translated">API sa nedá použiť</target>
       </trans-unit>
-      <trans-unit id="fxFzCHd" resname="api_password.missing_description">
-        <source>api_password.missing_description</source>
-        <target state="translated">Nezadali ste API heslo. Kvôli bezpečnostným dôvodom nemôžete používať API kým nenastavíte heslo.</target>
-      </trans-unit>
       <trans-unit id="95DUED0" resname="send_to">
         <source>send_to</source>
         <target state="translated">Poslať %name%</target>
@@ -1270,9 +1266,9 @@
         <source>team.add_user.help</source>
         <target state="translated">Výberom zo zoznamu pridajte do tímu nového používateľa. Potom môžete rozhodnúť, či se má používateľ stať vedúcim tímu.</target>
       </trans-unit>
-      <trans-unit id="JSBReoa" resname="api_password.intro">
+      <trans-unit id="JSBReoa" resname="api_password.intro" xml:space="preserve">
         <source>api_password.intro</source>
-        <target state="translated">API heslo sa používa pre komunikáciu medzi Kimai a vašimi aplikáciami</target>
+        <target state="needs-translation">API heslo sa používa pre komunikáciu medzi Kimai a vašimi aplikáciami</target>
       </trans-unit>
       <trans-unit id="JmkKf48" resname="user.language.help">
         <source>user.language.help</source>
@@ -1354,13 +1350,9 @@
         <source>help.invoiceTemplate</source>
         <target state="translated">Táto faktúra je generovaná s touto šablónou.</target>
       </trans-unit>
-      <trans-unit id="1btzNDa" resname="work_times_should">
-        <source>work_times_should</source>
-        <target state="translated">Cieľové hodiny</target>
-      </trans-unit>
-      <trans-unit id="PE2iiaW" resname="work_times_should.help">
-        <source>work_times_should.help</source>
-        <target state="translated">Nakonfigurované hodnoty se používajú k výpočtu hodinového účtu.</target>
+      <trans-unit id="1btzNDa" resname="work_times_should" xml:space="preserve">
+        <source>Expected number of hours</source>
+        <target state="needs-translation">Cieľové hodiny</target>
       </trans-unit>
       <trans-unit id="gcFtM3o" resname="holiday">
         <source>holiday</source>

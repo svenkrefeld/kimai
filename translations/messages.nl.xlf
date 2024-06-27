@@ -2,9 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="nl" datatype="plaintext" original="messages.en.xlf">
     <body>
-      <trans-unit id="N7mikjJ" resname="time_tracking">
-        <source>time_tracking</source>
-        <target>Tijdregistratie</target>
+      <trans-unit id="N7mikjJ" resname="time_tracking" xml:space="preserve">
+        <source>Time Tracking</source>
+        <target state="translated">Tijdsregistratie</target>
       </trans-unit>
       <trans-unit id="inmIkP6" resname="yes">
         <source>yes</source>
@@ -18,9 +18,9 @@
         <source>both</source>
         <target>Beiden</target>
       </trans-unit>
-      <trans-unit id="KLIuHvt" resname="This is a mandatory field">
+      <trans-unit id="KLIuHvt" resname="This is a mandatory field" xml:space="preserve">
         <source>This is a mandatory field</source>
-        <target>Dit is een verplicht veld</target>
+        <target state="translated">Verplicht veld</target>
       </trans-unit>
       <trans-unit id="_ohHsMM" resname="create">
         <source>create</source>
@@ -1075,9 +1075,9 @@
         <source>status.canceled</source>
         <target>Geannuleerd</target>
       </trans-unit>
-      <trans-unit id="_cY.wHP" resname="resetting.check_email">
-        <source>An email has been sent. It contains a link you must click to reset your password. Note: You can only request a new password once within %tokenLifetime% hours. If you don't get an email check your spam folder or try again.</source>
-        <target state="translated">Een email is verzonden. Deze bevat een link die je moet gebruiken op je wachtwoord opnieuw in te stellen. Je kan enkel een nieuw wachtwoord aanvragen elke %tokenLifetime% uur. Kijk je spammap na als je geen email hebt ontvangen of probeer opnieuw.</target>
+      <trans-unit id="_cY.wHP" resname="resetting.check_email" xml:space="preserve">
+        <source>An email has been sent with a link to reset your password. Note: You can only request a new password once every %tokenLifetime% hours. If you don't receive the email, please check your spam folder or try again.</source>
+        <target state="needs-translation">Een email is verzonden. Deze bevat een link die je moet gebruiken op je wachtwoord opnieuw in te stellen. Je kan enkel een nieuw wachtwoord aanvragen elke %tokenLifetime% uur. Kijk je spammap na als je geen email hebt ontvangen of probeer opnieuw.</target>
       </trans-unit>
       <trans-unit id="HWB4OGJ" resname="stats.workingTimeFinancialYear">
         <source>stats.workingTimeFinancialYear</source>
@@ -1411,13 +1411,9 @@
         <source>skin.dark</source>
         <target state="translated">Donker</target>
       </trans-unit>
-      <trans-unit id="JSBReoa" resname="api_password.intro">
+      <trans-unit id="JSBReoa" resname="api_password.intro" xml:space="preserve">
         <source>api_password.intro</source>
-        <target state="translated">Het API-wachtwoord wordt gebruikt voor communicatie tussen Kimai en uw applicaties</target>
-      </trans-unit>
-      <trans-unit id="fxFzCHd" resname="api_password.missing_description">
-        <source>api_password.missing_description</source>
-        <target state="translated">U heeft nog geen API-wachtwoord ingevoerd. Vanwege veiligheidsredenen kunt u de API niet gebruiken tot u een wachtwoord heeft opgeslagen.</target>
+        <target state="needs-translation">Het API-wachtwoord wordt gebruikt voor communicatie tussen Kimai en uw applicaties</target>
       </trans-unit>
       <trans-unit id="wYcx0So" resname="search.no_results">
         <source>search.no_results</source>
@@ -1483,9 +1479,9 @@
         <source>work_contract</source>
         <target state="translated">Arbeidsovereenkomst</target>
       </trans-unit>
-      <trans-unit id="1btzNDa" resname="work_times_should">
-        <source>work_times_should</source>
-        <target state="translated">Streefuren</target>
+      <trans-unit id="1btzNDa" resname="work_times_should" xml:space="preserve">
+        <source>Expected number of hours</source>
+        <target state="needs-translation">Streefuren</target>
       </trans-unit>
       <trans-unit id="8yqaKzX" resname="confirmed_by_at">
         <source>confirmed_by_at</source>
@@ -1506,10 +1502,6 @@
       <trans-unit id="IalLD5Q" resname="manual_bookings.work_contract_intro">
         <source>manual_bookings.work_contract_intro</source>
         <target state="translated">Handmatige boeken kunnen niet achtereenvolgens worden gewijzigd of verwijderd!</target>
-      </trans-unit>
-      <trans-unit id="PE2iiaW" resname="work_times_should.help">
-        <source>work_times_should.help</source>
-        <target state="translated">De hier geconfigureerde waarden worden gebruikt om de rekening per uur te berekenen.</target>
       </trans-unit>
       <trans-unit id="s9NPI3v" resname="work_times_should.none_configured">
         <source>work_times_should.none_configured</source>

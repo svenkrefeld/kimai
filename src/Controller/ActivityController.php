@@ -42,7 +42,7 @@ use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
@@ -81,6 +81,7 @@ final class ActivityController extends AbstractController
         $table->addColumn('name', ['class' => 'alwaysVisible']);
         $table->addColumn('project', ['class' => 'd-none']);
         $table->addColumn('comment', ['class' => 'd-none', 'title' => 'description']);
+        $table->addColumn('number', ['class' => 'd-none w-min', 'title' => 'activity_number']);
 
         foreach ($metaColumns as $metaColumn) {
             $table->addColumn('mf_' . $metaColumn->getName(), ['title' => $metaColumn->getLabel(), 'class' => 'd-none', 'orderBy' => false, 'data' => $metaColumn]);
@@ -455,19 +456,22 @@ final class ActivityController extends AbstractController
     }
 
     /**
-     * @param Activity $activity
      * @return FormInterface<ActivityEditForm>
      */
     private function createEditForm(Activity $activity): FormInterface
     {
         $currency = $this->configuration->getCustomerDefaultCurrency();
         $url = $this->generateUrl('admin_activity_create');
+        if ($activity->getProject()?->getId() !== null) {
+            $url = $this->generateUrl('admin_activity_create_with_project', ['project' => $activity->getProject()->getId()]);
+        }
 
         if ($activity->getId() !== null) {
             $url = $this->generateUrl('admin_activity_edit', ['id' => $activity->getId()]);
-            if (null !== $activity->getProject()) {
-                $currency = $activity->getProject()->getCustomer()->getCurrency();
-            }
+        }
+
+        if (null !== $activity->getProject()) {
+            $currency = $activity->getProject()->getCustomer()->getCurrency();
         }
 
         return $this->createForm(ActivityEditForm::class, $activity, [

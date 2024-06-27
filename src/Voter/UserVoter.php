@@ -35,24 +35,27 @@ final class UserVoter extends Voter
         'hourly-rate',
         'view_team_member',
         'contract',
+        'hours',
         'supervisor',
     ];
 
-    public function __construct(private RolePermissionManager $permissionManager)
+    public function __construct(private readonly RolePermissionManager $permissionManager)
     {
+    }
+
+    public function supportsAttribute(string $attribute): bool
+    {
+        return \in_array($attribute, self::ALLOWED_ATTRIBUTES, true);
+    }
+
+    public function supportsType(string $subjectType): bool
+    {
+        return str_contains($subjectType, User::class);
     }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if (!($subject instanceof User)) {
-            return false;
-        }
-
-        if (!\in_array($attribute, self::ALLOWED_ATTRIBUTES)) {
-            return false;
-        }
-
-        return true;
+        return $subject instanceof User && $this->supportsAttribute($attribute);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -69,6 +72,10 @@ final class UserVoter extends Voter
 
         if ($attribute === 'contract') {
             return $this->permissionManager->hasRolePermission($user, 'contract_other_profile');
+        }
+
+        if ($attribute === 'hours') {
+            return $this->permissionManager->hasRolePermission($user, 'hours_other_profile');
         }
 
         if ($attribute === 'access_user') {

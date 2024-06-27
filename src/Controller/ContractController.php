@@ -19,7 +19,7 @@ use App\WorkingTime\WorkingTimeService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * Users can control their working time statistics
@@ -31,7 +31,7 @@ final class ContractController extends AbstractController
     {
         $currentUser = $this->getUser();
         $dateTimeFactory = $this->getDateTimeFactory($currentUser);
-        $canChangeUser = $this->isGranted('contract_other_profile');
+        $canChangeUser = $this->isGranted('hours_other_profile');
         $defaultDate = $dateTimeFactory->createStartOfYear();
         $now = $dateTimeFactory->createDateTime();
 

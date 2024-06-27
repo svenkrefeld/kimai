@@ -85,6 +85,7 @@
         "fakerphp/faker": "^1.15",
         "friendsofphp/php-cs-fixer": "^3.3",
         "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-doctrine": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
@@ -197,9 +198,6 @@
         "symfony/symfony": "*"
     },
     "extra": {
-        "branch-alias": {
-            "dev-main": "2.0.x-dev"
-        },
         "symfony": {
             "id": "01C3FWRDJJEX9K6Y3A4XDFXPBR",
             "allow-contrib": true,

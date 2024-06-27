@@ -94,10 +94,6 @@
         <source>Cannot stop running timesheet</source>
         <target>Sie haben eine aktive Zeitmessung, die nicht automatisch beendet werden kann.</target>
       </trans-unit>
-      <trans-unit id="8L_7O31" resname="The given value is not a valid datetime format.">
-        <source>The given value is not a valid datetime format.</source>
-        <target>Das angegebene Format für die Tageszeit ist nicht korrekt.</target>
-      </trans-unit>
       <trans-unit id="xp0lmgm" resname="The given code is not the correct TOTP token.">
         <source>The given code is not the correct TOTP token.</source>
         <target>Der übermittelte Code ist nicht der korrekte TOTP Token.</target>
@@ -153,6 +149,10 @@
       <trans-unit id="BztgSSP" resname="The period of absence must not extend beyond the turn of the year.">
         <source>The period of absence must not extend beyond the turn of the year.</source>
         <target>Der Zeitraum der Abwesenheit darf nicht über einen Jahreswechsel hinweg gehen.</target>
+      </trans-unit>
+      <trans-unit id="fvxWW3V" resname="The CSRF token is invalid. Please try to resubmit the form.">
+        <source>The CSRF token is invalid. Please try to resubmit the form.</source>
+        <target>Bitte senden Sie das Formular erneut ab. Sollte das Problem weiterhin bestehen, laden Sie die bitte die Seite neu.</target>
       </trans-unit>
     </body>
   </file>

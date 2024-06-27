@@ -271,7 +271,7 @@ class LocaleFormatExtensionsTest extends TestCase
 
         $user->setTimezone('Asia/Dubai');
         $date = $sut->createDate('2019-08-27 16:30:45', $user);
-        $this->assertEquals('2019-08-27T16:30:45+0400', $date->format(DATE_ISO8601));
+        $this->assertEquals('2019-08-27T16:30:45+04:00', $date->format(DATE_ATOM));
         $this->assertEquals('Asia/Dubai', $date->getTimezone()->getName());
 
         $date = $sut->createDate('2019-08-27 16:30:45', null);
@@ -463,6 +463,8 @@ class LocaleFormatExtensionsTest extends TestCase
             'twentyFourHours' => false,
             'updateBrowserTitle' => false,
             'timezone' => 'America/Edmonton',
+            'locale' => 'en',
+            'language' => 'de',
             'user' => [
                 'id' => 1,
                 'name' => null,
@@ -473,6 +475,7 @@ class LocaleFormatExtensionsTest extends TestCase
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(1);
         $user->method('getName')->willReturn('Testing');
+        $user->method('getLanguage')->willReturn('de');
         $user->method('isAdmin')->willReturn(false);
         $user->method('isSuperAdmin')->willReturn(false);
         $user->method('getTimezone')->willReturn('America/Edmonton');

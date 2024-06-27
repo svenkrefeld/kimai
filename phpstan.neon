@@ -4,6 +4,7 @@ includes:
     - %rootDir%/../phpstan-doctrine/extension.neon
     - %rootDir%/../phpstan-doctrine/rules.neon
     - %rootDir%/../phpstan-strict-rules/rules.neon
+    - %rootDir%/../phpstan-deprecation-rules/rules.neon
     - %rootDir%/../phpstan/conf/bleedingEdge.neon
 
 parameters:
@@ -1108,11 +1109,6 @@ parameters:
             path: src/Controller/Security/PasswordResetController.php
 
         -
-            message: "#^Parameter \\#1 \\$usernameOrEmail of method App\\\\User\\\\UserService\\:\\:findUserByUsernameOrEmail\\(\\) expects string, bool\\|float\\|int\\|string\\|null given\\.$#"
-            count: 1
-            path: src/Controller/Security/PasswordResetController.php
-
-        -
             message: "#^Method App\\\\Controller\\\\Security\\\\SelfRegistrationController\\:\\:getTargetUrlFromSession\\(\\) should return string\\|null but returns mixed\\.$#"
             count: 1
             path: src/Controller/Security/SelfRegistrationController.php
@@ -1161,11 +1157,6 @@ parameters:
             message: "#^PHPDoc tag @var for variable \\$users contains generic class Doctrine\\\\Common\\\\Collections\\\\ArrayCollection but does not specify its types\\: TKey, T$#"
             count: 1
             path: src/Controller/TimesheetTeamController.php
-
-        -
-            message: "#^Parameter \\#2 \\$plainPassword of method Symfony\\\\Component\\\\PasswordHasher\\\\Hasher\\\\UserPasswordHasherInterface\\:\\:hashPassword\\(\\) expects string, string\\|null given\\.$#"
-            count: 1
-            path: src/Controller/UserController.php
 
         -
             message: "#^Parameter \\#2 \\$replace of method App\\\\User\\\\UserService\\:\\:deleteUser\\(\\) expects App\\\\Entity\\\\User\\|null, mixed given\\.$#"
@@ -1256,11 +1247,6 @@ parameters:
             message: "#^Method App\\\\Doctrine\\\\TimesheetSubscriber\\:\\:calculateFields\\(\\) has parameter \\$changes with no value type specified in iterable type array\\.$#"
             count: 1
             path: src/Doctrine/TimesheetSubscriber.php
-
-        -
-            message: "#^Parameter \\#2 \\$datetime of static method DateTime\\:\\:createFromFormat\\(\\) expects string, mixed given\\.$#"
-            count: 1
-            path: src/Doctrine/UTCDateTimeType.php
 
         -
             message: "#^Method App\\\\Entity\\\\Activity\\:\\:__toString\\(\\) should return string but returns string\\|null\\.$#"
@@ -2206,21 +2192,6 @@ parameters:
             message: "#^Parameter \\#1 \\$value \\(array\\<string\\>\\) of method App\\\\Form\\\\DataTransformer\\\\StringToArrayTransformer\\:\\:transform\\(\\) should be contravariant with parameter \\$value \\(array\\|null\\) of method Symfony\\\\Component\\\\Form\\\\DataTransformerInterface\\<array,string\\>\\:\\:transform\\(\\)$#"
             count: 1
             path: src/Form/DataTransformer/StringToArrayTransformer.php
-
-        -
-            message: "#^Class App\\\\Form\\\\DataTransformer\\\\TagArrayToStringTransformer implements generic interface Symfony\\\\Component\\\\Form\\\\DataTransformerInterface but does not specify its types\\: T, R$#"
-            count: 1
-            path: src/Form/DataTransformer/TagArrayToStringTransformer.php
-
-        -
-            message: "#^Parameter \\#1 \\$stringOfTags \\(string\\|null\\) of method App\\\\Form\\\\DataTransformer\\\\TagArrayToStringTransformer\\:\\:reverseTransform\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Form\\\\DataTransformerInterface\\<mixed,mixed\\>\\:\\:reverseTransform\\(\\)$#"
-            count: 1
-            path: src/Form/DataTransformer/TagArrayToStringTransformer.php
-
-        -
-            message: "#^Parameter \\#1 \\$tags \\(array\\<App\\\\Entity\\\\Tag\\>\\|null\\) of method App\\\\Form\\\\DataTransformer\\\\TagArrayToStringTransformer\\:\\:transform\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Form\\\\DataTransformerInterface\\<mixed,mixed\\>\\:\\:transform\\(\\)$#"
-            count: 1
-            path: src/Form/DataTransformer/TagArrayToStringTransformer.php
 
         -
             message: "#^Method App\\\\Form\\\\Extension\\\\DocumentationLinkExtension\\:\\:buildView\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
@@ -3299,7 +3270,7 @@ parameters:
 
         -
             message: "#^Parameter \\#1 \\$inputTimezone of class Symfony\\\\Component\\\\Form\\\\Extension\\\\Core\\\\DataTransformer\\\\DateTimeToLocalizedStringTransformer constructor expects string\\|null, mixed given\\.$#"
-            count: 1
+            count: 2
             path: src/Form/Type/DateRangeType.php
 
         -
@@ -3309,7 +3280,7 @@ parameters:
 
         -
             message: "#^Parameter \\#2 \\$outputTimezone of class Symfony\\\\Component\\\\Form\\\\Extension\\\\Core\\\\DataTransformer\\\\DateTimeToLocalizedStringTransformer constructor expects string\\|null, mixed given\\.$#"
-            count: 1
+            count: 2
             path: src/Form/Type/DateRangeType.php
 
         -
@@ -3468,11 +3439,6 @@ parameters:
             path: src/Invoice/Calculator/AbstractMergedCalculator.php
 
         -
-            message: "#^Cannot call method format\\(\\) on DateTime\\|null\\.$#"
-            count: 2
-            path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
-
-        -
             message: "#^Cannot call method getCurrency\\(\\) on App\\\\Entity\\\\Customer\\|null\\.$#"
             count: 1
             path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
@@ -3483,23 +3449,8 @@ parameters:
             path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
 
         -
-            message: "#^Cannot call method getTimestamp\\(\\) on DateTime\\|null\\.$#"
-            count: 2
-            path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
-
-        -
             message: "#^Method App\\\\Invoice\\\\Hydrator\\\\InvoiceItemDefaultHydrator\\:\\:hydrate\\(\\) return type has no value type specified in iterable type array\\.$#"
             count: 1
-            path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
-
-        -
-            message: "#^Parameter \\#1 \\$date of method App\\\\Invoice\\\\InvoiceFormatter\\:\\:getFormattedDateTime\\(\\) expects DateTimeInterface, DateTime\\|null given\\.$#"
-            count: 3
-            path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
-
-        -
-            message: "#^Parameter \\#1 \\$date of method App\\\\Invoice\\\\InvoiceFormatter\\:\\:getFormattedTime\\(\\) expects DateTimeInterface, DateTime\\|null given\\.$#"
-            count: 2
             path: src/Invoice/Hydrator/InvoiceItemDefaultHydrator.php
 
         -
@@ -3815,11 +3766,6 @@ parameters:
         -
             message: "#^Generator expects value type Symfony\\\\Component\\\\HttpKernel\\\\Bundle\\\\BundleInterface, object given\\.$#"
             count: 2
-            path: src/Kernel.php
-
-        -
-            message: "#^Method App\\\\Kernel\\:\\:configureContainer\\(\\) has no return type specified\\.$#"
-            count: 1
             path: src/Kernel.php
 
         -
@@ -4813,22 +4759,12 @@ parameters:
             path: src/Saml/SamlLoginAttributes.php
 
         -
-            message: "#^Method App\\\\Saml\\\\SamlLogoutSubscriber\\:\\:logout\\(\\) has no return type specified\\.$#"
-            count: 1
-            path: src/Saml/SamlLogoutSubscriber.php
-
-        -
             message: "#^Parameter \\#4 \\$sessionIndex of method OneLogin\\\\Saml2\\\\Auth\\:\\:logout\\(\\) expects string\\|null, mixed given\\.$#"
             count: 1
             path: src/Saml/SamlLogoutSubscriber.php
 
         -
             message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-            count: 1
-            path: src/Saml/SamlProvider.php
-
-        -
-            message: "#^Method App\\\\Saml\\\\SamlProvider\\:\\:getPropertyValue\\(\\) has no return type specified\\.$#"
             count: 1
             path: src/Saml/SamlProvider.php
 
@@ -5558,11 +5494,6 @@ parameters:
             path: src/Validator/Constraints/TimesheetBudgetUsedValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetBudgetUsedValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetBudgetUsedValidator.php
-
-        -
             message: "#^Parameter \\#4 \\$duration of method App\\\\Validator\\\\Constraints\\\\TimesheetBudgetUsedValidator\\:\\:checkBudgets\\(\\) expects int, float\\|int\\|null given\\.$#"
             count: 3
             path: src/Validator/Constraints/TimesheetBudgetUsedValidator.php
@@ -5573,29 +5504,9 @@ parameters:
             path: src/Validator/Constraints/TimesheetBudgetUsedValidator.php
 
         -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetExportedValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetExportedValidator.php
-
-        -
             message: "#^Cannot call method getTimezone\\(\\) on DateTime\\|null\\.$#"
             count: 1
             path: src/Validator/Constraints/TimesheetFutureTimesValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$value \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetFutureTimesValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetFutureTimesValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetLockdownValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetLockdownValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetLongRunningValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetLongRunningValidator.php
 
         -
             message: "#^Parameter \\#2 \\$value of method Symfony\\\\Component\\\\Validator\\\\Violation\\\\ConstraintViolationBuilderInterface\\:\\:setParameter\\(\\) expects string, string\\|null given\\.$#"
@@ -5606,26 +5517,6 @@ parameters:
             message: "#^Cannot call method isVisible\\(\\) on App\\\\Entity\\\\Customer\\|null\\.$#"
             count: 1
             path: src/Validator/Constraints/TimesheetMultiUpdateValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetOverlappingValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetOverlappingValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetRestartValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetRestartValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetValidator.php
-
-        -
-            message: "#^Parameter \\#1 \\$timesheet \\(App\\\\Entity\\\\Timesheet\\) of method App\\\\Validator\\\\Constraints\\\\TimesheetZeroDurationValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
-            count: 2
-            path: src/Validator/Constraints/TimesheetZeroDurationValidator.php
 
         -
             message: "#^Parameter \\#1 \\$value \\(App\\\\Entity\\\\User\\) of method App\\\\Validator\\\\Constraints\\\\UserValidator\\:\\:validate\\(\\) should be contravariant with parameter \\$value \\(mixed\\) of method Symfony\\\\Component\\\\Validator\\\\ConstraintValidatorInterface\\:\\:validate\\(\\)$#"
@@ -5648,94 +5539,14 @@ parameters:
             path: src/Voter/TimesheetVoter.php
 
         -
-            message: "#^Cannot access offset 'billable' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'day' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'details' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'duration' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'month' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'rate' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot access offset 'year' on mixed\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
             message: "#^Cannot call method getCustomer\\(\\) on App\\\\Entity\\\\Project\\|null\\.$#"
             count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Activity\\|null\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
+            path: src/Widget/Type/DailyWorkingTimeChart.php
 
         -
             message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Customer\\|null\\.$#"
             count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot call method getId\\(\\) on App\\\\Entity\\\\Project\\|null\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot cast mixed to float\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Cannot cast mixed to int\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Parameter \\#1 \\$details of method App\\\\Model\\\\Statistic\\\\Day\\:\\:setDetails\\(\\) expects array, mixed given\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Parameter \\#1 \\$seconds of method App\\\\Model\\\\Statistic\\\\Day\\:\\:setTotalDurationBillable\\(\\) expects int, mixed given\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Parameter \\#1 \\$year of method DateTime\\:\\:setDate\\(\\) expects int, mixed given\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Parameter \\#2 \\$month of method DateTime\\:\\:setDate\\(\\) expects int, mixed given\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
-
-        -
-            message: "#^Parameter \\#3 \\$day of method DateTime\\:\\:setDate\\(\\) expects int, mixed given\\.$#"
-            count: 1
-            path: src/Widget/DataProvider/DailyWorkingTimeChartProvider.php
+            path: src/Widget/Type/DailyWorkingTimeChart.php
 
         -
             message: "#^Method App\\\\Widget\\\\Type\\\\AbstractWidget\\:\\:getUser\\(\\) should return App\\\\Entity\\\\User but returns App\\\\Entity\\\\User\\|null\\.$#"

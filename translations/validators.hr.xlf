@@ -18,9 +18,9 @@
         <source>You already have an entry for this time.</source>
         <target>Za ovo vrijeme već postoji unos.</target>
       </trans-unit>
-      <trans-unit id="0o.pH3X" resname="This period is locked, please choose a later date.">
+      <trans-unit id="0o.pH3X" resname="This period is locked, please choose a later date." xml:space="preserve">
         <source>This period is locked. Please choose a later date.</source>
-        <target state="translated">Ovo je razdoblje zaključano. Odaberi jedan kasniji datum.</target>
+        <target state="translated">Ovo je razdoblje zaključeno. Odaberi jedan kasniji datum.</target>
       </trans-unit>
       <trans-unit id="yDlKSRw" resname="This invoice document cannot be used, please rename the file and upload it again.">
         <source>This invoice document cannot be used, please rename the file and upload it again.</source>
@@ -94,10 +94,6 @@
         <source>Cannot stop running timesheet</source>
         <target state="translated">Imaš jedno aktivno snimanje vremena koje se ne može automatski prekinuti.</target>
       </trans-unit>
-      <trans-unit id="8L_7O31" resname="The given value is not a valid datetime format.">
-        <source>The given value is not a valid datetime format.</source>
-        <target state="translated">Navedena vrijednost nije ispravni format za dan i vrijeme.</target>
-      </trans-unit>
       <trans-unit id="xp0lmgm" resname="The given code is not the correct TOTP token.">
         <source>The given code is not the correct TOTP token.</source>
         <target state="translated">Navedeni kod nije ispravni TOTP token.</target>
@@ -146,9 +142,9 @@
         <source>The chosen date is not a working day.</source>
         <target state="translated">Odabrani datum nije radni dan.</target>
       </trans-unit>
-      <trans-unit id="N21br.P" resname="The chosen date is already locked.">
+      <trans-unit id="N21br.P" resname="The chosen date is already locked." xml:space="preserve">
         <source>The chosen date is already locked.</source>
-        <target state="translated">Odabrani datum je već zaključan.</target>
+        <target state="translated">Odabrani datum je već zaključen.</target>
       </trans-unit>
       <trans-unit id="BztgSSP" resname="The period of absence must not extend beyond the turn of the year.">
         <source>The period of absence must not extend beyond the turn of the year.</source>

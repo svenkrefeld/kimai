@@ -11,12 +11,13 @@ namespace App\Tests\Saml;
 
 use App\Configuration\SamlConfiguration;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Saml\SamlLoginAttributes;
 use App\Saml\SamlProvider;
 use App\Tests\Configuration\TestConfigLoader;
 use App\Tests\Mocks\SystemConfigurationFactory;
+use App\User\UserService;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
@@ -49,15 +50,14 @@ class SamlProviderTest extends TestCase
         $userProvider = $this->getMockBuilder(UserProviderInterface::class)->disableOriginalConstructor();
         $userProvider->onlyMethods(['refreshUser', 'supportsClass', 'loadUserByIdentifier']);
         $userProvider = $userProvider->getMock();
-
-        $repository = $this->getMockBuilder(UserRepository::class)->disableOriginalConstructor()->getMock();
+        $userService = $this->getMockBuilder(UserService::class)->disableOriginalConstructor()->getMock();
         if ($user !== null) {
             $userProvider->method('loadUserByIdentifier')->willReturn($user);
         } else {
             $userProvider->method('loadUserByIdentifier')->willReturn(new User());
         }
 
-        $provider = new SamlProvider($repository, $userProvider, $samlConfig);
+        $provider = new SamlProvider($userService, $userProvider, $samlConfig, $this->createMock(LoggerInterface::class));
 
         return $provider;
     }
@@ -107,7 +107,7 @@ class SamlProviderTest extends TestCase
     public function testAuthenticateThrowsAuthenticationException(): void
     {
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Failed creating or hydrating user "foo1@example.com": Missing user attribute: Email');
+        $this->expectExceptionMessage('Failed creating or hydrating user "foo1@example.com": Missing SAML attribute in response: Email');
 
         $user = new User();
         $user->setAuth(User::AUTH_SAML);

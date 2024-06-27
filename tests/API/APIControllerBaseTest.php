@@ -22,42 +22,25 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
  */
 abstract class APIControllerBaseTest extends ControllerBaseTest
 {
+    /**
+     * @return array<string, string>
+     */
+    private function getAuthHeader(string $username, string $password): array
+    {
+        return [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $password,
+        ];
+    }
+
     protected function getClientForAuthenticatedUser(string $role = User::ROLE_USER): HttpKernelBrowser
     {
-        switch ($role) {
-            case User::ROLE_SUPER_ADMIN:
-                $client = self::createClient([], [
-                    'HTTP_X_AUTH_USER' => UserFixtures::USERNAME_SUPER_ADMIN,
-                    'HTTP_X_AUTH_TOKEN' => UserFixtures::DEFAULT_API_TOKEN,
-                ]);
-                break;
-
-            case User::ROLE_ADMIN:
-                $client = self::createClient([], [
-                    'HTTP_X_AUTH_USER' => UserFixtures::USERNAME_ADMIN,
-                    'HTTP_X_AUTH_TOKEN' => UserFixtures::DEFAULT_API_TOKEN,
-                ]);
-                break;
-
-            case User::ROLE_TEAMLEAD:
-                $client = self::createClient([], [
-                    'HTTP_X_AUTH_USER' => UserFixtures::USERNAME_TEAMLEAD,
-                    'HTTP_X_AUTH_TOKEN' => UserFixtures::DEFAULT_API_TOKEN,
-                ]);
-                break;
-
-            case User::ROLE_USER:
-                $client = self::createClient([], [
-                    'HTTP_X_AUTH_USER' => UserFixtures::USERNAME_USER,
-                    'HTTP_X_AUTH_TOKEN' => UserFixtures::DEFAULT_API_TOKEN,
-                ]);
-                break;
-
-            default:
-                throw new \Exception(sprintf('Unknown role "%s"', $role));
-        }
-
-        return $client;
+        return match ($role) {
+            User::ROLE_SUPER_ADMIN => self::createClient([], $this->getAuthHeader(UserFixtures::USERNAME_SUPER_ADMIN, UserFixtures::DEFAULT_API_TOKEN . '_super')),
+            User::ROLE_ADMIN => self::createClient([], $this->getAuthHeader(UserFixtures::USERNAME_ADMIN, UserFixtures::DEFAULT_API_TOKEN . '_admin')),
+            User::ROLE_TEAMLEAD => self::createClient([], $this->getAuthHeader(UserFixtures::USERNAME_TEAMLEAD, UserFixtures::DEFAULT_API_TOKEN . '_teamlead')),
+            User::ROLE_USER => self::createClient([], $this->getAuthHeader(UserFixtures::USERNAME_USER, UserFixtures::DEFAULT_API_TOKEN . '_user')),
+            default => throw new \Exception(sprintf('Unknown role "%s"', $role)),
+        };
     }
 
     protected function createUrl(string $url): string
@@ -81,16 +64,12 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
     protected function assertRequestIsSecured(HttpKernelBrowser $client, string $url, string $method = 'GET'): void
     {
         $this->request($client, $url, $method);
-        $this->assertResponseIsSecured($client->getResponse(), $url);
-    }
+        $response = $client->getResponse();
 
-    /**
-     * @param Response $response
-     * @param string $url
-     */
-    protected function assertResponseIsSecured(Response $response, string $url): void
-    {
-        $data = ['message' => 'Authentication required, missing user header: X-AUTH-USER'];
+        $data = [
+            'message' => 'Unauthorized',
+            'code' => 401
+        ];
 
         self::assertEquals(
             $data,
@@ -99,17 +78,12 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
         );
 
         self::assertEquals(
-            Response::HTTP_FORBIDDEN,
+            Response::HTTP_UNAUTHORIZED,
             $response->getStatusCode(),
             sprintf('The secure URL %s has the wrong status code %s.', $url, $response->getStatusCode())
         );
     }
 
-    /**
-     * @param string $role
-     * @param string $url
-     * @param string $method
-     */
     protected function assertUrlIsSecuredForRole(string $role, string $url, string $method = 'GET'): void
     {
         $client = $this->getClientForAuthenticatedUser($role);
@@ -313,6 +287,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'id' => 'int',
                     'name' => 'string',
                     'color' => '@string',
+                    'color-safe' => 'string',
                     'visible' => 'bool',
                 ];
 
@@ -472,6 +447,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'billable' => 'bool',
                     'color' => '@string',
                     'customer' => 'int',
+                    'number' => '@int',
                     'globalActivities' => 'bool',
                     'comment' => '@string',
                 ];
@@ -485,6 +461,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'billable' => 'bool',
                     'color' => '@string',
                     'customer' => ['result' => 'object', 'type' => 'Customer'],
+                    'number' => '@int',
                     'globalActivities' => 'bool',
                     'comment' => '@string',
                 ];
@@ -497,6 +474,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'customer' => 'int',
+                    'number' => '@int',
                     'color' => '@string',
                     'metaFields' => ['result' => 'array', 'type' => 'ProjectMeta'],
                     'parentTitle' => 'string',
@@ -515,6 +493,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'customer' => 'int',
+                    'number' => '@int',
                     'color' => '@string',
                     'metaFields' => ['result' => 'array', 'type' => 'ProjectMeta'],
                     'parentTitle' => 'string',
@@ -538,6 +517,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'project' => '@int',
+                    'number' => '@int',
                     'color' => '@string',
                     'comment' => '@string',
                 ];
@@ -549,6 +529,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'project' => ['result' => 'object', 'type' => '@ProjectExpanded'],
+                    'number' => '@int',
                     'color' => '@string',
                     'comment' => '@string',
                 ];
@@ -561,6 +542,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'project' => '@int',
+                    'number' => '@int',
                     'color' => '@string',
                     'metaFields' => ['result' => 'array', 'type' => 'ProjectMeta'],
                     'parentTitle' => '@string',
@@ -576,6 +558,7 @@ abstract class APIControllerBaseTest extends ControllerBaseTest
                     'visible' => 'bool',
                     'billable' => 'bool',
                     'project' => '@int',
+                    'number' => '@int',
                     'color' => '@string',
                     'metaFields' => ['result' => 'array', 'type' => 'ProjectMeta'],
                     'parentTitle' => '@string',

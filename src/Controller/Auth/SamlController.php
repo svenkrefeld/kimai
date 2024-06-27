@@ -14,7 +14,7 @@ use App\Saml\SamlAuthFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
@@ -47,7 +47,7 @@ final class SamlController extends AbstractController
             $session->remove($authErrorKey);
         }
 
-        if ($error) {
+        if ($error !== null) {
             if (\is_object($error) && method_exists($error, 'getMessage')) {
                 $error = $error->getMessage();
             }
@@ -60,13 +60,12 @@ final class SamlController extends AbstractController
             $redirectTarget = $this->generateUrl('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL);
         }
 
-        $url = $this->authFactory->create()->login($redirectTarget);
+        $url = $this->authFactory->create()->login($redirectTarget, [], false, false, true);
 
         if ($url === null) {
             throw new \RuntimeException('SAML login failed');
         }
 
-        // this line is not (yet) reached, as the previous call will exit
         return $this->redirect($url);
     }
 

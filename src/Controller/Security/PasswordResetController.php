@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,9 +32,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 final class PasswordResetController extends AbstractController
 {
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher,
-        private UserService $userService,
-        private SystemConfiguration $configuration
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly UserService $userService,
+        private readonly SystemConfiguration $configuration
     ) {
     }
 
@@ -62,6 +62,10 @@ final class PasswordResetController extends AbstractController
         }
 
         $username = $request->request->get('username');
+        if (!\is_string($username) || trim($username) === '') {
+            throw $this->createAccessDeniedException('Username cannot be empty');
+        }
+
         $user = $this->userService->findUserByUsernameOrEmail($username);
 
         if (!$user->isPasswordRequestNonExpired($this->configuration->getPasswordResetRetryLifetime())) {
@@ -83,7 +87,7 @@ final class PasswordResetController extends AbstractController
             $this->eventDispatcher->dispatch(new EmailEvent($event->getEmail()));
 
             $user->markPasswordRequested();
-            $this->userService->updateUser($user);
+            $this->userService->saveUser($user);
         }
 
         return $this->redirectToRoute('resetting_check_email', ['username' => $username]);
@@ -128,6 +132,8 @@ final class PasswordResetController extends AbstractController
         }
 
         if (!$user->isPasswordRequestNonExpired($this->configuration->getPasswordResetTokenLifetime())) {
+            $this->flashWarning('This link has already expired');
+
             return $this->redirectToRoute('resetting_request');
         }
 
@@ -140,7 +146,7 @@ final class PasswordResetController extends AbstractController
             $user->markPasswordResetted();
             $user->setEnabled(true);
 
-            $this->userService->updateUser($user);
+            $this->userService->saveUser($user);
 
             $response = $this->redirectToRoute('my_profile');
             $loginManager->logInUser($user, $response);

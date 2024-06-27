@@ -449,9 +449,9 @@
         <source>menu.homepage</source>
         <target state="translated">Dashbord</target>
       </trans-unit>
-      <trans-unit id="N7mikjJ" resname="time_tracking">
-        <source>time_tracking</source>
-        <target>Tidsregistrering</target>
+      <trans-unit id="N7mikjJ" resname="time_tracking" xml:space="preserve">
+        <source>Time Tracking</source>
+        <target state="translated">Tidsregistrering</target>
       </trans-unit>
       <trans-unit id="DYHuW58" resname="confirm.delete">
         <source>confirm.delete</source>
@@ -461,9 +461,9 @@
         <source>admin_entity.delete_confirm</source>
         <target state="translated">Denne dataen vil også bli slettet! Alternativt kan du velge en oppføring hvor all data vil bli overført til:</target>
       </trans-unit>
-      <trans-unit id="_cY.wHP" resname="resetting.check_email">
-        <source>resetting.check_email</source>
-        <target>En e-post har blitt sendt. Den inneholder en lenke du må klikke for å tilbakestille passordet ditt. Merk: Du kan kun forespørre nytt passord én gang i løpet av %tokenLifetime% timer. Hvis du ikke får en e-post kan du sjekke søppelposten eller prøve igjen.</target>
+      <trans-unit id="_cY.wHP" resname="resetting.check_email" xml:space="preserve">
+        <source>An email has been sent with a link to reset your password. Note: You can only request a new password once every %tokenLifetime% hours. If you don't receive the email, please check your spam folder or try again.</source>
+        <target state="needs-translation">En e-post har blitt sendt. Den inneholder en lenke du må klikke for å tilbakestille passordet ditt. Merk: Du kan kun forespørre nytt passord én gang i løpet av %tokenLifetime% timer. Hvis du ikke får en e-post kan du sjekke søppelposten eller prøve igjen.</target>
       </trans-unit>
       <trans-unit id="I3TZF5S" resname="cancel">
         <source>cancel</source>
@@ -1301,9 +1301,9 @@
         <source>login.2fa_intro</source>
         <target state="translated">Skriv inn bekreftelseskode for å fullføre innloggingsprosessen.</target>
       </trans-unit>
-      <trans-unit id="0ZWvn12" resname="notifications.welcome">
+      <trans-unit id="0ZWvn12" resname="notifications.welcome" xml:space="preserve">
         <source>notifications.welcome</source>
-        <target state="translated">Takk for at du samtykker til merknader.</target>
+        <target state="translated">Takk for at du samtykker til merknader!</target>
       </trans-unit>
       <trans-unit id="EI5gPkp" resname="stats.userDurationToday">
         <source>stats.userDurationToday</source>
@@ -1365,9 +1365,9 @@
         <source>skin.dark</source>
         <target state="translated">Mørk</target>
       </trans-unit>
-      <trans-unit id="JSBReoa" resname="api_password.intro">
+      <trans-unit id="JSBReoa" resname="api_password.intro" xml:space="preserve">
         <source>api_password.intro</source>
-        <target state="translated">API-passord brukes for kommunikasjon mellom Kimai og dine programmer</target>
+        <target state="needs-translation">API-passord brukes for kommunikasjon mellom Kimai og dine programmer</target>
       </trans-unit>
       <trans-unit id="5NugIxO" resname="includeWithBudget">
         <source>includeWithBudget</source>
@@ -1392,10 +1392,6 @@
       <trans-unit id="3WHV.yf" resname="activated">
         <source>Activated</source>
         <target state="translated">Aktivert</target>
-      </trans-unit>
-      <trans-unit id="fxFzCHd" resname="api_password.missing_description">
-        <source>api_password.missing_description</source>
-        <target state="translated">Du har ikke skrevet inn et API-passord enda. Av sikkerhetshensyn kan du ikke bruke API-et til du har lagret et passord.</target>
       </trans-unit>
       <trans-unit id="wYcx0So" resname="search.no_results">
         <source>search.no_results</source>

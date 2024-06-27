@@ -2,9 +2,9 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="cs" datatype="plaintext" original="messages.en.xlf">
     <body>
-      <trans-unit id="N7mikjJ" resname="time_tracking">
-        <source>time_tracking</source>
-        <target>Sledování času</target>
+      <trans-unit id="N7mikjJ" resname="time_tracking" xml:space="preserve">
+        <source>Time Tracking</source>
+        <target state="translated">Sledování času</target>
       </trans-unit>
       <trans-unit id="inmIkP6" resname="yes">
         <source>yes</source>
@@ -1135,9 +1135,9 @@
         <source>registration.check_email</source>
         <target>Aktivační email byl odeslán na %email%. Email obsahuje aktivační odkaz, na který musíte kliknout pro aktivaci účtu.</target>
       </trans-unit>
-      <trans-unit id="_cY.wHP" resname="resetting.check_email">
-        <source>resetting.check_email</source>
-        <target>Email s odkazem pro obnovení hesla byl odeslán. Poznámka: O nové heslo si můžete požádat pouze jednou za %tokenLifetime% hodin. Pokud email neobdržíte, zkontrolujte složku se spamem nebo to zkuste znovu.</target>
+      <trans-unit id="_cY.wHP" resname="resetting.check_email" xml:space="preserve">
+        <source>An email has been sent with a link to reset your password. Note: You can only request a new password once every %tokenLifetime% hours. If you don't receive the email, please check your spam folder or try again.</source>
+        <target state="needs-translation">Email s odkazem pro obnovení hesla byl odeslán. Poznámka: O nové heslo si můžete požádat pouze jednou za %tokenLifetime% hodin. Pokud email neobdržíte, zkontrolujte složku se spamem nebo to zkuste znovu.</target>
       </trans-unit>
       <trans-unit id="wuUWovn" resname="stats.amountFinancialYear">
         <source>stats.amountFinancialYear</source>
@@ -1443,9 +1443,9 @@
         <source>pagination</source>
         <target state="translated">Zobrazit položky %start% až %end% z %total%.</target>
       </trans-unit>
-      <trans-unit id="JSBReoa" resname="api_password.intro">
+      <trans-unit id="JSBReoa" resname="api_password.intro" xml:space="preserve">
         <source>api_password.intro</source>
-        <target state="translated">Heslo API se používá pro komunikaci mezi Kimai a vašemi aplikacemi</target>
+        <target state="needs-translation">Heslo API se používá pro komunikaci mezi Kimai a vašemi aplikacemi</target>
       </trans-unit>
       <trans-unit id="QT8.BCN" resname="api_password.missing_title">
         <source>api_password.missing_title</source>
@@ -1458,10 +1458,6 @@
       <trans-unit id="Uu8YvYV" resname="deactivated">
         <source>Deactivated</source>
         <target state="translated">Deaktivováno</target>
-      </trans-unit>
-      <trans-unit id="fxFzCHd" resname="api_password.missing_description">
-        <source>api_password.missing_description</source>
-        <target state="translated">Dosud jste nezadali heslo API. Z bezpečnostních důvodů nemůžete rozhraní API používat, dokud heslo neuložíte.</target>
       </trans-unit>
       <trans-unit id="3WHV.yf" resname="activated">
         <source>Activated</source>
@@ -1531,10 +1527,6 @@
         <source>work_times_result</source>
         <target state="translated">Odpracované hodiny</target>
       </trans-unit>
-      <trans-unit id="PE2iiaW" resname="work_times_should.help">
-        <source>work_times_should.help</source>
-        <target state="translated">Zde nakonfigurované hodnoty se používají k výpočtu hodinového účtu.</target>
-      </trans-unit>
       <trans-unit id="s9NPI3v" resname="work_times_should.none_configured">
         <source>work_times_should.none_configured</source>
         <target state="translated">Pro tohoto uživatele nebyly v nastavení pracovní smlouvy nakonfigurovány žádné cílové hodiny.</target>
@@ -1547,9 +1539,9 @@
         <source>work_times_is</source>
         <target state="translated">Je-hodin</target>
       </trans-unit>
-      <trans-unit id="1btzNDa" resname="work_times_should">
-        <source>work_times_should</source>
-        <target state="translated">Cílové hodiny</target>
+      <trans-unit id="1btzNDa" resname="work_times_should" xml:space="preserve">
+        <source>Expected number of hours</source>
+        <target state="needs-translation">Cílové hodiny</target>
       </trans-unit>
       <trans-unit id="8yqaKzX" resname="confirmed_by_at">
         <source>confirmed_by_at</source>

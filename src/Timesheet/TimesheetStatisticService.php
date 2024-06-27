@@ -18,7 +18,7 @@ use DateTimeInterface;
 
 final class TimesheetStatisticService
 {
-    public function __construct(private TimesheetRepository $repository)
+    public function __construct(private readonly TimesheetRepository $repository)
     {
     }
 
@@ -52,11 +52,11 @@ final class TimesheetStatisticService
             ->addSelect('DAY(t.date) as day')
             ->addSelect('MONTH(t.date) as month')
             ->addSelect('YEAR(t.date) as year')
-            ->where($qb->expr()->isNotNull('t.end'))
-            ->andWhere($qb->expr()->between('t.begin', ':begin', ':end'))
+            ->andWhere($qb->expr()->between('t.date', ':begin', ':end'))
             ->andWhere($qb->expr()->in('t.user', ':user'))
-            ->setParameter('begin', $begin)
-            ->setParameter('end', $end)
+            ->andWhere($qb->expr()->isNotNull('t.end'))
+            ->setParameter('begin', $begin->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
             ->setParameter('user', $users)
             ->groupBy('year')
             ->addGroupBy('month')
@@ -124,11 +124,11 @@ final class TimesheetStatisticService
             ->addSelect('IDENTITY(t.project) as project')
             ->addSelect('IDENTITY(t.activity) as activity')
             ->addSelect('DATE(t.date) as date')
-            ->where($qb->expr()->isNotNull('t.end'))
-            ->andWhere($qb->expr()->between('t.begin', ':begin', ':end'))
+            ->andWhere($qb->expr()->between('t.date', ':begin', ':end'))
             ->andWhere($qb->expr()->in('t.user', ':user'))
-            ->setParameter('begin', $begin)
-            ->setParameter('end', $end)
+            ->andWhere($qb->expr()->isNotNull('t.end'))
+            ->setParameter('begin', $begin->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
             ->setParameter('user', $users)
             ->groupBy('date')
             ->addGroupBy('project')
@@ -173,8 +173,6 @@ final class TimesheetStatisticService
 
     /**
      * @internal only for core development
-     * @param DateTimeInterface $begin
-     * @param DateTimeInterface $end
      * @param User[] $users
      * @return array
      */
@@ -202,11 +200,11 @@ final class TimesheetStatisticService
             ->addSelect('IDENTITY(t.activity) as activity')
             ->addSelect('YEAR(t.date) as year')
             ->addSelect('MONTH(t.date) as month')
-            ->where($qb->expr()->isNotNull('t.end'))
-            ->andWhere($qb->expr()->between('t.begin', ':begin', ':end'))
+            ->andWhere($qb->expr()->between('t.date', ':begin', ':end'))
             ->andWhere($qb->expr()->in('t.user', ':user'))
-            ->setParameter('begin', $begin)
-            ->setParameter('end', $end)
+            ->andWhere($qb->expr()->isNotNull('t.end'))
+            ->setParameter('begin', $begin->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
             ->setParameter('user', $users)
             ->groupBy('year')
             ->addGroupBy('month')
@@ -253,7 +251,7 @@ final class TimesheetStatisticService
     public function findFirstRecordDate(User $user): ?\DateTimeImmutable
     {
         $result = $this->repository->createQueryBuilder('t')
-            ->select('MIN(t.begin)')
+            ->select('MIN(t.date)')
             ->where('t.user = :user')
             ->setParameter('user', $user)
             ->getQuery()
@@ -294,11 +292,11 @@ final class TimesheetStatisticService
             ->addSelect('MONTH(t.date) as month')
             ->addSelect('YEAR(t.date) as year')
             ->addSelect('IDENTITY(t.user) as user')
-            ->where($qb->expr()->isNotNull('t.end'))
-            ->andWhere($qb->expr()->between('t.begin', ':begin', ':end'))
+            ->andWhere($qb->expr()->between('t.date', ':begin', ':end'))
             ->andWhere($qb->expr()->in('t.user', ':user'))
-            ->setParameter('begin', $begin)
-            ->setParameter('end', $end)
+            ->andWhere($qb->expr()->isNotNull('t.end'))
+            ->setParameter('begin', $begin->format('Y-m-d'))
+            ->setParameter('end', $end->format('Y-m-d'))
             ->setParameter('user', $users)
             ->groupBy('year')
             ->addGroupBy('month')

@@ -20,7 +20,7 @@ use App\User\UserService;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: '/wizard')]
@@ -28,14 +28,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class WizardController extends AbstractController
 {
     #[Route(path: '/{wizard}', name: 'wizard', methods: ['GET', 'POST'])]
-    #[IsGranted('view_own_timesheet')]
     public function wizard(Request $request, UserService $userService, string $wizard): Response
     {
         $user = $this->getUser();
 
         if ($wizard === 'intro') {
             $user->setWizardAsSeen('intro');
-            $userService->updateUser($user);
+            $userService->saveUser($user);
 
             return $this->render('wizard/intro.html.twig', [
                 'percent' => 0,
@@ -77,7 +76,7 @@ final class WizardController extends AbstractController
                 $user->setTimezone($data[UserPreference::TIMEZONE]);
                 $user->setPreferenceValue(UserPreference::SKIN, $data[UserPreference::SKIN]);
                 $user->setWizardAsSeen('profile');
-                $userService->updateUser($user);
+                $userService->saveUser($user);
 
                 if ($data['reload'] === '1') {
                     return $this->redirectToRoute('wizard', ['wizard' => 'profile', '_locale' => $user->getLanguage()]);
@@ -104,7 +103,7 @@ final class WizardController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $user->setRequiresPasswordReset(false);
-                $userService->updateUser($user);
+                $userService->saveUser($user);
 
                 return $this->redirectToRoute('wizard', ['wizard' => 'done']);
             }

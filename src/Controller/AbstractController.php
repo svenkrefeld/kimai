@@ -199,7 +199,7 @@ abstract class AbstractController extends BaseAbstractController implements Serv
         }
     }
 
-    protected function logException(\Exception $ex): void
+    protected function logException(\Throwable $ex): void
     {
         $this->container->get('logger')->critical($ex->getMessage());
     }
@@ -255,6 +255,8 @@ abstract class AbstractController extends BaseAbstractController implements Serv
     }
 
     /**
+     * Use "performSearch=1" to skip loading session searches.
+     *
      * @param array<string> $filterParams parameter names, which should not be saved (neither session, nor database)
      * @throws \Exception
      */
@@ -298,7 +300,6 @@ abstract class AbstractController extends BaseAbstractController implements Serv
         }
         $searchName = $this->getSearchName($data);
 
-        /** @var BookmarkRepository $bookmarkRepo */
         $bookmarkRepo = $this->getBookmark();
         $bookmark = $bookmarkRepo->getSearchDefaultOptions($this->getUser(), $searchName);
 
