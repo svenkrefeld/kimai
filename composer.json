@@ -27,7 +27,6 @@
         "composer-runtime-api": "^2.0",
         "azuyalabs/yasumi": "^2.6",
         "composer/semver": "^3.3",
-        "deployer/deployer": "^7.3",
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
@@ -81,6 +80,7 @@
     "require-dev": {
         "ext-simplexml": "*",
         "dama/doctrine-test-bundle": "^8.0",
+        "deployer/deployer": "^7.4",
         "doctrine/doctrine-fixtures-bundle": "^3.2",
         "fakerphp/faker": "^1.15",
         "friendsofphp/php-cs-fixer": "^3.3",
@@ -152,6 +152,7 @@
     },
     "scripts": {
         "auto-scripts": {
+            "cache:clear": "symfony-cmd",
             "assets:install": "symfony-cmd"
         },
         "post-install-cmd": [
