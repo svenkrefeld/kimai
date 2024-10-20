@@ -55,6 +55,15 @@ task('deploy:cache:clear', function () {
     }
 });
 
+
+desc('Installs vendors');
+task('deploy:vendors', function () {
+    if (!commandExist('unzip')) {
+        warning('To speed up composer installation setup "unzip" command with PHP zip extension.');
+    }
+    run('cd {{release_or_current_path}} && COMPOSER_MEMORY_LIMIT=-1 {{bin/composer}} {{composer_action}} {{composer_options}} 2>&1');
+});
+
 after('deploy:vendors', 'deploy:build');
 
 // If deploy fails automatically unlock.
