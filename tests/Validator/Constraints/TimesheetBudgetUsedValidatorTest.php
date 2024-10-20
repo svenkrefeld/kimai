@@ -420,6 +420,7 @@ class TimesheetBudgetUsedValidatorTest extends ConstraintValidatorTestCase
             $timesheet->method('getEnd')->willReturn($end);
             $timesheet->method('getCalculatedDuration')->willReturn($end->getTimestamp() - $begin->getTimestamp());
             $timesheet->method('getDuration')->willReturn($end->getTimestamp() - $begin->getTimestamp());
+            $timesheet->method('getCalculatedDuration')->willReturn($end->getTimestamp() - $begin->getTimestamp());
             $timesheet->method('getUser')->willReturn(new User());
             $timesheet->method('getProject')->willReturn($project);
             $timesheet->method('getActivity')->willReturn($activity);
