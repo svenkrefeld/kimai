@@ -14,9 +14,12 @@ use App\Invoice\InvoiceItemHydrator;
 use App\Invoice\InvoiceModel;
 use App\Invoice\InvoiceModelHydrator;
 use App\Model\InvoiceDocument;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+#[CoversClass(DebugRenderer::class)]
 class DebugRendererTest extends TestCase
 {
     use RendererTestTrait;
@@ -27,10 +30,8 @@ class DebugRendererTest extends TestCase
         yield [static fn (self $testCase) => $testCase->getInvoiceModelOneEntry(), '293.27', 1, 1, 0, 1, 0, false, []];
     }
 
-    /**
-     * @dataProvider getTestModel
-     */
-    public function testRender(callable $invoiceModel, $expectedRate, $expectedRows, $expectedDescriptions, $expectedUser1, $expectedUser2, $expectedUser3, $hasProject, $metaFields = []): void
+    #[DataProvider('getTestModel')]
+    public function testRender(callable $invoiceModel, string $expectedRate, int $expectedRows, int $expectedDescriptions, int $expectedUser1, int $expectedUser2, int $expectedUser3, bool $hasProject, array $metaFields = []): void
     {
         /** @var InvoiceModel $model */
         $model = $invoiceModel($this);
@@ -66,10 +67,12 @@ class DebugRendererTest extends TestCase
 
         $this->assertModelStructure($data['model'], \count($model->getQuery()->getProjects()), \count($model->getQuery()->getActivities()));
         $rows = $data['entries'];
+        self::assertIsArray($rows);
         self::assertEquals($expectedRows, \count($rows));
 
         $i = 0;
         foreach ($rows as $row) {
+            self::assertIsArray($row);
             $meta = isset($metaFields[$i]) ? $metaFields[$i++] : [];
             $this->assertEntryStructure($row, $meta);
         }
@@ -97,11 +100,16 @@ class DebugRendererTest extends TestCase
             'invoice.language',
             'invoice.tax_nc',
             'invoice.tax_plain',
+            'invoice.tax_rows',
             'invoice.total_time',
             'invoice.duration_decimal',
             'invoice.first',
+            'invoice.first_month',
+            'invoice.first_year',
             'invoice.first_process',
             'invoice.last',
+            'invoice.last_month',
+            'invoice.last_year',
             'invoice.last_process',
             'invoice.total',
             'invoice.total_nc',
@@ -109,8 +117,32 @@ class DebugRendererTest extends TestCase
             'invoice.subtotal',
             'invoice.subtotal_nc',
             'invoice.subtotal_plain',
+            'issuer.address',
+            'issuer.address_line1',
+            'issuer.address_line2',
+            'issuer.address_line3',
+            'issuer.buyer_reference',
+            'issuer.city',
+            'issuer.comment',
+            'issuer.company',
+            'issuer.contact',
+            'issuer.country',
+            'issuer.country_name',
+            'issuer.email',
+            'issuer.fax',
+            'issuer.homepage',
+            'issuer.id',
+            'issuer.invoice_text',
+            'issuer.meta.foo-customer',
+            'issuer.mobile',
+            'issuer.name',
+            'issuer.number',
+            'issuer.phone',
+            'issuer.postcode',
+            'issuer.vat_id',
             'template.name',
             'template.company',
+            'template.country',
             'template.address',
             'template.title',
             'template.payment_terms',
@@ -118,6 +150,7 @@ class DebugRendererTest extends TestCase
             'template.vat_id',
             'template.contact',
             'template.payment_details',
+            'template.country_name',
             'query.day',
             'query.month',
             'query.month_number',
@@ -136,12 +169,19 @@ class DebugRendererTest extends TestCase
             'query.end_year',
             'customer.id',
             'customer.address',
+            'customer.address_line1',
+            'customer.address_line2',
+            'customer.address_line3',
+            'customer.buyer_reference',
+            'customer.city',
+            'customer.postcode',
             'customer.name',
             'customer.contact',
             'customer.company',
             'customer.vat',
             'customer.vat_id',
             'customer.country',
+            'customer.country_name',
             'customer.number',
             'customer.homepage',
             'customer.comment',
@@ -165,6 +205,7 @@ class DebugRendererTest extends TestCase
             'activity.budget_open_plain',
             'activity.time_budget_open',
             'activity.time_budget_open_plain',
+            'user.account',
             'user.alias',
             'user.display',
             'user.email',
@@ -174,6 +215,7 @@ class DebugRendererTest extends TestCase
             'user.meta.hello',
             'user.meta.kitty',
             'testFromModelHydrator',
+            'project._counter',
         ];
 
         if ($activityCounter === 1) {
@@ -271,6 +313,7 @@ class DebugRendererTest extends TestCase
             'entry.description_safe',
             'entry.amount',
             'entry.rate',
+            'entry.rate_fixed',
             'entry.rate_nc',
             'entry.rate_plain',
             'entry.rate_internal',
@@ -299,6 +342,7 @@ class DebugRendererTest extends TestCase
             'entry.user_display',
             'entry.user_alias',
             'entry.user_title',
+            'entry.user_account',
             'entry.user_preference.foo',
             'entry.user_preference.mad',
             'entry.activity',

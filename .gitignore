@@ -4,6 +4,8 @@
 /.idea/
 /.migraw/
 .DS_Store
+var/templates/
+
 
 # custom apache rules e.g. to deactivate ioncube loader
 /public/.user.ini
@@ -14,9 +16,11 @@
 /php.ini
 /.php-version
 
-# YARN 2
+# frontend
 /.yarnrc.yml
 /.yarn
+/.pnp.*
+/.pnpm-store
 
 # for keeping empty directories
 /config/packages/local.yaml

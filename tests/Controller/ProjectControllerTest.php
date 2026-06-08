@@ -15,22 +15,25 @@ use App\Entity\ActivityRate;
 use App\Entity\Project;
 use App\Entity\ProjectMeta;
 use App\Entity\ProjectRate;
+use App\Entity\Role;
+use App\Entity\RolePermission;
 use App\Entity\Team;
 use App\Entity\Timesheet;
 use App\Entity\User;
 use App\Tests\DataFixtures\ActivityFixtures;
+use App\Tests\DataFixtures\CustomerFixtures;
 use App\Tests\DataFixtures\ProjectFixtures;
 use App\Tests\DataFixtures\TeamFixtures;
 use App\Tests\DataFixtures\TimesheetFixtures;
 use App\Tests\Mocks\ProjectTestMetaFieldSubscriberMock;
 use Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class ProjectControllerTest extends AbstractControllerBaseTestCase
 {
     public function testIsSecure(): void
@@ -72,9 +75,27 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
 
         $fixture = new ProjectFixtures();
         $fixture->setAmount(5);
-        $fixture->setCallback(function (Project $project) {
+        $i = 0;
+        $fixture->setCallback(function (Project $project) use (&$i): void {
             $project->setVisible(true);
-            $project->setComment('I am a foobar with tralalalala some more content');
+            switch ($i++) {
+                case 0:
+                    $project->setComment('I am a foo');
+                    break;
+                case 1:
+                    $project->setComment('I am a foo with tralalalala some more content');
+                    break;
+                case 2:
+                    $project->setComment('I am a barfoo with tralalalala some more content');
+                    break;
+                case 3:
+                    $project->setName($project->getName() . ' with');
+                    $project->setComment('I am a foobar tralalalala some more content');
+                    break;
+                default:
+                    $project->setComment('I am a foobar with tralalalala some more content');
+                    break;
+            }
             $project->setMetaField((new ProjectMeta())->setName('location')->setValue('homeoffice'));
             $project->setMetaField((new ProjectMeta())->setName('feature')->setValue('timetracking'));
         });
@@ -89,7 +110,7 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
 
         $form = $client->getCrawler()->filter('form.searchform')->form();
         $client->submit($form, [
-            'searchTerm' => 'feature:timetracking foo',
+            'searchTerm' => 'feature:timetracking foo with',
             'visibility' => 1,
             'customers' => [1],
             'size' => 50,
@@ -98,7 +119,7 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
 
         self::assertTrue($client->getResponse()->isSuccessful());
         $this->assertHasDataTable($client);
-        $this->assertDataTableRowCount($client, 'datatable_project_admin', 5);
+        $this->assertDataTableRowCount($client, 'datatable_project_admin', 4);
     }
 
     public function testExportIsSecureForRole(): void
@@ -119,7 +140,7 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
 
         $fixture = new ProjectFixtures();
         $fixture->setAmount(5);
-        $fixture->setCallback(function (Project $project) {
+        $fixture->setCallback(function (Project $project): void {
             $project->setVisible(true);
             $project->setComment('I am a foobar with tralalalala some more content');
             $project->setMetaField((new ProjectMeta())->setName('location')->setValue('homeoffice'));
@@ -192,6 +213,24 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
         $this->assertAddRate($client, 123.45, 1);
+    }
+
+    public function testEditRateActionDeniesForeignRate(): void
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
+
+        $project = $this->importFixture(new ProjectFixtures(1))[0];
+        $rate = new ProjectRate();
+        $rate->setProject($project);
+        $rate->setRate(123.45);
+
+        $em = $this->getEntityManager();
+        $em->persist($rate);
+        $em->flush();
+
+        $this->request($client, '/admin/project/1/rate/' . $rate->getId());
+
+        $this->assertAccessDenied($client);
     }
 
     public function assertAddRate(HttpKernelBrowser $client, $rate, $projectId): void
@@ -292,73 +331,6 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
         self::assertStringContainsString('<p>A beautiful and long comment <strong>with some</strong> markdown formatting</p>', $node->html());
     }
 
-    public function testDeleteCommentAction(): void
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-        $this->assertAccessIsGranted($client, '/admin/project/1/details');
-        $form = $client->getCrawler()->filter('form[name=project_comment_form]')->form();
-        $client->submit($form, [
-            'project_comment_form' => [
-                'message' => 'Foo bar blub',
-            ]
-        ]);
-        $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body');
-        self::assertStringContainsString('Foo bar blub', $node->html());
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body a.delete-comment-link');
-
-        $this->request($client, $node->attr('href'));
-        $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body');
-        self::assertStringContainsString('There were no comments posted yet', $node->html());
-    }
-
-    public function testPinCommentAction(): void
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-        $this->assertAccessIsGranted($client, '/admin/project/1/details');
-        $form = $client->getCrawler()->filter('form[name=project_comment_form]')->form();
-        $client->submit($form, [
-            'project_comment_form' => [
-                'message' => 'Foo bar blub',
-            ]
-        ]);
-        $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body');
-        self::assertStringContainsString('Foo bar blub', $node->html());
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body a.pin-comment-link.active');
-        self::assertEquals(0, $node->count());
-
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body a.pin-comment-link');
-        self::assertEquals(1, $node->count());
-        $this->request($client, $node->attr('href'));
-        $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('div.card#comments_box .card-body a.pin-comment-link.active');
-        self::assertEquals(1, $node->count());
-        self::assertStringContainsString('/admin/project/', $node->attr('href'));
-        self::assertStringContainsString('/comment_pin/', $node->attr('href'));
-    }
-
-    public function testCreateDefaultTeamAction(): void
-    {
-        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
-        $this->assertAccessIsGranted($client, '/admin/project/1/details');
-        $node = $client->getCrawler()->filter('div.card#team_listing_box .card-body');
-        self::assertStringContainsString('Visible to everyone, as no team was assigned yet.', $node->text(null, true));
-
-        $this->request($client, '/admin/project/1/create_team');
-        $this->assertIsRedirect($client, $this->createUrl('/admin/project/1/details'));
-        $client->followRedirect();
-        $node = $client->getCrawler()->filter('div.card#team_listing_box .card-title');
-        self::assertStringContainsString('Only visible to the following teams and all admins.', $node->text(null, true));
-        $node = $client->getCrawler()->filter('div.card#team_listing_box .card-body table tbody tr');
-        self::assertEquals(1, $node->count());
-    }
-
     public function testActivitiesAction(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
@@ -383,6 +355,32 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
 
         $node = $client->getCrawler()->filter('div.card#activity_list_box .card-body table tbody tr');
         self::assertEquals(5, $node->count());
+    }
+
+    public function testCreateWithCustomerActionDeniesUserWithoutEditCustomerPermission(): void
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_USER);
+        $user = $this->getUserByRole(User::ROLE_USER);
+
+        $customer = $this->importFixture(new CustomerFixtures(1))[0];
+
+        $em = $this->getEntityManager();
+
+        $role = (new Role())->setName('TEST_CREATE_PROJECT_ONLY');
+        $permission = (new RolePermission())->setRole($role)->setPermission('create_project')->setAllowed(true);
+
+        $roleName = $role->getName();
+        self::assertNotNull($roleName);
+        $user->addRole($roleName);
+
+        $em->persist($role);
+        $em->persist($permission);
+        $em->persist($user);
+        $em->flush();
+
+        $this->request($client, '/admin/project/create/' . $customer->getId());
+
+        $this->assertAccessDenied($client);
     }
 
     public function testCreateAction(): void
@@ -581,9 +579,7 @@ class ProjectControllerTest extends AbstractControllerBaseTestCase
         self::assertFalse($client->getResponse()->isSuccessful());
     }
 
-    /**
-     * @dataProvider getValidationTestData
-     */
+    #[DataProvider('getValidationTestData')]
     public function testValidationForCreateAction(array $formData, array $validationFields): void
     {
         $this->assertFormHasValidationError(

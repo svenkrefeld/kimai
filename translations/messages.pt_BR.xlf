@@ -4,23 +4,23 @@
     <body>
       <trans-unit id="N7mikjJ" resname="time_tracking" xml:space="preserve">
         <source>Time Tracking</source>
-        <target state="translated">Acompanhamento de tempo</target>
+        <target state="translated">Controle de tempo</target>
       </trans-unit>
-      <trans-unit id="inmIkP6" resname="yes">
+      <trans-unit id="inmIkP6" resname="yes" xml:space="preserve">
         <source>yes</source>
-        <target>Sim</target>
+        <target state="translated">Sim</target>
       </trans-unit>
-      <trans-unit id="k5Apjz_" resname="no">
+      <trans-unit id="k5Apjz_" resname="no" xml:space="preserve">
         <source>no</source>
-        <target>Não</target>
+        <target state="translated">Não</target>
       </trans-unit>
-      <trans-unit id=".3dyBTq" resname="both">
-        <source>both</source>
-        <target>Ambos</target>
+      <trans-unit id=".3dyBTq" resname="both" xml:space="preserve">
+        <source>Both</source>
+        <target state="translated">Ambos</target>
       </trans-unit>
-      <trans-unit id="KLIuHvt" resname="This is a mandatory field">
+      <trans-unit id="KLIuHvt" resname="This is a mandatory field" xml:space="preserve">
         <source>This is a mandatory field</source>
-        <target>Obrigatório</target>
+        <target state="translated">Obrigatório</target>
       </trans-unit>
       <trans-unit id="_ohHsMM" resname="create">
         <source>create</source>
@@ -90,9 +90,9 @@
         <source>my_times</source>
         <target state="translated">Meus horários</target>
       </trans-unit>
-      <trans-unit id="yxQop43" resname="all_times">
+      <trans-unit id="yxQop43" resname="all_times" xml:space="preserve">
         <source>all_times</source>
-        <target state="translated">Quadro de horários</target>
+        <target state="translated">Todos os tempos</target>
       </trans-unit>
       <trans-unit id="IeshU90" resname="customers">
         <source>customers</source>
@@ -126,9 +126,9 @@
         <source>error.no_entries_found</source>
         <target>Não foram encontradas entradas com base nos filtros selecionados.</target>
       </trans-unit>
-      <trans-unit id="DodjLNR" resname="date">
+      <trans-unit id="DodjLNR" resname="date" xml:space="preserve">
         <source>date</source>
-        <target>Data</target>
+        <target state="translated">Data</target>
       </trans-unit>
       <trans-unit id="BHk4pZ3" resname="starttime">
         <source>starttime</source>
@@ -146,9 +146,9 @@
         <source>user</source>
         <target>Usuário</target>
       </trans-unit>
-      <trans-unit id="FveKfWM" resname="username">
+      <trans-unit id="FveKfWM" resname="username" xml:space="preserve">
         <source>username</source>
-        <target>Nome de usuário</target>
+        <target state="translated">Nome do usuário</target>
       </trans-unit>
       <trans-unit id="yQRveje" resname="description">
         <source>description</source>
@@ -190,17 +190,17 @@
         <source>tag</source>
         <target>Tags</target>
       </trans-unit>
-      <trans-unit id="E_bHhGR" resname="hourlyRate">
+      <trans-unit id="E_bHhGR" resname="hourlyRate" xml:space="preserve">
         <source>hourlyRate</source>
-        <target>Taxa horária</target>
+        <target state="translated">Preço por hora</target>
       </trans-unit>
       <trans-unit id="QEMUsfS" resname="hours">
         <source>hours</source>
         <target>Horas</target>
       </trans-unit>
-      <trans-unit id="xUl3nXn" resname="rate">
+      <trans-unit id="xUl3nXn" resname="rate" xml:space="preserve">
         <source>rate</source>
-        <target>Taxa</target>
+        <target state="translated">Preço</target>
       </trans-unit>
       <trans-unit id="pO8wS6Q" resname="language">
         <source>language</source>
@@ -234,17 +234,17 @@
         <source>action.close</source>
         <target>Fechar</target>
       </trans-unit>
-      <trans-unit id="3bqLM8Q" resname="dashboard.title">
+      <trans-unit id="3bqLM8Q" resname="dashboard.title" xml:space="preserve">
         <source>dashboard.title</source>
-        <target>Dashboard</target>
+        <target state="translated">Painel</target>
       </trans-unit>
       <trans-unit id="muzkQpM" resname="toggle_dropdown">
         <source>toggle_dropdown</source>
         <target>Mostrar menu</target>
       </trans-unit>
-      <trans-unit id="VXj0Y3h" resname="timesheet.title">
+      <trans-unit id="VXj0Y3h" resname="timesheet.title" xml:space="preserve">
         <source>timesheet.title</source>
-        <target state="translated">Meus horários</target>
+        <target state="translated">Meus tempos</target>
       </trans-unit>
       <trans-unit id="dwEVXUR" resname="timesheet.edit">
         <source>timesheet.edit</source>
@@ -262,13 +262,13 @@
         <source>daterange</source>
         <target>Intervalo de tempo</target>
       </trans-unit>
-      <trans-unit id="UbnqJLn" resname="modal.columns.title">
+      <trans-unit id="UbnqJLn" resname="modal.columns.title" xml:space="preserve">
         <source>modal.columns.title</source>
-        <target>Alterar a visibilidade da coluna</target>
+        <target state="translated">Personalizar exibição</target>
       </trans-unit>
-      <trans-unit id="_0tuMNE" resname="fixedRate">
+      <trans-unit id="_0tuMNE" resname="fixedRate" xml:space="preserve">
         <source>fixedRate</source>
-        <target>Taxa fixa</target>
+        <target state="translated">Preço fixo</target>
       </trans-unit>
       <trans-unit id="dChNncv" resname="color">
         <source>color</source>
@@ -386,9 +386,9 @@
         <source>alias</source>
         <target>Nome</target>
       </trans-unit>
-      <trans-unit id="qvIyBkY" resname="title">
+      <trans-unit id="qvIyBkY" resname="title" xml:space="preserve">
         <source>title</source>
-        <target>Título</target>
+        <target state="translated">Título</target>
       </trans-unit>
       <trans-unit id="h7voece" resname="avatar">
         <source>avatar</source>
@@ -422,25 +422,25 @@
         <source>ROLE_USER</source>
         <target>Usuário</target>
       </trans-unit>
-      <trans-unit id="TdBJBAl" resname="stats.durationToday">
+      <trans-unit id="TdBJBAl" resname="stats.durationToday" xml:space="preserve">
         <source>stats.durationToday</source>
-        <target state="translated">Horas trabalhadas hoje</target>
+        <target state="translated">Hoje</target>
       </trans-unit>
-      <trans-unit id="XhKalZH" resname="stats.durationWeek">
+      <trans-unit id="XhKalZH" resname="stats.durationWeek" xml:space="preserve">
         <source>stats.durationWeek</source>
-        <target state="translated">Horas trabalhadas esta semana</target>
+        <target state="translated">Esta semana</target>
       </trans-unit>
-      <trans-unit id="uaOwf_P" resname="stats.durationMonth">
+      <trans-unit id="uaOwf_P" resname="stats.durationMonth" xml:space="preserve">
         <source>stats.durationMonth</source>
-        <target state="translated">Horas trabalhadas este mês</target>
+        <target state="translated">Este mês</target>
       </trans-unit>
-      <trans-unit id="WqF84KR" resname="stats.durationYear">
+      <trans-unit id="WqF84KR" resname="stats.durationYear" xml:space="preserve">
         <source>stats.durationYear</source>
-        <target state="translated">Horas trabalhadas este ano</target>
+        <target state="translated">Este ano</target>
       </trans-unit>
-      <trans-unit id="YtvPnl1" resname="stats.durationTotal">
+      <trans-unit id="YtvPnl1" resname="stats.durationTotal" xml:space="preserve">
         <source>stats.durationTotal</source>
-        <target state="translated">Total de horas trabalhadas</target>
+        <target state="translated">Total</target>
       </trans-unit>
       <trans-unit id="IFOLMgp" resname="stats.yourWorkingHours">
         <source>stats.yourWorkingHours</source>
@@ -514,24 +514,24 @@
         <source>invoices</source>
         <target>Faturas</target>
       </trans-unit>
-      <trans-unit id="X70dwP8" resname="button.print">
-        <source>button.print</source>
+      <trans-unit id="zpU6DrC" resname="print">
+        <source>print</source>
         <target>Imprimir</target>
       </trans-unit>
-      <trans-unit id="W_TXvSi" resname="button.csv">
-        <source>button.csv</source>
+      <trans-unit id="U7ubCzi" resname="csv">
+        <source>csv</source>
         <target>CSV</target>
       </trans-unit>
-      <trans-unit id="vC2IsaP" resname="button.xlsx">
-        <source>button.xlsx</source>
+      <trans-unit id="HJgLIry" resname="xlsx">
+        <source>xlsx</source>
         <target>Excel</target>
       </trans-unit>
-      <trans-unit id="aAa5uRR" resname="button.pdf">
-        <source>button.pdf</source>
+      <trans-unit id="w1sh1so" resname="pdf">
+        <source>pdf</source>
         <target>PDF</target>
       </trans-unit>
-      <trans-unit id="ulYFDIo" resname="button.ods">
-        <source>button.ods</source>
+      <trans-unit id="lmUO63g" resname="ods">
+        <source>ods</source>
         <target>ODS</target>
       </trans-unit>
       <trans-unit id="zPcx3O_" resname="invoice_print">
@@ -694,17 +694,13 @@
         <source>globalsOnly</source>
         <target>Apenas global</target>
       </trans-unit>
-      <trans-unit id="0M_Gylq" resname="rates.empty">
+      <trans-unit id="0M_Gylq" resname="rates.empty" xml:space="preserve">
         <source>rates.empty</source>
-        <target>Nenhuma taxa horária foi configurada.</target>
+        <target state="translated">Nenhum preço foi configurado.</target>
       </trans-unit>
       <trans-unit id="OTDmccn" resname="attachments">
         <source>attachments</source>
         <target>Arquivos</target>
-      </trans-unit>
-      <trans-unit id="hBNESu6" resname="my.profile">
-        <source>my.profile</source>
-        <target>Meu perfil</target>
       </trans-unit>
       <trans-unit id="JBkykGe" resname="search">
         <source>search</source>
@@ -734,9 +730,9 @@
         <source>login_required</source>
         <target>Permissão ausente. Redirecionar para o login?</target>
       </trans-unit>
-      <trans-unit id="mflwMcX" resname="rates.title">
+      <trans-unit id="mflwMcX" resname="rates.title" xml:space="preserve">
         <source>rates.title</source>
-        <target>Taxas</target>
+        <target state="translated">Preços</target>
       </trans-unit>
       <trans-unit id="J258iS6" resname="update_multiple">
         <source>update_multiple</source>
@@ -754,21 +750,21 @@
         <source>export_decimal</source>
         <target>Use a duração decimal na exportação</target>
       </trans-unit>
-      <trans-unit id="b43sCwO" resname="help.fixedRate">
+      <trans-unit id="b43sCwO" resname="help.fixedRate" xml:space="preserve">
         <source>help.fixedRate</source>
-        <target>Cada registro de cada vez recebe o mesmo valor, independentemente de sua duração</target>
+        <target state="translated">Cada disco tem o mesmo preço, independentemente da sua duração</target>
       </trans-unit>
       <trans-unit id="Ia0kvPi" resname="my_team_projects">
         <source>my_team_projects</source>
         <target>Meus projetos</target>
       </trans-unit>
-      <trans-unit id="evFI7nW" resname="teamlead">
+      <trans-unit id="evFI7nW" resname="teamlead" xml:space="preserve">
         <source>teamlead</source>
-        <target>Liderança de equipe</target>
+        <target state="translated">Líder da equipe</target>
       </trans-unit>
-      <trans-unit id="Qc5nsFn" resname="recalculate_rates">
+      <trans-unit id="Qc5nsFn" resname="recalculate_rates" xml:space="preserve">
         <source>recalculate_rates</source>
-        <target>Taxas de recalculação</target>
+        <target state="translated">Recalcular preços</target>
       </trans-unit>
       <trans-unit id="iwWaUoa" resname="export.filter">
         <source>export.filter</source>
@@ -886,17 +882,17 @@
         <source>team</source>
         <target>Equipe</target>
       </trans-unit>
-      <trans-unit id="Cxv_0wG" resname="help.internalRate">
+      <trans-unit id="Cxv_0wG" resname="help.internalRate" xml:space="preserve">
         <source>help.internalRate</source>
-        <target>Custos internos (se isso não for especificado, a taxa normal é usada)</target>
+        <target state="translated">Caso não seja especificado, será aplicado o preço normal</target>
       </trans-unit>
-      <trans-unit id="5ofAsOs" resname="internalRate">
+      <trans-unit id="5ofAsOs" resname="internalRate" xml:space="preserve">
         <source>internalRate</source>
-        <target>Taxa interna</target>
+        <target state="translated">Preço interno</target>
       </trans-unit>
-      <trans-unit id="djL6LMC" resname="help.rate">
+      <trans-unit id="djL6LMC" resname="help.rate" xml:space="preserve">
         <source>help.rate</source>
-        <target>Taxa horária a ser cobrada</target>
+        <target state="translated">Preço por hora a ser cobrado</target>
       </trans-unit>
       <trans-unit id="HcWuW2g" resname="layout">
         <source>layout</source>
@@ -986,9 +982,9 @@
         <source>stats.amountFinancialYear</source>
         <target>Receita deste ano fiscal</target>
       </trans-unit>
-      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear">
+      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear" xml:space="preserve">
         <source>stats.durationFinancialYear</source>
-        <target state="translated">Horários de trabalho neste ano fiscal</target>
+        <target state="translated">Ano fiscal</target>
       </trans-unit>
       <trans-unit id="HWB4OGJ" resname="stats.workingTimeFinancialYear">
         <source>stats.workingTimeFinancialYear</source>
@@ -1066,9 +1062,9 @@
         <source>default_value_new</source>
         <target>Valores predefinidos para as novas entradas</target>
       </trans-unit>
-      <trans-unit id="jdbtx6z" resname="action.add">
+      <trans-unit id="jdbtx6z" resname="action.add" xml:space="preserve">
         <source>action.add</source>
-        <target>Adiciona</target>
+        <target state="translated">Adicionar</target>
       </trans-unit>
       <trans-unit id="f8oNzSP" resname="quick_entry.title">
         <source>quick_entry.title</source>
@@ -1114,9 +1110,9 @@
         <source>Display of entries in selection lists</source>
         <target>Exibe as entradas nas listas de seleção</target>
       </trans-unit>
-      <trans-unit id="U_D.NIy" resname="automatic">
+      <trans-unit id="U_D.NIy" resname="automatic" xml:space="preserve">
         <source>automatic</source>
-        <target>Automático</target>
+        <target state="translated">Automático</target>
       </trans-unit>
       <trans-unit id="OJ.wI1U" resname="invoiceText">
         <source>invoiceText</source>
@@ -1182,9 +1178,9 @@
         <source>dashboard.edit_mode</source>
         <target state="translated">Você pode reorganizar os seus widgets arrastando e soltando &amp;. Ao adicionar os widgets as alterações pendentes são salvas.</target>
       </trans-unit>
-      <trans-unit id="LDsHBXd" resname="modal.columns.label">
+      <trans-unit id="LDsHBXd" resname="modal.columns.label" xml:space="preserve">
         <source>modal.columns.label</source>
-        <target state="translated">Colunas das tabelas</target>
+        <target state="translated">Colunas da tabela</target>
       </trans-unit>
       <trans-unit id="WOAx9yz" resname="modal.columns.profile">
         <source>modal.columns.profile</source>
@@ -1534,9 +1530,9 @@
         <source>button.report</source>
         <target state="translated">Relatar</target>
       </trans-unit>
-      <trans-unit id="YDrWFFP" resname="sickness.intro">
-        <source>sickness.intro</source>
-        <target state="translated">Doença, consulta médica, cuidado de parentes próximos, etc.</target>
+      <trans-unit id="YDrWFFP" resname="sickness.intro" xml:space="preserve">
+        <source>Incapacity for work, medically necessary appointments, care leave, etc.</source>
+        <target state="translated">Incapacidade de trabalho, compromissos medicamente necessários, saídas de licença, etc.</target>
       </trans-unit>
       <trans-unit id="YPO294a" resname="absence_other.intro">
         <source>absence_other.intro</source>
@@ -1822,25 +1818,13 @@
         <source>profile-stats</source>
         <target>Perfil</target>
       </trans-unit>
-      <trans-unit id="zeD7Dew" resname="settings">
-        <source>settings</source>
-        <target>Preferências</target>
+      <trans-unit id="zeD7Dew" resname="settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="translated">Configurações</target>
       </trans-unit>
-      <trans-unit id="anCjtwe" resname="timesheet.filter">
+      <trans-unit id="anCjtwe" resname="timesheet.filter" xml:space="preserve">
         <source>Filter timesheets</source>
-        <target>Horários</target>
-      </trans-unit>
-      <trans-unit id="xY9_cU2" resname="customer.filter">
-        <source>Filter customers</source>
-        <target>Filtrar clientes</target>
-      </trans-unit>
-      <trans-unit id="UFgOnc6" resname="project.filter">
-        <source>Filter projects</source>
-        <target>Filtrar projetos</target>
-      </trans-unit>
-      <trans-unit id="5G3QNHA" resname="activity.filter">
-        <source>Filter activities</source>
-        <target>Filtrar atividades</target>
+        <target state="translated">Quadro de horários</target>
       </trans-unit>
       <trans-unit id="b1pgNOd" resname="copy">
         <source>copy</source>
@@ -1941,6 +1925,162 @@
       <trans-unit id="wvt4jH3" resname="training" xml:space="preserve" approved="no">
         <source>training</source>
         <target state="translated">Treinamento</target>
+      </trans-unit>
+      <trans-unit id="HQ2YM1b" resname="attendance_only_project" xml:space="preserve">
+        <source>attendance_only_project</source>
+        <target state="translated">Contar apenas as entradas do projeto selecionado como tempo trabalhado</target>
+      </trans-unit>
+      <trans-unit id="mhOe3Iy" resname="unlock_month.help" xml:space="preserve">
+        <source>unlock_month.help</source>
+        <target state="translated">Isso desbloqueará todos os dias do ano após a data selecionada.</target>
+      </trans-unit>
+      <trans-unit id="nsbR30p" resname="sending_company" xml:space="preserve">
+        <source>sending_company</source>
+        <target state="translated">Emissor da Fatura</target>
+      </trans-unit>
+      <trans-unit id="rD4oQRR" resname="postcode" xml:space="preserve">
+        <source>Postcode</source>
+        <target state="translated">ZIP / CEP</target>
+      </trans-unit>
+      <trans-unit id="4WlKIfD" resname="unlock_month" xml:space="preserve" approved="no">
+        <source>Unlock month</source>
+        <target state="translated">Desbloquear mês</target>
+      </trans-unit>
+      <trans-unit id="EaYsI0E" resname="city" xml:space="preserve">
+        <source>City</source>
+        <target state="translated">Cidade</target>
+      </trans-unit>
+      <trans-unit id="y1XHR1Q" resname="address_deprecated" xml:space="preserve">
+        <source>address_deprecated</source>
+        <target state="translated">Este campo será removido em breve. Por favor, transfira o endereço para continuar gerando faturas válidas.</target>
+      </trans-unit>
+      <trans-unit id="UcWoKWo" resname="portrait" xml:space="preserve">
+        <source>Portrait</source>
+        <target state="translated">Retrato</target>
+      </trans-unit>
+      <trans-unit id="rLlV34K" resname="landscape" xml:space="preserve">
+        <source>Landscape</source>
+        <target state="translated">Paisagem</target>
+      </trans-unit>
+      <trans-unit id="UZUFKZg" resname="remaining_budget" xml:space="preserve">
+        <source>remaining_budget</source>
+        <target state="translated">Orçamento restante</target>
+      </trans-unit>
+      <trans-unit id="eV6j76Q" resname="font" xml:space="preserve">
+        <source>font</source>
+        <target state="translated">Fonte</target>
+      </trans-unit>
+      <trans-unit id="PciSBv9" resname="address_row" xml:space="preserve">
+        <source>address_row</source>
+        <target state="translated">Linha %row%</target>
+      </trans-unit>
+      <trans-unit id="nPJWKwW" resname="payment_type" xml:space="preserve">
+        <source>payment_type</source>
+        <target state="translated">Forma de pagamento</target>
+      </trans-unit>
+      <trans-unit id="4toQj2M" resname="Cash" xml:space="preserve">
+        <source>Cash</source>
+        <target state="translated">Dinheiro</target>
+      </trans-unit>
+      <trans-unit id="TJQbc0a" resname="Payment To Bank Account" xml:space="preserve">
+        <source>Payment To Bank Account</source>
+        <target state="translated">Pagamento para Conta Bancária</target>
+      </trans-unit>
+      <trans-unit id=".UIt099" resname="Card Payment" xml:space="preserve">
+        <source>Card Payment</source>
+        <target state="translated">Pagamento de Cartão</target>
+      </trans-unit>
+      <trans-unit id="Wnb_qF0" resname="Direct Debit" xml:space="preserve">
+        <source>Direct Debit</source>
+        <target state="translated">Débito direto</target>
+      </trans-unit>
+      <trans-unit id="rIdfGxM" resname="payment_account_name" xml:space="preserve">
+        <source>payment_account_name</source>
+        <target state="translated">Titular da conta ou cartão</target>
+      </trans-unit>
+      <trans-unit id="jcT9Og6" resname="payment_account_number" xml:space="preserve">
+        <source>payment_account_name</source>
+        <target state="translated">IBAN ou número do cartão</target>
+      </trans-unit>
+      <trans-unit id="jMvh7bn" resname="Credit Transfer" xml:space="preserve">
+        <source>Credit Transfer</source>
+        <target state="translated">Transferência de Crédito</target>
+      </trans-unit>
+      <trans-unit id="xZzzKxM" resname="orientation" xml:space="preserve">
+        <source>Orientation</source>
+        <target state="translated">Orientação</target>
+      </trans-unit>
+      <trans-unit id="NA9GMDP" resname="Code" xml:space="preserve">
+        <source>Code</source>
+        <target state="translated">Código</target>
+      </trans-unit>
+      <trans-unit id="cDOQMYv" resname="Beta" xml:space="preserve">
+        <source>Beta</source>
+        <target state="translated">Habilita um recurso de prévia que ainda está em desenvolvimento.</target>
+      </trans-unit>
+      <trans-unit id="Uzll0ps" resname="Customer portal" xml:space="preserve">
+        <source>Customer portal</source>
+        <target state="translated">Portal do cliente</target>
+      </trans-unit>
+      <trans-unit id="N_ZNih_" resname="electronic_invoice" xml:space="preserve">
+        <source>electronic_invoice</source>
+        <target state="translated">Fatura Eletrônica</target>
+      </trans-unit>
+      <trans-unit id="cWZZc6D" resname="Cheque" xml:space="preserve">
+        <source>Cheque</source>
+        <target state="translated">Cheque</target>
+      </trans-unit>
+      <trans-unit id="BmDRYT." resname="sending_company.help" xml:space="preserve">
+        <source>sending_company.help</source>
+        <target state="translated">Esta companhia é mostrada como o emissor na fatura. Desta, o nome, endereço, e informações de impostos serão usados.</target>
+      </trans-unit>
+      <trans-unit id="uXB48Vj" resname="SEPA Credit Transfer" xml:space="preserve">
+        <source>SEPA Credit Transfer</source>
+        <target state="translated">Transferência de Crédito SEPA</target>
+      </trans-unit>
+      <trans-unit id="_Ep8Ogx" resname="buyerReference" xml:space="preserve">
+        <source>buyerReference</source>
+        <target state="translated">Referência do comprador</target>
+      </trans-unit>
+      <trans-unit id="s42A2gm" resname="SEPA Direct Debit" xml:space="preserve">
+        <source>SEPA Direct Debit</source>
+        <target state="translated">Débito direto SEPA</target>
+      </trans-unit>
+      <trans-unit id="QnN_ONc" resname="invoice_tax_type" xml:space="preserve">
+        <source>invoice_tax_type</source>
+        <target state="translated">Situação fiscal</target>
+      </trans-unit>
+      <trans-unit id="Mi7y8Q3" resname="tax.type.exempt" xml:space="preserve">
+        <source>tax.type.exempt</source>
+        <target state="translated">Isentar</target>
+      </trans-unit>
+      <trans-unit id="lU1Njcy" resname="tax.type.standard" xml:space="preserve">
+        <source>tax.type.standard</source>
+        <target state="translated">Tributável</target>
+      </trans-unit>
+      <trans-unit id="E470U8W" resname="tax.type.reverse" xml:space="preserve">
+        <source>tax.type.reverse</source>
+        <target state="translated">Cobrança reversa</target>
+      </trans-unit>
+      <trans-unit id="hi31a3v" resname="tax.note.reverse_charge" xml:space="preserve">
+        <source>tax.note.reverse_charge</source>
+        <target state="translated">Imposto a ser pago sob o regime de cobrança reversa</target>
+      </trans-unit>
+      <trans-unit id="lt2Y2LO" resname="timesheet" xml:space="preserve">
+        <source>Timesheet</source>
+        <target state="translated">Quadro de horário</target>
+      </trans-unit>
+      <trans-unit id="6w8kS.m" resname="user_access_all" xml:space="preserve">
+        <source>user_access_all</source>
+        <target state="translated">Permitir acesso para todos os usuários</target>
+      </trans-unit>
+      <trans-unit id="DbF_j60" resname="count_as_expected_time" xml:space="preserve">
+        <source>count_as_expected_time</source>
+        <target state="translated">Contagem de horas esperadas: %type%</target>
+      </trans-unit>
+      <trans-unit id="Rz4ZiyB" resname="count_as_expected_time_help" xml:space="preserve">
+        <source>count_as_expected_time_help</source>
+        <target state="translated">Quando ativada, a opção %type% contabilizará as horas trabalhadas no total de horas diárias esperadas. Quando desativada, o total de horas esperadas para esses dias será definido como 0. Ambas as configurações mantêm um equilíbrio neutro, mas afetam os totais mensais de maneiras diferentes.</target>
       </trans-unit>
     </body>
   </file>

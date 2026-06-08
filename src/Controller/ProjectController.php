@@ -11,13 +11,10 @@ namespace App\Controller;
 
 use App\Configuration\SystemConfiguration;
 use App\Entity\Customer;
-use App\Entity\MetaTableTypeInterface;
 use App\Entity\Project;
 use App\Entity\ProjectComment;
 use App\Entity\ProjectRate;
-use App\Entity\Team;
 use App\Event\ProjectDetailControllerEvent;
-use App\Event\ProjectMetaDefinitionEvent;
 use App\Event\ProjectMetaDisplayEvent;
 use App\Export\Spreadsheet\EntityWithMetaFieldsExporter;
 use App\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
@@ -38,6 +35,7 @@ use App\Repository\Query\ActivityQuery;
 use App\Repository\Query\ProjectQuery;
 use App\Repository\Query\TeamQuery;
 use App\Repository\Query\TimesheetQuery;
+use App\Repository\Query\VisibilityInterface;
 use App\Repository\TeamRepository;
 use App\Utils\Context;
 use App\Utils\DataTable;
@@ -58,19 +56,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: '/admin/project')]
 final class ProjectController extends AbstractController
 {
-    public function __construct(
-        private readonly ProjectRepository $repository,
-        private readonly SystemConfiguration $configuration,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly ProjectService $projectService
-    )
+    public function __construct(private readonly ProjectRepository $repository)
     {
     }
 
     #[Route(path: '/', defaults: ['page' => 1], name: 'admin_project', methods: ['GET'])]
     #[Route(path: '/page/{page}', requirements: ['page' => '[1-9]\d*'], name: 'admin_project_paginated', methods: ['GET'])]
     #[IsGranted(new Expression("is_granted('listing', 'project')"))]
-    public function indexAction(int $page, Request $request): Response
+    public function indexAction(int $page, Request $request, EventDispatcherInterface $dispatcher): Response
     {
         $query = new ProjectQuery();
         $query->loadTeams();
@@ -83,7 +76,9 @@ final class ProjectController extends AbstractController
         }
 
         $entries = $this->repository->getPagerfantaForQuery($query);
-        $metaColumns = $this->findMetaColumns($query);
+        $event = new ProjectMetaDisplayEvent($query, ProjectMetaDisplayEvent::PROJECT);
+        $dispatcher->dispatch($event);
+        $metaColumns = $event->getFields();
 
         $table = new DataTable('project_admin', $query);
         $table->setPagination($entries);
@@ -129,21 +124,9 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    /**
-     * @param ProjectQuery $query
-     * @return MetaTableTypeInterface[]
-     */
-    private function findMetaColumns(ProjectQuery $query): array
-    {
-        $event = new ProjectMetaDisplayEvent($query, ProjectMetaDisplayEvent::PROJECT);
-        $this->dispatcher->dispatch($event);
-
-        return $event->getFields();
-    }
-
     #[Route(path: '/{id}/permissions', name: 'admin_project_permissions', methods: ['GET', 'POST'])]
     #[IsGranted('permissions', 'project')]
-    public function teamPermissions(Project $project, Request $request): Response
+    public function teamPermissions(Project $project, Request $request, ProjectService $projectService): Response
     {
         $form = $this->createForm(ProjectTeamPermissionForm::class, $project, [
             'action' => $this->generateUrl('admin_project_permissions', ['id' => $project->getId()]),
@@ -154,7 +137,7 @@ final class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->projectService->updateProject($project);
+                $projectService->saveProject($project);
                 $this->flashSuccess('action.update.success');
 
                 if ($this->isGranted('view', $project)) {
@@ -176,28 +159,29 @@ final class ProjectController extends AbstractController
 
     #[Route(path: '/create/{customer}', name: 'admin_project_create_with_customer', methods: ['GET', 'POST'])]
     #[IsGranted('create_project')]
-    public function createWithCustomerAction(Request $request, Customer $customer): Response
+    #[IsGranted('edit', 'customer')]
+    public function createWithCustomerAction(Request $request, Customer $customer, ProjectService $projectService, SystemConfiguration $configuration): Response
     {
-        return $this->createProject($request, $customer);
+        return $this->createProject($request, $projectService, $configuration, $customer);
     }
 
     #[Route(path: '/create', name: 'admin_project_create', methods: ['GET', 'POST'])]
     #[IsGranted('create_project')]
-    public function createAction(Request $request): Response
+    public function createAction(Request $request, ProjectService $projectService, SystemConfiguration $configuration): Response
     {
-        return $this->createProject($request, null);
+        return $this->createProject($request, $projectService, $configuration, null);
     }
 
-    private function createProject(Request $request, ?Customer $customer = null): Response
+    private function createProject(Request $request, ProjectService $projectService, SystemConfiguration $configuration, ?Customer $customer = null): Response
     {
-        $project = $this->projectService->createNewProject($customer);
+        $project = $projectService->createNewProject($customer);
 
-        $editForm = $this->createEditForm($project);
+        $editForm = $this->createEditForm($project, $configuration->getDefaultCurrency());
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             try {
-                $this->projectService->saveNewProject($project, new Context($this->getUser()));
+                $projectService->saveProject($project, new Context($this->getUser()));
                 $this->flashSuccess('action.update.success');
 
                 return $this->redirectToRouteAfterCreate('project_details', ['id' => $project->getId()]);
@@ -211,29 +195,6 @@ final class ProjectController extends AbstractController
             'project' => $project,
             'form' => $editForm->createView()
         ]);
-    }
-
-    #[Route(path: '/{id}/comment_delete/{token}', name: 'project_comment_delete', methods: ['GET'])]
-    #[IsGranted(new Expression("is_granted('edit', subject.getProject()) and is_granted('comments', subject.getProject())"), 'comment')]
-    public function deleteCommentAction(ProjectComment $comment, string $token, CsrfTokenManagerInterface $csrfTokenManager): Response
-    {
-        $projectId = $comment->getProject()->getId();
-
-        if (!$csrfTokenManager->isTokenValid(new CsrfToken('comment.delete', $token))) {
-            $this->flashError('action.csrf.error');
-
-            return $this->redirectToRoute('project_details', ['id' => $projectId]);
-        }
-
-        $csrfTokenManager->refreshToken('comment.delete');
-
-        try {
-            $this->repository->deleteComment($comment);
-        } catch (\Exception $ex) {
-            $this->flashDeleteException($ex);
-        }
-
-        return $this->redirectToRoute('project_details', ['id' => $projectId]);
     }
 
     #[Route(path: '/{id}/comment_add', name: 'project_comment_add', methods: ['POST'])]
@@ -256,53 +217,6 @@ final class ProjectController extends AbstractController
         return $this->redirectToRoute('project_details', ['id' => $project->getId()]);
     }
 
-    #[Route(path: '/{id}/comment_pin/{token}', name: 'project_comment_pin', methods: ['GET'])]
-    #[IsGranted(new Expression("is_granted('edit', subject.getProject()) and is_granted('comments', subject.getProject())"), 'comment')]
-    public function pinCommentAction(ProjectComment $comment, string $token, CsrfTokenManagerInterface $csrfTokenManager): Response
-    {
-        $projectId = $comment->getProject()->getId();
-
-        if (!$csrfTokenManager->isTokenValid(new CsrfToken('comment.pin', $token))) {
-            $this->flashError('action.csrf.error');
-
-            return $this->redirectToRoute('project_details', ['id' => $projectId]);
-        }
-
-        $csrfTokenManager->refreshToken('comment.pin');
-
-        $comment->setPinned(!$comment->isPinned());
-        try {
-            $this->repository->saveComment($comment);
-        } catch (\Exception $ex) {
-            $this->flashUpdateException($ex);
-        }
-
-        return $this->redirectToRoute('project_details', ['id' => $projectId]);
-    }
-
-    #[Route(path: '/{id}/create_team', name: 'project_team_create', methods: ['GET'])]
-    #[IsGranted('create_team')]
-    #[IsGranted('permissions', 'project')]
-    public function createDefaultTeamAction(Project $project, TeamRepository $teamRepository): Response
-    {
-        $defaultTeam = $teamRepository->findOneBy(['name' => $project->getName()]);
-
-        if (null === $defaultTeam) {
-            $defaultTeam = new Team($project->getName());
-        }
-
-        $defaultTeam->addTeamlead($this->getUser());
-        $defaultTeam->addProject($project);
-
-        try {
-            $teamRepository->saveTeam($defaultTeam);
-        } catch (\Exception $ex) {
-            $this->flashUpdateException($ex);
-        }
-
-        return $this->redirectToRoute('project_details', ['id' => $project->getId()]);
-    }
-
     #[Route(path: '/{id}/activities/{page}', defaults: ['page' => 1], name: 'project_activities', methods: ['GET', 'POST'])]
     #[IsGranted('view', 'project')]
     public function activitiesAction(Project $project, int $page, ActivityRepository $activityRepository): Response
@@ -313,7 +227,7 @@ final class ProjectController extends AbstractController
         $query->setPageSize(5);
         $query->addProject($project);
         $query->setExcludeGlobals(true);
-        $query->setShowBoth();
+        $query->setVisibility(VisibilityInterface::SHOW_BOTH);
         $query->addOrderGroup('visible', ActivityQuery::ORDER_DESC);
         $query->addOrderGroup('name', ActivityQuery::ORDER_ASC);
 
@@ -329,10 +243,9 @@ final class ProjectController extends AbstractController
 
     #[Route(path: '/{id}/details', name: 'project_details', methods: ['GET', 'POST'])]
     #[IsGranted('view', 'project')]
-    public function detailsAction(Project $project, TeamRepository $teamRepository, ProjectRateRepository $rateRepository, ProjectStatisticService $statisticService, CsrfTokenManagerInterface $csrfTokenManager): Response
+    public function detailsAction(Project $project, TeamRepository $teamRepository, ProjectRateRepository $rateRepository, ProjectStatisticService $statisticService, ProjectService $projectService, CsrfTokenManagerInterface $csrfTokenManager, EventDispatcherInterface $dispatcher): Response
     {
-        $event = new ProjectMetaDefinitionEvent($project);
-        $this->dispatcher->dispatch($event);
+        $projectService->loadMetaFields($project);
 
         $stats = null;
         $defaultTeam = null;
@@ -376,7 +289,7 @@ final class ProjectController extends AbstractController
 
         // additional boxes by plugins
         $event = new ProjectDetailControllerEvent($project);
-        $this->dispatcher->dispatch($event);
+        $dispatcher->dispatch($event);
         $boxes = $event->getController();
 
         $page = $this->createPageSetup();
@@ -405,6 +318,10 @@ final class ProjectController extends AbstractController
     #[IsGranted('edit', 'project')]
     public function editRateAction(Project $project, ProjectRate $rate, Request $request, ProjectRateRepository $repository): Response
     {
+        if ($rate->getProject() !== $project) {
+            throw $this->createAccessDeniedException('Trying to edit rate and project that do not belong together.');
+        }
+
         return $this->rateFormAction($project, $rate, $request, $repository, $this->generateUrl('admin_project_rate_edit', ['id' => $project->getId(), 'rate' => $rate->getId()]));
     }
 
@@ -447,14 +364,16 @@ final class ProjectController extends AbstractController
 
     #[Route(path: '/{id}/edit', name: 'admin_project_edit', methods: ['GET', 'POST'])]
     #[IsGranted('edit', 'project')]
-    public function editAction(Project $project, Request $request): Response
+    public function editAction(Project $project, Request $request, ProjectService $projectService, SystemConfiguration $configuration): Response
     {
-        $editForm = $this->createEditForm($project);
+        $projectService->loadMetaFields($project);
+
+        $editForm = $this->createEditForm($project, $configuration->getDefaultCurrency());
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             try {
-                $this->projectService->updateProject($project);
+                $projectService->saveProject($project);
                 $this->flashSuccess('action.update.success');
 
                 if ($this->isGranted('view', $project)) {
@@ -501,7 +420,7 @@ final class ProjectController extends AbstractController
 
     #[Route(path: '/{id}/delete', name: 'admin_project_delete', methods: ['GET', 'POST'])]
     #[IsGranted('delete', 'project')]
-    public function deleteAction(Project $project, Request $request, ProjectStatisticService $statisticService): Response
+    public function deleteAction(Project $project, Request $request, ProjectStatisticService $statisticService, ProjectService $projectService): Response
     {
         $stats = $statisticService->getProjectStatistics($project);
 
@@ -526,7 +445,9 @@ final class ProjectController extends AbstractController
 
         if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
             try {
-                $this->repository->deleteProject($project, $deleteForm->get('project')->getData());
+                /** @var Project|null $replace */
+                $replace = $deleteForm->get('project')->getData();
+                $projectService->deleteProject($project, $replace);
                 $this->flashSuccess('action.delete.success');
             } catch (\Exception $ex) {
                 $this->flashDeleteException($ex);
@@ -591,12 +512,8 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    private function createEditForm(Project $project): FormInterface
+    private function createEditForm(Project $project, string $currency): FormInterface
     {
-        $event = new ProjectMetaDefinitionEvent($project);
-        $this->dispatcher->dispatch($event);
-
-        $currency = $this->configuration->getCustomerDefaultCurrency();
         $url = $this->generateUrl('admin_project_create');
 
         if ($project->getId() !== null) {

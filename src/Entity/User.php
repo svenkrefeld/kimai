@@ -17,6 +17,7 @@ use App\WorkingTime\Mode\WorkingTimeModeNone;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use JMS\Serializer\Annotation as Serializer;
@@ -70,7 +71,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      */
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Column(name: 'id', type: Types::INTEGER)]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'id', type: 'integer')]
@@ -78,8 +79,9 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     /**
      * The user alias will be displayed in the frontend instead of the username
      */
-    #[ORM\Column(name: 'alias', type: 'string', length: 60, nullable: true)]
+    #[ORM\Column(name: 'alias', type: Types::STRING, length: 60, nullable: true)]
     #[Assert\Length(max: 60)]
+    #[Constraints\NoSpecialCharacters]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'alias')]
@@ -87,33 +89,37 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     /**
      * Registration date for the user
      */
-    #[ORM\Column(name: 'registration_date', type: 'datetime', nullable: true)]
+    #[ORM\Column(name: 'registration_date', type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Exporter\Expose(label: 'profile.registration_date', type: 'datetime')]
     private ?\DateTime $registeredAt = null;
     /**
      * An additional title for the user, like the Job position or Department
      */
-    #[ORM\Column(name: 'title', type: 'string', length: 50, nullable: true)]
+    #[ORM\Column(name: 'title', type: Types::STRING, length: 50, nullable: true)]
     #[Assert\Length(max: 50)]
+    #[Constraints\NoSpecialCharacters]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'title')]
     private ?string $title = null;
     /**
-     * URL to the user avatar, will be auto-generated if empty
+     * URL to the user avatar
      */
-    #[ORM\Column(name: 'avatar', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(name: 'avatar', type: Types::STRING, length: 255, nullable: true)]
+    #[Assert\Url]
     #[Assert\Length(max: 255, groups: ['Profile'])]
     #[Serializer\Expose]
-    #[Serializer\Groups(['User_Entity'])]
+    #[Serializer\Groups(['Default'])]
     private ?string $avatar = null;
     /**
      * API token (password) for this user
+     * @deprecated since 2.55
      */
-    #[ORM\Column(name: 'api_token', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(name: 'api_token', type: Types::STRING, length: 255, nullable: true)]
     private ?string $apiToken = null;
     /**
      * @internal to be set via form, must not be persisted
+     * @deprecated since 2.55
      */
     #[Assert\NotBlank(groups: ['ApiTokenUpdate'])]
     #[Assert\Length(min: 8, max: 60, groups: ['ApiTokenUpdate'])]
@@ -130,7 +136,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      * @var Collection<UserPreference>|null
      */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPreference::class, cascade: ['persist'])]
-    private ?Collection $preferences;
+    private ?Collection $preferences = null;
     /**
      * List of all team memberships.
      *
@@ -148,7 +154,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      *
      * @internal for internal usage only
      */
-    #[ORM\Column(name: 'auth', type: 'string', length: 20, nullable: true)]
+    #[ORM\Column(name: 'auth', type: Types::STRING, length: 20, nullable: true)]
     #[Assert\Length(max: 20)]
     private ?string $auth = self::AUTH_INTERNAL;
     /**
@@ -157,32 +163,36 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      * @internal has no database mapping as the value is calculated from a permission
      */
     private ?bool $isAllowedToSeeAllData = null;
-    #[ORM\Column(name: 'username', type: 'string', length: 180, nullable: false)]
+    #[ORM\Column(name: 'username', type: Types::STRING, length: 180, nullable: false)]
     #[Assert\NotBlank(groups: ['Registration', 'UserCreate', 'Profile'])]
     #[Assert\Regex(pattern: '/\//', match: false, groups: ['Registration', 'UserCreate', 'Profile'])]
     #[Assert\Length(min: 2, max: 64, groups: ['Registration', 'UserCreate', 'Profile'])]
+    #[Constraints\NoSpecialCharacters]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private ?string $username = null;
-    #[ORM\Column(name: 'email', type: 'string', length: 180, nullable: false)]
+    #[ORM\Column(name: 'email', type: Types::STRING, length: 180, nullable: false)]
     #[Assert\NotBlank(groups: ['Registration', 'UserCreate', 'Profile'])]
     #[Assert\Length(min: 2, max: 180)]
     #[Assert\Email(mode: 'html5', groups: ['Registration', 'UserCreate', 'Profile'])]
+    #[Serializer\Expose]
+    #[Serializer\Groups(['Default'])]
     private ?string $email = null;
-    #[ORM\Column(name: 'account', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'account', type: Types::STRING, length: 30, nullable: true)]
+    #[Constraints\NoSpecialCharacters]
     #[Assert\Length(max: 30)]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'account_number')]
     private ?string $accountNumber = null;
-    #[ORM\Column(name: 'enabled', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'enabled', type: Types::BOOLEAN, nullable: false)]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private bool $enabled = false;
     /**
      * Encrypted password. Must be persisted.
      */
-    #[ORM\Column(name: 'password', type: 'string', nullable: false)]
+    #[ORM\Column(name: 'password', type: Types::STRING, nullable: false)]
     private ?string $password = null;
     /**
      * Plain password. Used for model validation, not persisted.
@@ -190,20 +200,20 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     #[Assert\NotBlank(groups: ['Registration', 'PasswordUpdate', 'UserCreate'])]
     #[Assert\Length(min: 8, max: 60, groups: ['Registration', 'PasswordUpdate', 'UserCreate', 'ResetPassword', 'ChangePassword'])]
     private ?string $plainPassword = null;
-    #[ORM\Column(name: 'last_login', type: 'datetime', nullable: true)]
+    #[ORM\Column(name: 'last_login', type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?DateTime $lastLogin = null;
     /**
      * Random string sent to the user email address in order to verify it.
      */
-    #[ORM\Column(name: 'confirmation_token', type: 'string', length: 180, unique: true, nullable: true)]
+    #[ORM\Column(name: 'confirmation_token', type: Types::STRING, length: 180, unique: true, nullable: true)]
     #[Assert\Length(max: 180)]
     private ?string $confirmationToken = null;
-    #[ORM\Column(name: 'password_requested_at', type: 'datetime_immutable', nullable: true)]
+    #[ORM\Column(name: 'password_requested_at', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $passwordRequestedAt = null;
     /**
      * List of all role names
      */
-    #[ORM\Column(name: 'roles', type: 'array', nullable: false)]
+    #[ORM\Column(name: 'roles', type: Types::ARRAY, nullable: false)] // @phpstan-ignore classConstant.deprecated
     #[Serializer\Expose]
     #[Serializer\Groups(['User_Entity'])]
     #[Serializer\Type('array<string>')]
@@ -213,11 +223,13 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      * If not empty two-factor authentication is enabled.
      * TODO reduce the length, which was initially forgotten and set to 255, as this is the default for MySQL with Doctrine (see migration Version20230126002049)
      */
-    #[ORM\Column(name: 'totp_secret', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(name: 'totp_secret', type: Types::STRING, length: 255, nullable: true)]
     private ?string $totpSecret = null;
-    #[ORM\Column(name: 'totp_enabled', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'totp_enabled', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
     private bool $totpEnabled = false;
-    #[ORM\Column(name: 'system_account', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'system_account', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
+    #[Serializer\Expose]
+    #[Serializer\Groups(['Default'])]
     private bool $systemAccount = false;
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -225,6 +237,8 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     #[Serializer\Groups(['User_Entity'])]
     #[OA\Property(ref: '#/components/schemas/User')]
     private ?User $supervisor = null;
+    #[ORM\Column(name: 'signature_date', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $signatureDate = null;
 
     use ColorTrait;
 
@@ -288,11 +302,17 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $this;
     }
 
+    /**
+     * @deprecated since 2.57
+     */
     public function getApiToken(): ?string
     {
         return $this->apiToken;
     }
 
+    /**
+     * @deprecated since 2.57
+     */
     public function setApiToken(?string $apiToken): User
     {
         $this->apiToken = $apiToken;
@@ -306,16 +326,23 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     #[Serializer\VirtualProperty]
     #[Serializer\SerializedName('apiToken')]
     #[Serializer\Groups(['Default'])]
+    #[OA\Property(description: 'DEPRECATED - switch to API tokens instead', deprecated: true)]
     public function hasApiToken(): bool
     {
         return $this->apiToken !== null;
     }
 
+    /**
+     * @deprecated since 2.57
+     */
     public function getPlainApiToken(): ?string
     {
         return $this->plainApiToken;
     }
 
+    /**
+     * @deprecated since 2.57
+     */
     public function setPlainApiToken(?string $plainApiToken): User
     {
         $this->plainApiToken = $plainApiToken;
@@ -351,6 +378,9 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
         $all = [];
         foreach ($this->preferences as $preference) {
+            if ($preference->getName() === null || $preference->getName()[0] === '_') {
+                continue;
+            }
             if ($preference->isEnabled() && !\in_array($preference->getName(), $skip)) {
                 $all[] = $preference;
             }
@@ -368,22 +398,30 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     }
 
     /**
+     * This method is called from the "edit user preferences" form.
+     * Therefor it just merges the values for existing preferences and adds new ones.
+     * But it will NOT remove existing preferences or replace the underlying collection.
+     *
      * @param iterable<UserPreference> $preferences
-     * @return User
      */
     public function setPreferences(iterable $preferences): User
     {
-        $this->preferences = new ArrayCollection();
-
         foreach ($preferences as $preference) {
-            $this->addPreference($preference);
+            if (($name = $preference->getName()) === null) {
+                continue;
+            }
+            $p = $this->getPreference($name);
+            if ($p === null) {
+                $this->addPreference($preference);
+            } else {
+                $p->setValue($preference->getValue());
+            }
         }
 
         return $this;
     }
 
     /**
-     * @param string $name
      * @param bool|int|string|float|null $value
      */
     public function setPreferenceValue(string $name, $value = null): void
@@ -418,7 +456,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      */
     #[Serializer\VirtualProperty]
     #[Serializer\SerializedName('locale')]
-    #[Serializer\Groups(['User_Entity'])]
+    #[Serializer\Groups(['Default'])]
     #[OA\Property(type: 'string')]
     public function getLocale(): string
     {
@@ -433,7 +471,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
     #[Serializer\VirtualProperty]
     #[Serializer\SerializedName('timezone')]
-    #[Serializer\Groups(['User_Entity'])]
+    #[Serializer\Groups(['Default'])]
     #[OA\Property(type: 'string')]
     public function getTimezone(): string
     {
@@ -441,11 +479,11 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     }
 
     /**
-     * The locale used for translations
+     * The locale used for translating the UI
      */
     #[Serializer\VirtualProperty]
     #[Serializer\SerializedName('language')]
-    #[Serializer\Groups(['User_Entity'])]
+    #[Serializer\Groups(['Default'])]
     #[OA\Property(type: 'string')]
     public function getLanguage(): string
     {
@@ -467,6 +505,9 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $this->getPreferenceValue(UserPreference::FIRST_WEEKDAY, User::DEFAULT_FIRST_WEEKDAY, false);
     }
 
+    /**
+     * @ deprecated since 2.40 - will be removed with 3.0
+     */
     public function isExportDecimal(): bool
     {
         return (bool) $this->getPreferenceValue('export_decimal', false, false);
@@ -503,10 +544,6 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $allowNull ? $value : ($value ?? $default);
     }
 
-    /**
-     * @param UserPreference $preference
-     * @return User
-     */
     public function addPreference(UserPreference $preference): User
     {
         if (null === $this->preferences) {
@@ -585,9 +622,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     }
 
     /**
-     * Checks if the user is member of any team.
-     *
-     * @return bool
+     * Checks if the user is a member of any team.
      */
     public function hasTeamAssignment(): bool
     {
@@ -598,7 +633,6 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
      * Checks is the user is teamlead in any of the assigned teams.
      *
      * @see User::hasTeamleadRole()
-     * @return bool
      */
     public function isTeamlead(): bool
     {
@@ -613,9 +647,6 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
     /**
      * Checks if the given user is a team member.
-     *
-     * @param User $user
-     * @return bool
      */
     public function hasTeamMember(User $user): bool
     {
@@ -630,6 +661,8 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
     /**
      * Use this function to check if the current user can read data from the given user.
+     *
+     * @deprecated since 2.57 use RolePermissionManager::checkUserAccess() or is_granted('access_user', user)
      */
     public function canSeeUser(User $user): bool
     {
@@ -637,7 +670,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
             return true;
         }
 
-        if ($this->canSeeAllData()) {
+        if ($this->isSuperAdmin() || $this->canSeeAllData()) {
             return true;
         }
 
@@ -653,7 +686,34 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
             return true;
         }
 
+        // special case: the requested user is in no team and the current user is a teamlead.
+        // this configuration is likely in new installations with small teams, and
+        // it is allowed for teamleads to see other users data by definition
+        if ($this->hasTeamleadRole() && $user->isRegularUserOnly()) {
+            return \count($user->getTeams()) === 0;
+        }
+
         return false;
+    }
+
+    public function isRegularUserOnly(): bool
+    {
+        return $this->getRoles() === [static::DEFAULT_ROLE];
+    }
+
+    public function getSignatureDate(): string
+    {
+        return $this->signatureDate?->format(\DateTimeInterface::ATOM) ?? '';
+    }
+
+    /**
+     * This will reset all security signatures and therefor invalidate:
+     * - login links
+     * - remember me cookies
+     */
+    public function resetSecuritySignature(): void
+    {
+        $this->signatureDate = new \DateTimeImmutable('now', new \DateTimeZone($this->getTimezone()));
     }
 
     /**
@@ -679,8 +739,6 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
     /**
      * Required in the User profile screen to edit his teams.
-     *
-     * @param Team $team
      */
     public function addTeam(Team $team): void
     {
@@ -699,8 +757,6 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
 
     /**
      * Required in the User profile screen to edit his teams.
-     *
-     * @param Team $team
      */
     public function removeTeam(Team $team): void
     {
@@ -827,7 +883,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
-        $this->plainApiToken = null;
+        $this->plainApiToken = null; // @phpstan-ignore property.deprecated
     }
 
     public function hasUsername(): bool
@@ -927,6 +983,11 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $this;
     }
 
+    /**
+     * Alias for setUserIdentifier()
+     *
+     * The visible username is setAlias())
+     */
     public function setUsername(string $username): void
     {
         $this->username = $username;
@@ -970,7 +1031,7 @@ class User implements UserInterface, EquatableInterface, ThemeUserInterface, Pas
         return $this;
     }
 
-    public function setLastLogin(\DateTime $time = null): User
+    public function setLastLogin(?\DateTime $time = null): User
     {
         $this->lastLogin = $time;
 

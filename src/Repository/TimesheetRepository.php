@@ -26,6 +26,8 @@ use App\Repository\Paginator\PaginatorInterface;
 use App\Repository\Query\TimesheetQuery;
 use App\Repository\Query\TimesheetQueryHint;
 use App\Repository\Result\TimesheetResult;
+use App\Repository\Search\SearchConfiguration;
+use App\Repository\Search\SearchHelper;
 use App\Utils\Pagination;
 use DateInterval;
 use DateTime;
@@ -43,8 +45,6 @@ use InvalidArgumentException;
  */
 class TimesheetRepository extends EntityRepository
 {
-    use RepositorySearchTrait;
-
     /** @deprecated since 2.0.35 */
     public const STATS_QUERY_DURATION = 'duration';
     /** @deprecated since 2.0.35 */
@@ -631,11 +631,13 @@ class TimesheetRepository extends EntityRepository
 
         if ($query->hasProjects()) {
             $qb->andWhere($qb->expr()->in('t.project', ':project'))
-                ->setParameter('project', $query->getProjectIds());
-        } elseif ($query->hasCustomers()) {
+                ->setParameter('project', $query->getProjects());
+        }
+
+        if ($query->hasCustomers()) {
             $requiresCustomer = true;
             $qb->andWhere($qb->expr()->in('p.customer', ':customer'))
-                ->setParameter('customer', $query->getCustomerIds());
+                ->setParameter('customer', $query->getCustomers());
         }
 
         $tags = $query->getTags();
@@ -646,7 +648,13 @@ class TimesheetRepository extends EntityRepository
 
         $requiresTeams = $this->addPermissionCriteria($qb, $query->getCurrentUser(), $query->getTeams());
 
-        $this->addSearchTerm($qb, $query);
+        $configuration = new SearchConfiguration(
+            ['t.description'],
+            TimesheetMeta::class,
+            'timesheet'
+        );
+        $helper = new SearchHelper($configuration);
+        $helper->addSearchTerm($qb, $query);
 
         if ($requiresCustomer || $requiresProject || $requiresTeams) {
             $qb->leftJoin('t.project', 'p');
@@ -665,24 +673,6 @@ class TimesheetRepository extends EntityRepository
         }
 
         return $qb;
-    }
-
-    private function getMetaFieldClass(): string
-    {
-        return TimesheetMeta::class;
-    }
-
-    private function getMetaFieldName(): string
-    {
-        return 'timesheet';
-    }
-
-    /**
-     * @return array<string>
-     */
-    private function getSearchableFields(): array
-    {
-        return ['t.description'];
     }
 
     /**
@@ -729,11 +719,6 @@ class TimesheetRepository extends EntityRepository
             $qb->andWhere($qb->expr()->gte('t.begin', ':begin'))
                 ->setParameter('begin', \DateTimeImmutable::createFromInterface($startFrom), Types::DATETIME_IMMUTABLE);
         }
-
-        $qb->join('t.project', 'p');
-        $qb->join('p.customer', 'c');
-
-        $this->addPermissionCriteria($qb, $user);
 
         $results = $qb->getQuery()->getScalarResult();
 

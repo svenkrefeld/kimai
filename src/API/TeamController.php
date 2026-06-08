@@ -20,6 +20,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\Query\TeamQuery;
 use App\Repository\TeamRepository;
+use App\User\TeamService;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use OpenApi\Attributes as OA;
@@ -41,16 +42,17 @@ final class TeamController extends BaseApiController
 
     public function __construct(
         private readonly ViewHandlerInterface $viewHandler,
-        private readonly TeamRepository $repository
+        private readonly TeamRepository $repository,
+        private readonly TeamService $teamService
     )
     {
     }
 
     /**
-     * Fetch all existing teams (which are visible to the user)
+     * Fetch teams
      */
     #[IsGranted('view_team')]
-    #[OA\Response(response: 200, description: 'Returns the collection of teams', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/TeamCollection')))]
+    #[OA\Response(response: 200, description: 'Returns a collection of teams', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/TeamCollection')))]
     #[Route(methods: ['GET'], path: '', name: 'get_teams')]
     public function cgetAction(): Response
     {
@@ -66,10 +68,10 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Returns one team
+     * Fetch team
      */
     #[IsGranted('view_team')]
-    #[OA\Response(response: 200, description: 'Returns one team entity', content: new OA\JsonContent(ref: '#/components/schemas/Team'))]
+    #[OA\Response(response: 200, description: 'Returns the team', content: new OA\JsonContent(ref: '#/components/schemas/Team'))]
     #[Route(methods: ['GET'], path: '/{id}', name: 'get_team', requirements: ['id' => '\d+'])]
     public function getAction(Team $team): Response
     {
@@ -80,15 +82,15 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Delete a team
+     * Delete team
      */
-    #[IsGranted('delete_team')]
-    #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Delete one team')])]
+    #[IsGranted('delete', 'team')]
+    #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Empty')])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Team ID to delete', required: true)]
     #[Route(methods: ['DELETE'], path: '/{id}', name: 'delete_team', requirements: ['id' => '\d+'])]
     public function deleteAction(Team $team): Response
     {
-        $this->repository->deleteTeam($team);
+        $this->teamService->deleteTeam($team);
 
         $view = new View(null, Response::HTTP_NO_CONTENT);
 
@@ -96,7 +98,7 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Creates a new team
+     * Create team
      */
     #[IsGranted('create_team')]
     #[OA\Post(description: 'Creates a new team and returns it afterwards', responses: [new OA\Response(response: 200, description: 'Returns the new created team', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
@@ -104,13 +106,13 @@ final class TeamController extends BaseApiController
     #[Route(methods: ['POST'], path: '', name: 'post_team')]
     public function postAction(Request $request): Response
     {
-        $team = new Team('');
+        $team = $this->teamService->createNewTeam('');
 
         $form = $this->createForm(TeamApiEditForm::class, $team);
         $form->submit($request->request->all());
 
         if ($form->isValid()) {
-            $this->repository->saveTeam($team);
+            $this->teamService->saveTeam($team);
 
             $view = new View($team, 200);
             $view->getContext()->setGroups(self::GROUPS_ENTITY);
@@ -125,9 +127,9 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Update an existing team
+     * Update team
      */
-    #[IsGranted('edit_team')]
+    #[IsGranted('edit', 'team')]
     #[OA\Patch(description: 'Update an existing team, you can pass all or just a subset of all attributes (passing members will replace all existing ones)', responses: [new OA\Response(response: 200, description: 'Returns the updated team', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/TeamEditForm'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Team ID to update', required: true)]
@@ -139,6 +141,8 @@ final class TeamController extends BaseApiController
                 $team->removeMember($member);
                 $this->repository->removeTeamMember($member);
             }
+            // this fails, if we use the teamservice, because the validator
+            // complains about teams without members or teamleads
             $this->repository->saveTeam($team);
         }
 
@@ -154,7 +158,7 @@ final class TeamController extends BaseApiController
             return $this->viewHandler->handle($view);
         }
 
-        $this->repository->saveTeam($team);
+        $this->teamService->saveTeam($team);
 
         $view = new View($team, Response::HTTP_OK);
         $view->getContext()->setGroups(self::GROUPS_ENTITY);
@@ -163,9 +167,10 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Add a new member to a team
+     * Add team member
      */
-    #[IsGranted('edit_team')]
+    #[IsGranted('edit', 'team')]
+    #[IsGranted('access_user', 'member')]
     #[OA\Post(responses: [new OA\Response(response: 200, description: 'Adds a new user to a team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team which will receive the new member', required: true)]
     #[OA\Parameter(name: 'userId', in: 'path', description: 'The team member to add (User ID)', required: true)]
@@ -178,7 +183,7 @@ final class TeamController extends BaseApiController
 
         $team->addUser($member);
 
-        $this->repository->saveTeam($team);
+        $this->teamService->saveTeam($team);
 
         $view = new View($team, Response::HTTP_OK);
         $view->getContext()->setGroups(self::GROUPS_ENTITY);
@@ -187,9 +192,9 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Removes a member from the team
+     * Remove team member
      */
-    #[IsGranted('edit_team')]
+    #[IsGranted('edit', 'team')]
     #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Removes a user from the team. The teamlead cannot be removed.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team from which the member will be removed', required: true)]
     #[OA\Parameter(name: 'userId', in: 'path', description: 'The team member to remove (User ID)', required: true)]
@@ -206,7 +211,7 @@ final class TeamController extends BaseApiController
 
         $team->removeUser($member);
 
-        $this->repository->saveTeam($team);
+        $this->teamService->saveTeam($team);
 
         $view = new View($team, Response::HTTP_OK);
         $view->getContext()->setGroups(self::GROUPS_ENTITY);
@@ -215,10 +220,13 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Grant the team access to a customer
+     * Grant customer access
+     *
+     * The team is granted access to the customer.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Adds a new customer to a team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[IsGranted('view', 'customer')]
+    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the team including the customer', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team that is granted access', required: true)]
     #[OA\Parameter(name: 'customerId', in: 'path', description: 'The customer to grant acecess to (Customer ID)', required: true)]
     #[Route(methods: ['POST'], path: '/{id}/customers/{customerId}', name: 'post_team_customer', requirements: ['id' => '\d+', 'customerId' => '\d+'])]
@@ -238,10 +246,12 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Revokes access for a customer from a team
+     * Revoke customer access
+     *
+     * This removes access to the customer from the team.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Removes a customer from the team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Returns the team without the customer', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team whose permission will be revoked', required: true)]
     #[OA\Parameter(name: 'customerId', in: 'path', description: 'The customer to remove (Customer ID)', required: true)]
     #[Route(methods: ['DELETE'], path: '/{id}/customers/{customerId}', name: 'delete_team_customer', requirements: ['id' => '\d+', 'customerId' => '\d+'])]
@@ -261,10 +271,13 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Grant the team access to a project
+     * Grant project access
+     *
+     * The team is granted access to the project.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Adds a new project to a team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[IsGranted('view', 'project')]
+    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the team including the project', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team that is granted access', required: true)]
     #[OA\Parameter(name: 'projectId', in: 'path', description: 'The project to grant acecess to (Project ID)', required: true)]
     #[Route(methods: ['POST'], path: '/{id}/projects/{projectId}', name: 'post_team_project', requirements: ['id' => '\d+', 'projectId' => '\d+'])]
@@ -284,10 +297,12 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Revokes access for a project from a team
+     * Revoke project access
+     *
+     * This removes access to the project from the team.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Removes a project from the team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Returns the team without the project', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team whose permission will be revoked', required: true)]
     #[OA\Parameter(name: 'projectId', in: 'path', description: 'The project to remove (Project ID)', required: true)]
     #[Route(methods: ['DELETE'], path: '/{id}/projects/{projectId}', name: 'delete_team_project', requirements: ['id' => '\d+', 'projectId' => '\d+'])]
@@ -307,10 +322,13 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Grant the team access to an activity
+     * Grant activity access
+     *
+     * The team is granted access to the activity.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Adds a new activity to a team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[IsGranted('view', 'activity')]
+    #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the team including the activity', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team that is granted access', required: true)]
     #[OA\Parameter(name: 'activityId', in: 'path', description: 'The activity to grant acecess to (Activity ID)', required: true)]
     #[Route(methods: ['POST'], path: '/{id}/activities/{activityId}', name: 'post_team_activity', requirements: ['id' => '\d+', 'activityId' => '\d+'])]
@@ -330,10 +348,12 @@ final class TeamController extends BaseApiController
     }
 
     /**
-     * Revokes access for an activity from a team
+     * Revoke activity access
+     *
+     * This removes access to the activity from the team.
      */
-    #[IsGranted('edit_team')]
-    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Removes a activity from the team.', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
+    #[IsGranted('edit', 'team')]
+    #[OA\Delete(responses: [new OA\Response(response: 200, description: 'Returns the team without the activity', content: new OA\JsonContent(ref: '#/components/schemas/Team'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The team whose permission will be revoked', required: true)]
     #[OA\Parameter(name: 'activityId', in: 'path', description: 'The activity to remove (Activity ID)', required: true)]
     #[Route(methods: ['DELETE'], path: '/{id}/activities/{activityId}', name: 'delete_team_activity', requirements: ['id' => '\d+', 'activityId' => '\d+'])]

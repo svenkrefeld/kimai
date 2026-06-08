@@ -19,13 +19,13 @@ use App\Export\Spreadsheet\Extractor\AnnotationExtractor;
 use App\Tests\Security\TestUserEntity;
 use App\WorkingTime\Mode\WorkingTimeModeDay;
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @covers \App\Entity\User
- */
+#[CoversClass(User::class)]
 class UserTest extends TestCase
 {
     public function testDefaultValues(): void
@@ -34,6 +34,7 @@ class UserTest extends TestCase
         self::assertInstanceOf(EquatableInterface::class, $user);
         self::assertInstanceOf(UserInterface::class, $user);
         self::assertInstanceOf(ArrayCollection::class, $user->getPreferences());
+        self::assertEquals([], $user->getVisiblePreferences());
         self::assertNull($user->getTitle());
         self::assertNull($user->getAvatar());
         self::assertNull($user->getAlias());
@@ -49,10 +50,14 @@ class UserTest extends TestCase
         self::assertFalse($user->canSeeAllData());
         self::assertFalse($user->isExportDecimal());
         self::assertFalse($user->isSystemAccount());
+        self::assertFalse($user->isPasswordRequestNonExpired(-1));
+        self::assertFalse($user->isPasswordRequestNonExpired(0));
         self::assertFalse($user->isPasswordRequestNonExpired(3599));
+        self::assertFalse($user->isPasswordRequestNonExpired(PHP_INT_MAX));
 
         $user->setUserIdentifier('foo');
         self::assertEquals('foo', $user->getUserIdentifier());
+        self::assertEquals('foo', $user->getIdentifier());
         self::assertEquals('foo', $user->getDisplayName());
         $user->setAlias('BAR');
         self::assertEquals('BAR', $user->getDisplayName());
@@ -84,11 +89,12 @@ class UserTest extends TestCase
 
     /**
      * @deprecated
-     * @group legacy
      */
+    #[Group('legacy')]
     public function testWorkContract(): void
     {
         $user = new User();
+        self::assertFalse($user->hasContractSettings());
 
         self::assertEquals(0, $user->getWorkHoursMonday());
         self::assertEquals(0, $user->getWorkHoursTuesday());
@@ -127,6 +133,7 @@ class UserTest extends TestCase
         $user->setWorkHoursSunday(7800);
         $user->setHolidaysPerYear(10.7);
         self::assertTrue($user->hasWorkHourConfiguration());
+        self::assertTrue($user->hasContractSettings());
 
         self::assertEquals(7200, $user->getWorkHoursMonday());
         self::assertEquals(7300, $user->getWorkHoursTuesday());
@@ -158,6 +165,16 @@ class UserTest extends TestCase
 
         $user->setPublicHolidayGroup('DE-NRW');
         self::assertEquals('DE-NRW', $user->getPublicHolidayGroup());
+
+        self::assertNull($user->getWorkStartingDay());
+        $workStart = new \DateTimeImmutable('2018-07-23');
+        $user->setWorkStartingDay($workStart);
+        self::assertEquals($workStart, $user->getWorkStartingDay());
+
+        self::assertNull($user->getLastWorkingDay());
+        $workStart = new \DateTimeImmutable('2021-02-13');
+        $user->setLastWorkingDay($workStart);
+        self::assertEquals($workStart, $user->getLastWorkingDay());
     }
 
     public function testColor(): void
@@ -170,9 +187,13 @@ class UserTest extends TestCase
         self::assertNull($sut->getColor());
         self::assertFalse($sut->hasColor());
 
+        $sut->setUsername('foo test 123');
+        self::assertEquals('#a972c9', $sut->getColorSafe());
+
         $sut->setColor('#000000');
         self::assertEquals('#000000', $sut->getColor());
         self::assertTrue($sut->hasColor());
+        self::assertEquals('#000000', $sut->getColorSafe());
     }
 
     public function testWizards(): void
@@ -248,6 +269,31 @@ class UserTest extends TestCase
 
         $user->setPreferenceValue('export_decimal', true);
         self::assertTrue($user->isExportDecimal());
+
+        $prefs = $user->getPreferences();
+        self::assertCount(3, $prefs);
+
+        $preference1 = new UserPreference('_aaaaa', 'bbbbb');
+        $user->addPreference($preference1);
+
+        $preference2 = new UserPreference('AAAAAA', 'CCCCCC');
+        $user->addPreference($preference2);
+
+        $prefs = $user->getPreferences();
+        self::assertCount(5, $prefs);
+
+        $visiblePrefs = $user->getVisiblePreferences();
+        self::assertCount(3, $visiblePrefs); // export_decimal and _aaaaa is skipped
+        self::assertEquals([$user->getPreference('test'), $user->getPreference('test2'), $preference2], $visiblePrefs);
+
+        self::assertInstanceOf(UserPreference::class, $prefs[0]);
+        self::assertEquals('test', $prefs[0]->getName());
+
+        self::assertInstanceOf(UserPreference::class, $prefs[1]);
+        self::assertEquals('test2', $prefs[1]->getName());
+
+        self::assertInstanceOf(UserPreference::class, $prefs[2]);
+        self::assertEquals('export_decimal', $prefs[2]->getName());
     }
 
     public function testDisplayName(): void
@@ -331,6 +377,12 @@ class UserTest extends TestCase
         $team2->addTeamLead($sut);
         self::assertTrue($sut->isTeamleadOf($team2));
         self::assertTrue($sut->isInTeam($team2));
+
+        self::assertTrue($sut->isTeamleadOf($team2));
+        $user2 = new User();
+        self::assertFalse($sut->isTeamleadOfUser($user2));
+        $team2->addUser($user2);
+        self::assertTrue($sut->isTeamleadOfUser($user2));
 
         self::assertCount(2, $sut->getTeams());
         $sut->removeMembership(new TeamMember());
@@ -427,6 +479,74 @@ class UserTest extends TestCase
         self::assertTrue($sut->initCanSeeAllData(true));
         self::assertTrue($sut->canSeeAllData());
         self::assertFalse($sut->initCanSeeAllData(true));
+    }
+
+    public function testIsRegularUserOnly(): void
+    {
+        $sut = new User();
+        self::assertTrue($sut->isRegularUserOnly());
+
+        $sut->setRoles([User::ROLE_USER]);
+        self::assertTrue($sut->isRegularUserOnly());
+
+        $sut->addRole(User::ROLE_TEAMLEAD);
+        self::assertFalse($sut->isRegularUserOnly());
+
+        $sut->removeRole(User::ROLE_TEAMLEAD);
+        self::assertTrue($sut->isRegularUserOnly());
+    }
+
+    /**
+     * @deprecated
+     */
+    #[Group('legacy')]
+    public function testCanSeeUserGrantsAccessForTeamleadToRegularUserWithoutTeam(): void
+    {
+        $requester = new User();
+        $requester->setRoles([User::ROLE_TEAMLEAD]);
+
+        $subject = self::userWithId(1);
+        $subject->setEnabled(true);
+
+        self::assertTrue($subject->isRegularUserOnly());
+        self::assertSame([], $subject->getTeams());
+        self::assertTrue($requester->canSeeUser($subject));
+    }
+
+    /**
+     * @deprecated
+     */
+    #[Group('legacy')]
+    public function testCanSeeUserDeniesTeamleadFallbackForRegularUserWithTeam(): void
+    {
+        $requester = new User();
+        $requester->setRoles([User::ROLE_TEAMLEAD]);
+
+        $subject = self::userWithId(1);
+        $subject->setEnabled(true);
+        (new Team('Support'))->addUser($subject);
+
+        self::assertTrue($subject->isRegularUserOnly());
+        self::assertNotSame([], $subject->getTeams());
+        self::assertFalse($requester->canSeeUser($subject));
+    }
+
+    /**
+     * @deprecated
+     */
+    #[Group('legacy')]
+    public function testCanSeeUserDeniesTeamleadFallbackForNonRegularUserWithoutTeam(): void
+    {
+        $requester = new User();
+        $requester->setRoles([User::ROLE_TEAMLEAD]);
+
+        $subject = self::userWithId(1);
+        $subject->setEnabled(true);
+        $subject->addRole(User::ROLE_ADMIN);
+
+        self::assertFalse($subject->isRegularUserOnly());
+        self::assertSame([], $subject->getTeams());
+        self::assertFalse($requester->canSeeUser($subject));
     }
 
     public function testSystemAccount(): void
@@ -623,5 +743,58 @@ class UserTest extends TestCase
         self::assertTrue($user->hasSupervisor());
         self::assertNotNull($user->getSupervisor());
         self::assertSame($supervisor, $user->getSupervisor());
+    }
+
+    public function testLastLogin(): void
+    {
+        $dateTime = new \DateTime('now', new \DateTimeZone('UTC'));
+
+        $user = new User();
+        $user->setTimezone('Europe/Berlin');
+
+        $lastLogin = $user->getLastLogin();
+        self::assertNull($lastLogin);
+        $user->setLastLogin($dateTime);
+
+        $lastLogin = $user->getLastLogin();
+        self::assertNotNull($lastLogin);
+        self::assertInstanceOf(\DateTime::class, $lastLogin);
+        self::assertEquals('Europe/Berlin', $lastLogin->getTimezone()->getName());
+    }
+
+    public function testIsPasswordRequestNonExpiredIsTimezoneIndependent(): void
+    {
+        $user = new User();
+        $user->setTimezone('Europe/Vienna');
+        $user->markPasswordRequested();
+
+        self::assertTrue($user->isPasswordRequestNonExpired(3600));
+        self::assertTrue($user->isPasswordRequestNonExpired(7200));
+
+        $user->setTimezone('America/Los_Angeles');
+
+        self::assertTrue($user->isPasswordRequestNonExpired(3600));
+        self::assertTrue($user->isPasswordRequestNonExpired(7200));
+    }
+
+    public function testSignatureDate(): void
+    {
+        $user = new User();
+
+        self::assertEquals('', $user->getSignatureDate());
+        $user->resetSecuritySignature();
+        // shortest possible result: 2026-05-31T01:18:19Z
+        self::assertGreaterThanOrEqual(20, \strlen($user->getSignatureDate()));
+    }
+
+    private static function userWithId(int $id): User
+    {
+        $user = new User();
+        $reflection = new \ReflectionClass($user);
+        $property = $reflection->getProperty('id');
+        $property->setAccessible(true);
+        $property->setValue($user, $id);
+
+        return $user;
     }
 }

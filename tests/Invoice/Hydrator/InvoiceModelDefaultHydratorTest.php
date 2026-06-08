@@ -11,11 +11,11 @@ namespace App\Tests\Invoice\Hydrator;
 
 use App\Invoice\Hydrator\InvoiceModelDefaultHydrator;
 use App\Tests\Invoice\Renderer\RendererTestTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionObject;
 
-/**
- * @covers \App\Invoice\Hydrator\InvoiceModelDefaultHydrator
- */
+#[CoversClass(InvoiceModelDefaultHydrator::class)]
 class InvoiceModelDefaultHydratorTest extends TestCase
 {
     use RendererTestTrait;
@@ -28,6 +28,39 @@ class InvoiceModelDefaultHydratorTest extends TestCase
 
         $result = $sut->hydrate($model);
         $this->assertModelStructure($result);
+        self::assertSame(
+            $model->getFormatter()->getFormattedDateTime($model->getInvoicePeriod()->getStart()),
+            $result['invoice.first']
+        );
+        self::assertSame(
+            $model->getInvoicePeriod()->getStart()->format('Y-m-d h:i:s'),
+            $result['invoice.first_process']
+        );
+        self::assertSame(
+            $model->getFormatter()->getFormattedDateTime($model->getInvoicePeriod()->getEnd()),
+            $result['invoice.last']
+        );
+        self::assertSame(
+            $model->getInvoicePeriod()->getEnd()->format('Y-m-d h:i:s'),
+            $result['invoice.last_process']
+        );
+    }
+
+    public function testHydrateThrowsOnMissing(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('InvoiceModel needs a calculator');
+
+        $model = $this->getInvoiceModel();
+
+        $obj = new ReflectionObject($model);
+        $prop = $obj->getProperty('calculator');
+        $prop->setAccessible(true);
+        $prop->setValue($model, null);
+
+        $sut = new InvoiceModelDefaultHydrator();
+
+        $sut->hydrate($model);
     }
 
     protected function assertModelStructure(array $model, bool $hasProject = true): void
@@ -46,11 +79,16 @@ class InvoiceModelDefaultHydratorTest extends TestCase
             'invoice.tax_hide',
             'invoice.tax_nc',
             'invoice.tax_plain',
+            'invoice.tax_rows',
             'invoice.total_time',
             'invoice.duration_decimal',
             'invoice.first',
+            'invoice.first_month',
+            'invoice.first_year',
             'invoice.first_process',
             'invoice.last',
+            'invoice.last_month',
+            'invoice.last_year',
             'invoice.last_process',
             'invoice.total',
             'invoice.total_nc',
@@ -60,6 +98,8 @@ class InvoiceModelDefaultHydratorTest extends TestCase
             'invoice.subtotal_plain',
             'template.name',
             'template.company',
+            'template.country',
+            'template.country_name',
             'template.address',
             'template.title',
             'template.payment_terms',

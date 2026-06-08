@@ -42,13 +42,13 @@ export default class KimaiThemeInitializer extends KimaiPlugin {
             }
 
             // at which element we append the loading screen
-            let container = 'body';
+            let container = 'div.page-wrapper';
             if (event.detail !== undefined && event.detail !== null) {
                 container = event.detail;
             }
 
             const temp = document.createElement('div');
-            temp.innerHTML = '<div class="overlay"><div class="fas fa-sync fa-spin"></div></div>';
+            temp.innerHTML = '<div class="overlay"><div class="progress progress-sm"><div class="progress-bar progress-bar-indeterminate"></div></div></div>';
             this.overlay = temp.firstElementChild;
             document.querySelector(container).append(this.overlay);
         });

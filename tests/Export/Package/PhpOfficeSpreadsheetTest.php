@@ -9,13 +9,15 @@
 
 namespace App\Tests\Export\Package;
 
+use App\Export\Package\CellFormatter\DefaultFormatter;
+use App\Export\Package\Column;
 use App\Export\Package\PhpOfficeSpreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @covers \App\Export\Package\PhpOfficeSpreadsheet
- */
+#[CoversClass(PhpOfficeSpreadsheet::class)]
 class PhpOfficeSpreadsheetTest extends TestCase
 {
     private string $filename;
@@ -33,9 +35,17 @@ class PhpOfficeSpreadsheetTest extends TestCase
         }
     }
 
+    private function createSut(): PhpOfficeSpreadsheet
+    {
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return new PhpOfficeSpreadsheet($translator);
+    }
+
     public function testopenSetsFilename(): void
     {
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
         $reflection = new \ReflectionClass($spreadsheetPackage);
         $property = $reflection->getProperty('filename');
@@ -48,15 +58,15 @@ class PhpOfficeSpreadsheetTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Need to call open() first before save()');
 
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->save();
     }
 
     public function testsaveWritesFile(): void
     {
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
-        $spreadsheetPackage->setHeader(['Foo', 'Bar']);
+        $spreadsheetPackage->setColumns([new Column('Foo', new DefaultFormatter()), new Column('Bar', new DefaultFormatter())]);
         $spreadsheetPackage->addRow(['Data1', 'Data2']);
         $spreadsheetPackage->addRow(['Data3', 'Data4']);
         $spreadsheetPackage->save();
@@ -69,7 +79,7 @@ class PhpOfficeSpreadsheetTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot re-use spreadsheet after calling save()');
 
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
         $spreadsheetPackage->save();
         $spreadsheetPackage->save();
@@ -77,9 +87,9 @@ class PhpOfficeSpreadsheetTest extends TestCase
 
     public function testsetHeaderSetsHeaderRow(): void
     {
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
-        $spreadsheetPackage->setHeader(['Column1', 'Column2']);
+        $spreadsheetPackage->setColumns([new Column('Column1', new DefaultFormatter()), new Column('Column2', new DefaultFormatter())]);
 
         $reflection = new \ReflectionClass($spreadsheetPackage);
         $property = $reflection->getProperty('worksheet');
@@ -94,7 +104,7 @@ class PhpOfficeSpreadsheetTest extends TestCase
 
     public function testaddRowAddsDataRow(): void
     {
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
         $spreadsheetPackage->addRow(['Data1', 'Data2']);
 
@@ -113,7 +123,7 @@ class PhpOfficeSpreadsheetTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot re-use spreadsheet after calling save()');
 
-        $spreadsheetPackage = new PhpOfficeSpreadsheet();
+        $spreadsheetPackage = $this->createSut();
         $spreadsheetPackage->open($this->filename);
         $spreadsheetPackage->save();
         $spreadsheetPackage->addRow(['Data1', 'Data2']);

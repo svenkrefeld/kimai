@@ -1,5 +1,3 @@
-// Hint: if something doesn't work as expected: yarn upgrade --latest
-
 const Encore = require('@symfony/webpack-encore');
 
 Encore
@@ -16,6 +14,7 @@ Encore
     .addEntry('chart', './assets/chart.js')
     .addEntry('calendar', './assets/calendar.js')
     .addEntry('dashboard', './assets/dashboard.js')
+    .addEntry('highlight', './assets/highlight.js')
 
     .splitEntryChunks()
     .configureSplitChunks((splitChunks) => {

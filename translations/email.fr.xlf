@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="1ZLD_Y0" resname="reset.subject" xml:space="preserve">
         <source>reset.subject</source>
-        <target state="needs-translation">Réinitialiser le mot de passe</target>
+        <target state="translated">Se connecter à Kimai</target>
       </trans-unit>
       <trans-unit id="G2mhn_2" resname="reset.title" xml:space="preserve">
         <source>Forgot your password?</source>
@@ -32,7 +32,7 @@
       </trans-unit>
       <trans-unit id="qbt.84Y" resname="reset.button" xml:space="preserve">
         <source>reset.button</source>
-        <target state="translated">Connectez-vous</target>
+        <target state="translated">Se connecter</target>
       </trans-unit>
       <trans-unit id="rhkMAep" resname="reset.intro" xml:space="preserve">
         <source>Don't worry, Kimai will help you create a new one!</source>

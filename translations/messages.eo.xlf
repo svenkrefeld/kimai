@@ -54,10 +54,6 @@
         <source>search</source>
         <target>Serĉi</target>
       </trans-unit>
-      <trans-unit id="hBNESu6" resname="my.profile">
-        <source>my.profile</source>
-        <target>Mia profilo</target>
-      </trans-unit>
       <trans-unit id="J258iS6" resname="update_multiple">
         <source>update_multiple</source>
         <target>%action% %count% elementojn</target>
@@ -534,25 +530,25 @@
         <source>ROLE_USER</source>
         <target>Uzanto</target>
       </trans-unit>
-      <trans-unit id="TdBJBAl" resname="stats.durationToday">
+      <trans-unit id="TdBJBAl" resname="stats.durationToday" xml:space="preserve">
         <source>stats.durationToday</source>
-        <target>Laborhoroj hodiaŭ</target>
+        <target state="needs-translation">Laborhoroj hodiaŭ</target>
       </trans-unit>
-      <trans-unit id="XhKalZH" resname="stats.durationWeek">
+      <trans-unit id="XhKalZH" resname="stats.durationWeek" xml:space="preserve">
         <source>stats.durationWeek</source>
-        <target>Laborhoroj ĉi-semajne</target>
+        <target state="needs-translation">Laborhoroj ĉi-semajne</target>
       </trans-unit>
-      <trans-unit id="uaOwf_P" resname="stats.durationMonth">
+      <trans-unit id="uaOwf_P" resname="stats.durationMonth" xml:space="preserve">
         <source>stats.durationMonth</source>
-        <target>Laborhoroj ĉi-monate</target>
+        <target state="needs-translation">Laborhoroj ĉi-monate</target>
       </trans-unit>
-      <trans-unit id="WqF84KR" resname="stats.durationYear">
+      <trans-unit id="WqF84KR" resname="stats.durationYear" xml:space="preserve">
         <source>stats.durationYear</source>
-        <target>Laborhoroj ĉi-jare</target>
+        <target state="needs-translation">Laborhoroj ĉi-jare</target>
       </trans-unit>
-      <trans-unit id="YtvPnl1" resname="stats.durationTotal">
+      <trans-unit id="YtvPnl1" resname="stats.durationTotal" xml:space="preserve">
         <source>stats.durationTotal</source>
-        <target>Laborhoroj entute</target>
+        <target state="needs-translation">Laborhoroj entute</target>
       </trans-unit>
       <trans-unit id="IFOLMgp" resname="stats.yourWorkingHours">
         <source>stats.yourWorkingHours</source>
@@ -642,24 +638,24 @@
         <source>preview</source>
         <target>Antaŭrigardo</target>
       </trans-unit>
-      <trans-unit id="X70dwP8" resname="button.print">
-        <source>button.print</source>
+      <trans-unit id="zpU6DrC" resname="print">
+        <source>print</source>
         <target>Printi</target>
       </trans-unit>
-      <trans-unit id="W_TXvSi" resname="button.csv">
-        <source>button.csv</source>
+      <trans-unit id="U7ubCzi" resname="csv">
+        <source>csv</source>
         <target>CSV</target>
       </trans-unit>
-      <trans-unit id="vC2IsaP" resname="button.xlsx">
-        <source>button.xlsx</source>
+      <trans-unit id="HJgLIry" resname="xlsx">
+        <source>xlsx</source>
         <target>Excel</target>
       </trans-unit>
-      <trans-unit id="aAa5uRR" resname="button.pdf">
-        <source>button.pdf</source>
+      <trans-unit id="w1sh1so" resname="pdf">
+        <source>pdf</source>
         <target>PDF</target>
       </trans-unit>
-      <trans-unit id="ulYFDIo" resname="button.ods">
-        <source>button.ods</source>
+      <trans-unit id="lmUO63g" resname="ods">
+        <source>ods</source>
         <target>ODS</target>
       </trans-unit>
       <trans-unit id="zPcx3O_" resname="invoice_print">
@@ -998,9 +994,9 @@
         <source>stats.activeUsersFinancialYear</source>
         <target>Aktivaj uzantoj ĉi-financjare</target>
       </trans-unit>
-      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear">
+      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear" xml:space="preserve">
         <source>stats.durationFinancialYear</source>
-        <target>Laborhoroj ĉi-financjare</target>
+        <target state="needs-translation">Laborhoroj ĉi-financjare</target>
       </trans-unit>
       <trans-unit id="wuUWovn" resname="stats.amountFinancialYear">
         <source>stats.amountFinancialYear</source>
@@ -1182,25 +1178,13 @@
         <source>profile-stats</source>
         <target>Profilo</target>
       </trans-unit>
-      <trans-unit id="zeD7Dew" resname="settings">
-        <source>settings</source>
-        <target>Agordoj</target>
+      <trans-unit id="zeD7Dew" resname="settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="needs-translation">Agordoj</target>
       </trans-unit>
-      <trans-unit id="anCjtwe" resname="timesheet.filter">
+      <trans-unit id="anCjtwe" resname="timesheet.filter" xml:space="preserve">
         <source>Filter timesheets</source>
-        <target>Temposlipoj</target>
-      </trans-unit>
-      <trans-unit id="xY9_cU2" resname="customer.filter">
-        <source>Filter customers</source>
-        <target>Filtri klientojn</target>
-      </trans-unit>
-      <trans-unit id="UFgOnc6" resname="project.filter">
-        <source>Filter projects</source>
-        <target>Filtri projektojn</target>
-      </trans-unit>
-      <trans-unit id="5G3QNHA" resname="activity.filter">
-        <source>Filter activities</source>
-        <target>Filtri aktivaĵojn</target>
+        <target state="needs-translation">Temposlipoj</target>
       </trans-unit>
       <trans-unit id="b1pgNOd" resname="copy">
         <source>copy</source>

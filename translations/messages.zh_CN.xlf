@@ -50,10 +50,6 @@
         <source>search</source>
         <target>搜索</target>
       </trans-unit>
-      <trans-unit id="hBNESu6" resname="my.profile">
-        <source>my.profile</source>
-        <target>我的资料</target>
-      </trans-unit>
       <trans-unit id="J258iS6" resname="update_multiple">
         <source>update_multiple</source>
         <target>%action% %count% 条目</target>
@@ -66,9 +62,9 @@
         <source>password_repeat</source>
         <target state="translated">确认密码</target>
       </trans-unit>
-      <trans-unit id="ACcM9j_" resname="logout">
+      <trans-unit id="ACcM9j_" resname="logout" xml:space="preserve">
         <source>logout</source>
-        <target>退出</target>
+        <target state="translated">登出</target>
       </trans-unit>
       <trans-unit id="_x2He8M" resname="user_profile">
         <source>user_profile</source>
@@ -82,13 +78,13 @@
         <source>api_token_repeat</source>
         <target>再次输入API密码</target>
       </trans-unit>
-      <trans-unit id=".372.o7" resname="login_required">
+      <trans-unit id=".372.o7" resname="login_required" xml:space="preserve">
         <source>login_required</source>
-        <target>无许可。重新登录？</target>
+        <target state="translated">未许可。重新登录？</target>
       </trans-unit>
-      <trans-unit id="UoOv6mx" resname="menu.homepage">
+      <trans-unit id="UoOv6mx" resname="menu.homepage" xml:space="preserve">
         <source>menu.homepage</source>
-        <target>控制主页</target>
+        <target state="translated">仪表盘</target>
       </trans-unit>
       <trans-unit id="wvvYSw_" resname="menu.admin">
         <source>menu.admin</source>
@@ -98,9 +94,9 @@
         <source>menu.system</source>
         <target>系统</target>
       </trans-unit>
-      <trans-unit id="wBTFKFR" resname="menu.logout">
+      <trans-unit id="wBTFKFR" resname="menu.logout" xml:space="preserve">
         <source>menu.logout</source>
-        <target>退出</target>
+        <target state="translated">登出</target>
       </trans-unit>
       <trans-unit id="ebTjBb9" resname="my_times">
         <source>my_times</source>
@@ -200,7 +196,7 @@
       </trans-unit>
       <trans-unit id="qbD0dHa" resname="timeBudget" xml:space="preserve">
         <source>timeBudget</source>
-        <target state="needs-translation">时间预算</target>
+        <target state="translated">每小时配额</target>
       </trans-unit>
       <trans-unit id="BlGGO.X" resname="activity">
         <source>activity</source>
@@ -332,7 +328,7 @@
       </trans-unit>
       <trans-unit id="Fm.kwVn" resname="profile.first_entry" xml:space="preserve">
         <source>profile.first_entry</source>
-        <target state="needs-translation">自什么时候开始工作</target>
+        <target state="translated">开始工作时间</target>
       </trans-unit>
       <trans-unit id="xEYQXPy" resname="profile.settings">
         <source>profile.settings</source>
@@ -486,25 +482,25 @@
         <source>ROLE_USER</source>
         <target>用户</target>
       </trans-unit>
-      <trans-unit id="TdBJBAl" resname="stats.durationToday">
+      <trans-unit id="TdBJBAl" resname="stats.durationToday" xml:space="preserve">
         <source>stats.durationToday</source>
-        <target>今日工作时长</target>
+        <target state="translated">今天</target>
       </trans-unit>
-      <trans-unit id="XhKalZH" resname="stats.durationWeek">
+      <trans-unit id="XhKalZH" resname="stats.durationWeek" xml:space="preserve">
         <source>stats.durationWeek</source>
-        <target>本周工作时长</target>
+        <target state="translated">这周</target>
       </trans-unit>
-      <trans-unit id="uaOwf_P" resname="stats.durationMonth">
+      <trans-unit id="uaOwf_P" resname="stats.durationMonth" xml:space="preserve">
         <source>stats.durationMonth</source>
-        <target>本月工作时长</target>
+        <target state="translated">本月</target>
       </trans-unit>
-      <trans-unit id="WqF84KR" resname="stats.durationYear">
+      <trans-unit id="WqF84KR" resname="stats.durationYear" xml:space="preserve">
         <source>stats.durationYear</source>
-        <target>本年工作时长</target>
+        <target state="translated">本年</target>
       </trans-unit>
-      <trans-unit id="YtvPnl1" resname="stats.durationTotal">
+      <trans-unit id="YtvPnl1" resname="stats.durationTotal" xml:space="preserve">
         <source>stats.durationTotal</source>
-        <target>总工作时长</target>
+        <target state="translated">总共</target>
       </trans-unit>
       <trans-unit id="IFOLMgp" resname="stats.yourWorkingHours">
         <source>stats.yourWorkingHours</source>
@@ -594,24 +590,24 @@
         <source>preview</source>
         <target>预审</target>
       </trans-unit>
-      <trans-unit id="X70dwP8" resname="button.print">
-        <source>button.print</source>
+      <trans-unit id="zpU6DrC" resname="print">
+        <source>print</source>
         <target>打印</target>
       </trans-unit>
-      <trans-unit id="W_TXvSi" resname="button.csv">
-        <source>button.csv</source>
+      <trans-unit id="U7ubCzi" resname="csv">
+        <source>csv</source>
         <target>CSV</target>
       </trans-unit>
-      <trans-unit id="vC2IsaP" resname="button.xlsx">
-        <source>button.xlsx</source>
+      <trans-unit id="HJgLIry" resname="xlsx">
+        <source>xlsx</source>
         <target>Excel</target>
       </trans-unit>
-      <trans-unit id="aAa5uRR" resname="button.pdf">
-        <source>button.pdf</source>
+      <trans-unit id="w1sh1so" resname="pdf">
+        <source>pdf</source>
         <target>PDF</target>
       </trans-unit>
-      <trans-unit id="ulYFDIo" resname="button.ods">
-        <source>button.ods</source>
+      <trans-unit id="lmUO63g" resname="ods">
+        <source>ods</source>
         <target>ODS</target>
       </trans-unit>
       <trans-unit id="zPcx3O_" resname="invoice_print">
@@ -838,9 +834,9 @@
         <source>modal.dirty</source>
         <target>表格已更改。请点击 "保存 "以保存更改，或点击 "关闭 "以取消更改。</target>
       </trans-unit>
-      <trans-unit id="zFfl7jw" resname="sum.total">
+      <trans-unit id="zFfl7jw" resname="sum.total" xml:space="preserve">
         <source>sum.total</source>
-        <target>汇总</target>
+        <target state="translated">总共</target>
       </trans-unit>
       <trans-unit id="mflwMcX" resname="rates.title">
         <source>rates.title</source>
@@ -914,17 +910,17 @@
         <source>stats.amountFinancialYear</source>
         <target>本财政年度的收入</target>
       </trans-unit>
-      <trans-unit id="0M_Gylq" resname="rates.empty">
+      <trans-unit id="0M_Gylq" resname="rates.empty" xml:space="preserve">
         <source>rates.empty</source>
-        <target>尚未配置小时费率。</target>
+        <target state="translated">尚未配置任何价格。</target>
       </trans-unit>
       <trans-unit id="BXBFJP8" resname="stats.workingTime" xml:space="preserve">
         <source>Working hours</source>
         <target>工作时间</target>
       </trans-unit>
-      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear">
+      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear" xml:space="preserve">
         <source>stats.durationFinancialYear</source>
-        <target>本财政年度工作时间</target>
+        <target state="translated">财政年度</target>
       </trans-unit>
       <trans-unit id="Nx9_QiO" resname="revenue">
         <source>revenue</source>
@@ -1002,17 +998,17 @@
         <source>file</source>
         <target>文件</target>
       </trans-unit>
-      <trans-unit id="VSo_gmO" resname="orderBy">
+      <trans-unit id="VSo_gmO" resname="orderBy" xml:space="preserve">
         <source>orderBy</source>
-        <target>以...排序</target>
+        <target state="translated">按...顺序排列</target>
       </trans-unit>
-      <trans-unit id="l4ZOh4." resname="desc">
+      <trans-unit id="l4ZOh4." resname="desc" xml:space="preserve">
         <source>desc</source>
-        <target>下降</target>
+        <target state="translated">向下</target>
       </trans-unit>
-      <trans-unit id="1o0.9vf" resname="asc">
+      <trans-unit id="1o0.9vf" resname="asc" xml:space="preserve">
         <source>asc</source>
-        <target>上升</target>
+        <target state="translated">向上</target>
       </trans-unit>
       <trans-unit id="DUDrvjk" resname="remove_default">
         <source>remove_default</source>
@@ -1460,11 +1456,11 @@
       </trans-unit>
       <trans-unit id="1btzNDa" resname="work_times_should" xml:space="preserve">
         <source>Expected number of hours</source>
-        <target state="needs-translation">期望小时数</target>
+        <target state="translated">预计时间</target>
       </trans-unit>
       <trans-unit id="31dFXhR" resname="work_times_is" xml:space="preserve">
         <source>work_times_is</source>
-        <target state="needs-translation">是-小时</target>
+        <target state="translated">工作时长</target>
       </trans-unit>
       <trans-unit id="wZRRqg0" resname="manual_bookings">
         <source>manual_bookings</source>
@@ -1534,13 +1530,13 @@
         <source>button.report</source>
         <target state="translated">报告</target>
       </trans-unit>
-      <trans-unit id="YDrWFFP" resname="sickness.intro">
-        <source>sickness.intro</source>
-        <target state="translated">生病、看病、照顾近亲等。</target>
+      <trans-unit id="YDrWFFP" resname="sickness.intro" xml:space="preserve">
+        <source>Incapacity for work, medically necessary appointments, care leave, etc.</source>
+        <target state="needs-translation">生病、看病、照顾近亲等。</target>
       </trans-unit>
       <trans-unit id="yJg6P3m" resname="holiday.intro" xml:space="preserve">
         <source>You have submitted %used% of your available %days% vacation days so far.</source>
-        <target state="needs-translation">到目前为止，您已使用了 %used% 的可用假期，其中有 %days% 个。</target>
+        <target state="translated">到目前为止，您已使用了可用假期 %days%天中的 %used% 天。</target>
       </trans-unit>
       <trans-unit id="DA1.Ln_" resname="time_off.intro">
         <source>time_off.intro</source>
@@ -1786,25 +1782,13 @@
         <source>profile-stats</source>
         <target state="translated">资料</target>
       </trans-unit>
-      <trans-unit id="zeD7Dew" resname="settings">
-        <source>settings</source>
-        <target>参数选择</target>
+      <trans-unit id="zeD7Dew" resname="settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="needs-translation">参数选择</target>
       </trans-unit>
-      <trans-unit id="anCjtwe" resname="timesheet.filter">
+      <trans-unit id="anCjtwe" resname="timesheet.filter" xml:space="preserve">
         <source>Filter timesheets</source>
-        <target>时间表</target>
-      </trans-unit>
-      <trans-unit id="xY9_cU2" resname="customer.filter">
-        <source>Filter customers</source>
-        <target>筛选用户</target>
-      </trans-unit>
-      <trans-unit id="UFgOnc6" resname="project.filter">
-        <source>Filter projects</source>
-        <target>筛选项目</target>
-      </trans-unit>
-      <trans-unit id="5G3QNHA" resname="activity.filter">
-        <source>Filter activities</source>
-        <target>筛选活动</target>
+        <target state="translated">时间表</target>
       </trans-unit>
       <trans-unit id="b1pgNOd" resname="copy">
         <source>copy</source>
@@ -1881,6 +1865,110 @@
       <trans-unit id="5vJvarK" resname="syncronisation">
         <source>syncronisation</source>
         <target state="translated">同步</target>
+      </trans-unit>
+      <trans-unit id="2pbkbn_" resname="work_hours_mode" xml:space="preserve">
+        <source>work_hours_mode</source>
+        <target state="translated">工作时间计算</target>
+      </trans-unit>
+      <trans-unit id="IFT9pou" resname="last_working_day" xml:space="preserve">
+        <source>last_working_day</source>
+        <target state="translated">最后工作日</target>
+      </trans-unit>
+      <trans-unit id="0jvo0RQ" resname="profit" xml:space="preserve">
+        <source>profit</source>
+        <target state="translated">利润</target>
+      </trans-unit>
+      <trans-unit id="FOvlalA" resname="break" xml:space="preserve">
+        <source>break</source>
+        <target state="translated">休息</target>
+      </trans-unit>
+      <trans-unit id="9qIU96X" resname="result" xml:space="preserve">
+        <source>result</source>
+        <target state="translated">结果</target>
+      </trans-unit>
+      <trans-unit id="wvt4jH3" resname="training" xml:space="preserve">
+        <source>training</source>
+        <target state="translated">培训</target>
+      </trans-unit>
+      <trans-unit id="vN5pKOU" resname="costs" xml:space="preserve">
+        <source>costs</source>
+        <target state="translated">成本</target>
+      </trans-unit>
+      <trans-unit id="EiWubBr" resname="sessions" xml:space="preserve">
+        <source>Sessions</source>
+        <target state="translated">会话</target>
+      </trans-unit>
+      <trans-unit id="f0kKHXR" resname="sessions_logout" xml:space="preserve">
+        <source>Log out of all devices</source>
+        <target state="translated">从所有设备退出</target>
+      </trans-unit>
+      <trans-unit id="YzOSTim" resname="status.rejected" xml:space="preserve" approved="no">
+        <source>Rejected</source>
+        <target state="translated">拒绝</target>
+      </trans-unit>
+      <trans-unit id="2qbRs28" resname="hours_per_day" xml:space="preserve">
+        <source>hours_per_day</source>
+        <target state="translated">小时/天</target>
+      </trans-unit>
+      <trans-unit id="07e8ywS" resname="hours_per_month" xml:space="preserve">
+        <source>hours_per_month</source>
+        <target state="translated">小时/月</target>
+      </trans-unit>
+      <trans-unit id="y7KtuSS" resname="hours_per_week" xml:space="preserve">
+        <source>hours_per_week</source>
+        <target state="translated">小时/周</target>
+      </trans-unit>
+      <trans-unit id="7p_pFHl" resname="work_days" xml:space="preserve">
+        <source>work_days</source>
+        <target state="translated">工作天数</target>
+      </trans-unit>
+      <trans-unit id="CE6ZCkm" resname="reject" xml:space="preserve">
+        <source>reject</source>
+        <target state="translated">拒绝</target>
+      </trans-unit>
+      <trans-unit id="HQ2YM1b" resname="attendance_only_project" xml:space="preserve">
+        <source>attendance_only_project</source>
+        <target state="needs-translation">只会将当前项目记录于工作时长</target>
+      </trans-unit>
+      <trans-unit id="rD4oQRR" resname="postcode" xml:space="preserve">
+        <source>Postcode</source>
+        <target state="translated">邮政编码</target>
+      </trans-unit>
+      <trans-unit id="EaYsI0E" resname="city" xml:space="preserve">
+        <source>City</source>
+        <target state="translated">城市</target>
+      </trans-unit>
+      <trans-unit id="y1XHR1Q" resname="address_deprecated" xml:space="preserve">
+        <source>address_deprecated</source>
+        <target state="translated">该字段即将被删除，请转移地址以继续生成有效发票（例如：电子发票）</target>
+      </trans-unit>
+      <trans-unit id="Uzll0ps" resname="Customer portal" xml:space="preserve">
+        <source>Customer portal</source>
+        <target state="needs-translation">顾客链接</target>
+      </trans-unit>
+      <trans-unit id="cDOQMYv" resname="Beta" xml:space="preserve">
+        <source>Beta</source>
+        <target state="translated">启用对实验性功能的预览</target>
+      </trans-unit>
+      <trans-unit id="4WlKIfD" resname="unlock_month" xml:space="preserve" approved="no">
+        <source>Unlock month</source>
+        <target state="translated">解锁月份</target>
+      </trans-unit>
+      <trans-unit id="mhOe3Iy" resname="unlock_month.help" xml:space="preserve">
+        <source>unlock_month.help</source>
+        <target state="translated">这将解锁所选日期之后一年中的所有的日子。</target>
+      </trans-unit>
+      <trans-unit id="nsbR30p" resname="sending_company" xml:space="preserve">
+        <source>sending_company</source>
+        <target state="needs-translation">发送发票者</target>
+      </trans-unit>
+      <trans-unit id="NA9GMDP" resname="Code" xml:space="preserve">
+        <source>Code</source>
+        <target state="translated">代码</target>
+      </trans-unit>
+      <trans-unit id="lt2Y2LO" resname="timesheet">
+        <source>Timesheet</source>
+        <target state="translated">时间表</target>
       </trans-unit>
     </body>
   </file>

@@ -12,8 +12,8 @@ namespace App\Controller\Security;
 use App\Configuration\SystemConfiguration;
 use App\Controller\AbstractController;
 use App\Entity\User;
-use App\Event\EmailEvent;
 use App\Event\EmailPasswordResetEvent;
+use App\Event\UserEmailEvent;
 use App\User\UserService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -28,6 +28,15 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * This is the anonymous "password forgotten" flow.
+ * The flow itself can be deactivated via a system-configuration.
+ *
+ * When a user enters his username or email:
+ * - a login link will be generated
+ * - the user will be flagged as "a new password is required during next login"
+ * - the login link will be sent to the user via email
+ */
 #[Route(path: '/resetting')]
 final class PasswordResetController extends AbstractController
 {
@@ -112,7 +121,7 @@ final class PasswordResetController extends AbstractController
                 $this->eventDispatcher->dispatch($event);
 
                 // this will send the email
-                $this->eventDispatcher->dispatch(new EmailEvent($event->getEmail()));
+                $this->eventDispatcher->dispatch(new UserEmailEvent($user, $event->getEmail()));
 
                 $user->markPasswordRequested();
                 $user->setRequiresPasswordReset(true);

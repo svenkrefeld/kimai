@@ -11,11 +11,13 @@ namespace App\Export\Package;
 
 use App\Entity\ExportableItem;
 use App\Export\Package\CellFormatter\CellFormatterInterface;
+use App\Export\Package\CellFormatter\CellWithFormatInterface;
 
 class Column
 {
     private ?string $header = null;
     private \Closure|null $extractor = null;
+    private ColumnWidth $columnWidth = ColumnWidth::DEFAULT;
 
     public function __construct(private readonly string $name, private readonly CellFormatterInterface $formatter)
     {
@@ -31,6 +33,18 @@ class Column
         $this->header = $header;
 
         return $this;
+    }
+
+    public function withColumnWidth(ColumnWidth $columnWidth): Column
+    {
+        $this->columnWidth = $columnWidth;
+
+        return $this;
+    }
+
+    public function getColumnWidth(): ColumnWidth
+    {
+        return $this->columnWidth;
     }
 
     public function withExtractor(\Closure $extractor): Column
@@ -57,5 +71,14 @@ class Column
     public function getHeader(): string
     {
         return $this->header ?? $this->name;
+    }
+
+    public function getFormat(): ?string
+    {
+        if ($this->formatter instanceof CellWithFormatInterface) {
+            return $this->formatter->getFormat();
+        }
+
+        return null;
     }
 }

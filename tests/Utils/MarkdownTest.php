@@ -10,12 +10,12 @@
 namespace App\Tests\Utils;
 
 use App\Utils\Markdown;
+use App\Utils\ParsedownExtension;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Utils\Markdown
- * @covers \App\Utils\ParsedownExtension
- */
+#[CoversClass(Markdown::class)]
+#[CoversClass(ParsedownExtension::class)]
 class MarkdownTest extends TestCase
 {
     public function testMarkdownToHtml(): void
@@ -33,7 +33,7 @@ class MarkdownTest extends TestCase
             asdfasdfa</p>
             <pre><code>ssdfsdf</code></pre>
             <p><a href="http://example.com/foo-bar.html" target="_blank">http://example.com/foo-bar.html</a><br />
-            <a href="file:///home/kimai/images/beautiful-flower.png" target="_blank">file:///home/kimai/images/beautiful-flower.png</a></p>
+            file:///home/kimai/images/beautiful-flower.png</p>
             <p>sdfsdf <a href="#test-1">asdfasdf</a> asdfasdf</p>
             <p># test<br />
             aasdfasdf<br />

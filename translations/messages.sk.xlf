@@ -50,10 +50,6 @@
         <source>search</source>
         <target>Hľadať</target>
       </trans-unit>
-      <trans-unit id="hBNESu6" resname="my.profile">
-        <source>my.profile</source>
-        <target>Môj profil</target>
-      </trans-unit>
       <trans-unit id="J258iS6" resname="update_multiple">
         <source>update_multiple</source>
         <target>%action% %count% záznamov</target>
@@ -510,25 +506,25 @@
         <source>ROLE_USER</source>
         <target>User</target>
       </trans-unit>
-      <trans-unit id="TdBJBAl" resname="stats.durationToday">
+      <trans-unit id="TdBJBAl" resname="stats.durationToday" xml:space="preserve">
         <source>stats.durationToday</source>
-        <target>Pracovný čas dnes</target>
+        <target state="needs-translation">Pracovný čas dnes</target>
       </trans-unit>
-      <trans-unit id="XhKalZH" resname="stats.durationWeek">
+      <trans-unit id="XhKalZH" resname="stats.durationWeek" xml:space="preserve">
         <source>stats.durationWeek</source>
-        <target>Pracovný čas tento týždeň</target>
+        <target state="needs-translation">Pracovný čas tento týždeň</target>
       </trans-unit>
-      <trans-unit id="uaOwf_P" resname="stats.durationMonth">
+      <trans-unit id="uaOwf_P" resname="stats.durationMonth" xml:space="preserve">
         <source>stats.durationMonth</source>
-        <target>Pracovný čas tento mesiac</target>
+        <target state="needs-translation">Pracovný čas tento mesiac</target>
       </trans-unit>
-      <trans-unit id="WqF84KR" resname="stats.durationYear">
+      <trans-unit id="WqF84KR" resname="stats.durationYear" xml:space="preserve">
         <source>stats.durationYear</source>
-        <target>Pracovný čas tento rok</target>
+        <target state="needs-translation">Pracovný čas tento rok</target>
       </trans-unit>
-      <trans-unit id="YtvPnl1" resname="stats.durationTotal">
+      <trans-unit id="YtvPnl1" resname="stats.durationTotal" xml:space="preserve">
         <source>stats.durationTotal</source>
-        <target>Celkový pracovný čas</target>
+        <target state="needs-translation">Celkový pracovný čas</target>
       </trans-unit>
       <trans-unit id="023M9Ta" resname="stats.amountToday">
         <source>stats.amountToday</source>
@@ -610,24 +606,24 @@
         <source>invoice.filter</source>
         <target>Filtrovať dáta faktúr</target>
       </trans-unit>
-      <trans-unit id="X70dwP8" resname="button.print">
-        <source>button.print</source>
+      <trans-unit id="zpU6DrC" resname="print">
+        <source>print</source>
         <target>Tlačiť</target>
       </trans-unit>
-      <trans-unit id="W_TXvSi" resname="button.csv">
-        <source>button.csv</source>
+      <trans-unit id="U7ubCzi" resname="csv">
+        <source>csv</source>
         <target>CSV</target>
       </trans-unit>
-      <trans-unit id="vC2IsaP" resname="button.xlsx">
-        <source>button.xlsx</source>
+      <trans-unit id="HJgLIry" resname="xlsx">
+        <source>xlsx</source>
         <target>Excel</target>
       </trans-unit>
-      <trans-unit id="aAa5uRR" resname="button.pdf">
-        <source>button.pdf</source>
+      <trans-unit id="w1sh1so" resname="pdf">
+        <source>pdf</source>
         <target>PDF</target>
       </trans-unit>
-      <trans-unit id="ulYFDIo" resname="button.ods">
-        <source>button.ods</source>
+      <trans-unit id="lmUO63g" resname="ods">
+        <source>ods</source>
         <target>ODS</target>
       </trans-unit>
       <trans-unit id="zPcx3O_" resname="invoice_print">
@@ -749,14 +745,6 @@
       <trans-unit id="vKY0tof" resname="export.date_copyright">
         <source>export.date_copyright</source>
         <target>Vytvorené %date% - %kimai%</target>
-      </trans-unit>
-      <trans-unit id="OxdYMR3" resname="active.entries">
-        <source>active.entries</source>
-        <target>Máte %count% aktívny záznam | Máte %count% aktívnych záznamov</target>
-      </trans-unit>
-      <trans-unit id="WVU_S.A" resname="recent.activities">
-        <source>recent.activities</source>
-        <target>Reštartujte poslednú zaznamenanú aktivitu | Reštartujte jednu z vašich %count% posledných aktivít</target>
       </trans-unit>
       <trans-unit id="dTHY7Mw" resname="timesheet.start">
         <source>timesheet.start</source>
@@ -1010,9 +998,9 @@
         <source>revenue</source>
         <target state="translated">Tržby</target>
       </trans-unit>
-      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear">
+      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear" xml:space="preserve">
         <source>stats.durationFinancialYear</source>
-        <target state="translated">Pracovné hodiny tento finančný rok</target>
+        <target state="needs-translation">Pracovné hodiny tento finančný rok</target>
       </trans-unit>
       <trans-unit id="wuUWovn" resname="stats.amountFinancialYear">
         <source>stats.amountFinancialYear</source>
@@ -1578,25 +1566,13 @@
         <source>profile-stats</source>
         <target>Štatistika</target>
       </trans-unit>
-      <trans-unit id="zeD7Dew" resname="settings">
-        <source>settings</source>
-        <target state="translated">Nastavenia</target>
+      <trans-unit id="zeD7Dew" resname="settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="needs-translation">Nastavenia</target>
       </trans-unit>
-      <trans-unit id="anCjtwe" resname="timesheet.filter">
+      <trans-unit id="anCjtwe" resname="timesheet.filter" xml:space="preserve">
         <source>Filter timesheets</source>
-        <target>Pracovné výkazy</target>
-      </trans-unit>
-      <trans-unit id="xY9_cU2" resname="customer.filter">
-        <source>Filter customers</source>
-        <target>Zákazník</target>
-      </trans-unit>
-      <trans-unit id="UFgOnc6" resname="project.filter">
-        <source>Filter projects</source>
-        <target>Projekt</target>
-      </trans-unit>
-      <trans-unit id="5G3QNHA" resname="activity.filter">
-        <source>Filter activities</source>
-        <target>Činnosť</target>
+        <target state="needs-translation">Pracovné výkazy</target>
       </trans-unit>
       <trans-unit id="b1pgNOd" resname="copy">
         <source>copy</source>
@@ -1673,6 +1649,10 @@
       <trans-unit id="pJzNT.n" resname="vcard">
         <source>vcard</source>
         <target state="translated">Vizitka</target>
+      </trans-unit>
+      <trans-unit id="lt2Y2LO" resname="timesheet">
+        <source>Timesheet</source>
+        <target state="translated">Pracovný výkaz</target>
       </trans-unit>
     </body>
   </file>

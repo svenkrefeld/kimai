@@ -90,14 +90,13 @@
     {% endif %}
 
     {% if models|length > 0 %}
-        {% embed '@theme/embeds/card.html.twig' %}
+        {% embed '@theme/embeds/card.html.twig' with {fullsize: true}  %}
             {% import "macros/widgets.html.twig" as widgets %}
             {% import "macros/datatables.html.twig" as tables %}
             {% block box_title %}
                 {{ 'preview'|trans }}
             {% endblock %}
             {% block box_attributes %}id="invoice_customer_forms"{% endblock %}
-            {% block box_body_class %}p-0{% endblock %}
             {% block box_body %}
                 <table class="table dataTable">
                     <thead>
@@ -137,7 +136,7 @@
                                 <td class="w-min text-center actions alwaysVisible">
                                     {% for attrs in [{'class': 'd-inline-flex d-md-none'}, {'icon': false, 'class': 'd-none d-md-inline-flex'}] %}
                                     {{ widgets.action_button('print', {'url': '#', 'onclick': 'return singleInvoice(this, true)', 'title': 'preview'|trans, 'target': '_blank', 'attr': {'data-customer': model.customer.id, 'data-href': path('invoice_preview', {'customer': model.customer.id, 'token': csrf_token('invoice.preview')})}}|merge(attrs)) }}
-                                    {{ widgets.action_button('invoice', {'url': '#', 'onclick': 'return singleInvoice(this, false)', 'title': 'action.save'|trans, 'attr': {'data-customer': model.customer.id, 'data-href': path('invoice_create', {'customer': model.customer.id, 'token': csrf_token('invoice.create')})}}|merge(attrs), 'success') }}
+                                    {{ widgets.action_button('invoice', {'url': '#', 'onclick': 'return singleInvoice(this, false)', 'title': 'action.save'|trans, 'attr': {'data-customer': model.customer.id, 'data-href': path('invoice_create', {'customer': model.customer.id, 'token': csrf_token('invoice.create')})}}|merge(attrs), 'primary') }}
                                     {% endfor %}
                                 </td>
                             </tr>

@@ -14,10 +14,9 @@ use App\Tests\DataFixtures\ActivityFixtures;
 use App\Tests\DataFixtures\CustomerFixtures;
 use App\Tests\DataFixtures\ProjectFixtures;
 use App\Tests\DataFixtures\TimesheetFixtures;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class ActionsControllerTest extends APIControllerBaseTestCase
 {
     public function testIsSecure(): void
@@ -25,7 +24,7 @@ class ActionsControllerTest extends APIControllerBaseTestCase
         $this->assertUrlIsSecured('/api/actions/timesheet/1/index/en');
     }
 
-    public function test_getTimesheetActions(): void
+    public function testGetTimesheetActions(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_USER);
 
@@ -73,7 +72,7 @@ class ActionsControllerTest extends APIControllerBaseTestCase
         }
     }
 
-    public function test_getActivityActions(): void
+    public function testGetActivityActions(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
 
@@ -125,7 +124,7 @@ class ActionsControllerTest extends APIControllerBaseTestCase
         }
     }
 
-    public function test_getProjectActions(): void
+    public function testGetProjectActions(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
 
@@ -176,7 +175,7 @@ class ActionsControllerTest extends APIControllerBaseTestCase
         }
     }
 
-    public function test_getCustomerActions(): void
+    public function testGetCustomerActions(): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
 

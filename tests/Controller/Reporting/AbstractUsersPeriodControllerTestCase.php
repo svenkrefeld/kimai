@@ -12,11 +12,11 @@ namespace App\Tests\Controller\Reporting;
 use App\Entity\User;
 use App\Tests\Controller\AbstractControllerBaseTestCase;
 use App\Tests\DataFixtures\TimesheetFixtures;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 abstract class AbstractUsersPeriodControllerTestCase extends AbstractControllerBaseTestCase
 {
     protected function importReportingFixture(string $role): void
@@ -43,43 +43,37 @@ abstract class AbstractUsersPeriodControllerTestCase extends AbstractControllerB
     public static function getTestData(): array
     {
         return [
-            ['duration', 'Working hours total'],
+            ['duration', 'Total'],
             ['rate', 'Total revenue'],
             ['internalRate', 'Internal price'],
         ];
     }
 
-    /**
-     * @dataProvider getTestData
-     */
+    #[DataProvider('getTestData')]
     public function testUsersPeriodReport(string $dataType, string $title): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);
         $this->importReportingFixture(User::ROLE_SUPER_ADMIN);
         $this->assertAccessIsGranted($client, \sprintf('%s?date=12999119191&sumType=%s', $this->getReportUrl(), $dataType));
-        self::assertStringContainsString(\sprintf('<div class="card-body %s', $this->getBoxId()), $client->getResponse()->getContent());
+        self::assertStringContainsString(\sprintf('<div class="card-body p-0 %s', $this->getBoxId()), $client->getResponse()->getContent());
         $cell = $client->getCrawler()->filterXPath("//th[contains(@class, 'reportDataTypeTitle')]");
         self::assertEquals($title, $cell->text());
     }
 
-    /**
-     * @dataProvider getTestData
-     */
+    #[DataProvider('getTestData')]
     public function testUsersPeriodReportAsTeamlead(string $dataType, string $title): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_TEAMLEAD);
         $this->importReportingFixture(User::ROLE_TEAMLEAD);
         $this->assertAccessIsGranted($client, \sprintf('%s?date=12999119191&sumType=%s', $this->getReportUrl(), $dataType));
-        self::assertStringContainsString(\sprintf('<div class="card-body %s', $this->getBoxId()), $client->getResponse()->getContent());
+        self::assertStringContainsString(\sprintf('<div class="card-body p-0 %s', $this->getBoxId()), $client->getResponse()->getContent());
         $select = $client->getCrawler()->filterXPath("//select[@id='user']");
         self::assertEquals(0, $select->count());
         $cell = $client->getCrawler()->filterXPath("//th[contains(@class, 'reportDataTypeTitle')]");
         self::assertEquals($title, $cell->text());
     }
 
-    /**
-     * @dataProvider getTestData
-     */
+    #[DataProvider('getTestData')]
     public function testUsersPeriodReportExport(string $dataType, string $title): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_SUPER_ADMIN);

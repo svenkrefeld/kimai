@@ -4,13 +4,17 @@
          backupGlobals="false"
          colors="true"
          bootstrap="tests/bootstrap.php"
-         cacheDirectory="var/cache/phpunit/">
+         cacheDirectory="var/cache/phpunit/"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnPhpunitDeprecations="true">
   <php>
     <ini name="error_reporting" value="-1"/>
     <ini name="max_execution_time" value="-1"/>
-    <ini name="date.timezone" value="UTC"/>
-    <ini name="intl.default_locale" value="en_US"/>
-    <ini name="date.timezone" value="Europe/Vienna"/>
+    <ini name="intl.default_locale" value="en"/>
+    <ini name="date.timezone" value="Pacific/Tahiti"/>
     <env name="KERNEL_CLASS" value="App\Kernel" force="true"/>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
     <env name="APP_ENV" value="test" force="true"/>
@@ -34,14 +38,15 @@
     -->
     <env name="BOOTSTRAP_RESET_DATABASE" value="true"/>
   </php>
-
   <testsuites>
     <testsuite name="Kimai">
       <directory>tests/</directory>
     </testsuite>
   </testsuites>
-
-  <coverage>
+  <extensions>
+    <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+  </extensions>
+  <source>
     <include>
       <directory suffix=".php">src/</directory>
       <directory suffix=".php">templates/</directory>
@@ -58,10 +63,5 @@
       <directory suffix=".php">var/</directory>
       <directory suffix=".php">vendor/</directory>
     </exclude>
-  </coverage>
-
-  <extensions>
-    <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
-  </extensions>
-
+  </source>
 </phpunit>

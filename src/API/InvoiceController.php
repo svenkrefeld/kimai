@@ -10,6 +10,8 @@
 namespace App\API;
 
 use App\Entity\Invoice;
+use App\Entity\InvoiceMeta;
+use App\Invoice\InvoiceService;
 use App\Repository\CustomerRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\Query\InvoiceArchiveQuery;
@@ -17,8 +19,11 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandlerInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints;
@@ -38,15 +43,13 @@ final class InvoiceController extends BaseApiController
     }
 
     /**
-     * Returns a paginated collection of invoices.
-     *
-     * Needs permission: view_invoice
+     * Fetch invoices
      */
     #[IsGranted('view_invoice')]
     #[OA\Response(response: 200, description: 'Returns a collection of invoices', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/InvoiceCollection')))]
     #[Route(methods: ['GET'], path: '', name: 'get_invoices')]
-    #[Rest\QueryParam(name: 'begin', requirements: [new Constraints\DateTime(format: 'Y-m-d\TH:i:s')], strict: true, nullable: true, description: 'Only records after this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)')]
-    #[Rest\QueryParam(name: 'end', requirements: [new Constraints\DateTime(format: 'Y-m-d\TH:i:s')], strict: true, nullable: true, description: 'Only records before this date will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)')]
+    #[Rest\QueryParam(name: 'begin', requirements: [new Constraints\DateTime(format: 'Y-m-d\TH:i:s')], strict: true, nullable: true, description: 'Only invoices created at or after this date-time will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)')]
+    #[Rest\QueryParam(name: 'end', requirements: [new Constraints\DateTime(format: 'Y-m-d\TH:i:s')], strict: true, nullable: true, description: 'Only invoices created before or at this date-time will be included (format: HTML5 datetime-local, e.g. YYYY-MM-DDThh:mm:ss)')]
     #[Rest\QueryParam(name: 'customers', map: true, requirements: '\d+', strict: true, nullable: true, default: [], description: 'List of customer IDs to filter, e.g.: customers[]=1&customers[]=2')]
     #[Rest\QueryParam(name: 'status', map: true, requirements: 'pending|paid|canceled|new', strict: true, nullable: true, default: [], description: 'Invoice status: pending, paid, canceled, new. Default: all')]
     #[Rest\QueryParam(name: 'page', requirements: '\d+', strict: true, nullable: true, description: 'The page to display, renders a 404 if not found (default: 1)')]
@@ -78,22 +81,23 @@ final class InvoiceController extends BaseApiController
         /** @var array<int> $customers */
         $customers = $paramFetcher->get('customers');
         foreach ($customerRepository->findByIds(array_unique($customers)) as $customer) {
+            if (!$this->isGranted('access', $customer)) {
+                throw $this->createAccessDeniedException('Cannot access Customer: ' . $customer->getId());
+            }
             $query->addCustomer($customer);
         }
 
         $data = $this->repository->getPagerfantaForQuery($query);
-        $view = $this->createPaginatedView($data);
+        $view = new View($data, 200);
         $view->getContext()->setGroups(self::GROUPS_COLLECTION);
 
         return $this->viewHandler->handle($view);
     }
 
     /**
-     * Returns one invoice.
-     *
-     * Needs permission: view_invoice
+     * Fetch invoice
      */
-    #[IsGranted('view_invoice')]
+    #[IsGranted('view_invoice', 'invoice')]
     #[OA\Response(response: 200, description: 'Returns one invoice', content: new OA\JsonContent(ref: '#/components/schemas/Invoice'))]
     #[Route(methods: ['GET'], path: '/{id}', name: 'get_invoice', requirements: ['id' => '\d+'])]
     public function getAction(Invoice $invoice): Response
@@ -102,5 +106,84 @@ final class InvoiceController extends BaseApiController
         $view->getContext()->setGroups(self::GROUPS_ENTITY);
 
         return $this->viewHandler->handle($view);
+    }
+
+    /**
+     * Update invoice custom-fields
+     */
+    #[IsGranted('edit_invoice', 'invoice')]
+    #[OA\Response(response: 200, description: 'Sets the value of configured custom-fields. You cannot create unknown custom-fields.', content: new OA\JsonContent(ref: '#/components/schemas/Invoice'))]
+    #[OA\Parameter(name: 'id', description: 'Invoice ID to set the custom-fields for', in: 'path', required: true)]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(type: 'array', items: new OA\Items(new Model(type: InvoiceMeta::class))))]
+    #[Route(path: '/{id}/custom-fields', requirements: ['id' => '\d+'], methods: ['PATCH'])]
+    public function updateMetaFields(Invoice $invoice, Request $request, InvoiceService $invoiceService): Response
+    {
+        $invoiceService->loadMetaFields($invoice);
+        $dirty = false;
+
+        foreach ($request->request->all() as $preference) {
+            // why is this not handled by FosRestBundle ?
+            if (!\is_array($preference)) {
+                throw new BadRequestHttpException('Invalid request, array expected');
+            }
+
+            if (!\array_key_exists('name', $preference) || !\array_key_exists('value', $preference)) {
+                throw new BadRequestHttpException('Missing required parameter "name" or "value"');
+            }
+
+            $name = $preference['name'];
+            $value = $preference['value'];
+
+            if (null === ($meta = $invoice->getMetaField($name))) {
+                throw $this->createNotFoundException(\sprintf('Unknown custom-field "%s" requested', $name));
+            }
+
+            $meta->setValue($value);
+            $dirty = true;
+        }
+
+        if ($dirty) {
+            $invoiceService->saveInvoice($invoice);
+        }
+
+        $view = new View($invoice, 200);
+        $view->getContext()->setGroups(self::GROUPS_ENTITY);
+
+        return $this->viewHandler->handle($view);
+    }
+
+    /**
+     * Download invoice
+     */
+    #[IsGranted('view_invoice', 'invoice')]
+    #[OA\Response(
+        response: 200,
+        description: 'Downloads the invoice document as an attachment. The content type depends on the configured invoice renderer.',
+        headers: [
+            new OA\Header(header: 'Content-Disposition', description: 'Attachment filename', schema: new OA\Schema(type: 'string')),
+        ],
+        content: [
+            new OA\MediaType(mediaType: 'application/pdf', schema: new OA\Schema(type: 'string', format: 'binary')),
+            new OA\MediaType(mediaType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', schema: new OA\Schema(type: 'string', format: 'binary')),
+            new OA\MediaType(mediaType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', schema: new OA\Schema(type: 'string', format: 'binary')),
+            new OA\MediaType(mediaType: 'application/vnd.oasis.opendocument.spreadsheet', schema: new OA\Schema(type: 'string', format: 'binary')),
+            new OA\MediaType(mediaType: 'text/html', schema: new OA\Schema(type: 'string')),
+            new OA\MediaType(mediaType: 'application/xml', schema: new OA\Schema(type: 'string')),
+            new OA\MediaType(mediaType: 'text/xml', schema: new OA\Schema(type: 'string')),
+            new OA\MediaType(mediaType: 'application/octet-stream', schema: new OA\Schema(type: 'string', format: 'binary')),
+        ]
+    )]
+    #[Route(path: '/{id}/download', name: 'download_invoice', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function downloadAction(Invoice $invoice, InvoiceService $service): Response
+    {
+        $file = $service->getInvoiceFile($invoice);
+
+        if (null === $file) {
+            throw $this->createNotFoundException(
+                \sprintf('Invoice file could not be found for invoice ID "%s"', $invoice->getId())
+            );
+        }
+
+        return $this->file($file->getRealPath(), $file->getBasename());
     }
 }

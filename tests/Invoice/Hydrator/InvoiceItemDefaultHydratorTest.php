@@ -11,11 +11,10 @@ namespace App\Tests\Invoice\Hydrator;
 
 use App\Invoice\Hydrator\InvoiceItemDefaultHydrator;
 use App\Tests\Invoice\Renderer\RendererTestTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Invoice\Hydrator\InvoiceItemDefaultHydrator
- */
+#[CoversClass(InvoiceItemDefaultHydrator::class)]
 class InvoiceItemDefaultHydratorTest extends TestCase
 {
     use RendererTestTrait;
@@ -57,6 +56,7 @@ class InvoiceItemDefaultHydratorTest extends TestCase
             'entry.description_safe',
             'entry.amount',
             'entry.rate',
+            'entry.rate_fixed',
             'entry.rate_nc',
             'entry.rate_plain',
             'entry.rate_internal',
@@ -85,6 +85,7 @@ class InvoiceItemDefaultHydratorTest extends TestCase
             'entry.user_alias',
             'entry.user_display',
             'entry.user_title',
+            'entry.user_account',
             'entry.user_preference.foo',
             'entry.user_preference.mad',
             'entry.activity',

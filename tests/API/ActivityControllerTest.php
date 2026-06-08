@@ -21,24 +21,23 @@ use App\Repository\ActivityRateRepository;
 use App\Repository\ActivityRepository;
 use App\Repository\Query\VisibilityInterface;
 use App\Tests\Mocks\ActivityTestMetaFieldSubscriberMock;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class ActivityControllerTest extends APIControllerBaseTestCase
 {
     use RateControllerTestTrait;
 
-    /**
-     * @param ActivityRate $rate
-     * @param bool $isCollection
-     * @return string
-     */
     protected function getRateUrlByRate(RateInterface $rate, bool $isCollection): string
     {
+        self::assertInstanceOf(ActivityRate::class, $rate);
+        self::assertNotNull($rate->getActivity());
+        self::assertNotNull($rate->getActivity()->getId());
+
         if ($isCollection) {
             return $this->getRateUrl($rate->getActivity()->getId());
         }
@@ -46,7 +45,7 @@ class ActivityControllerTest extends APIControllerBaseTestCase
         return $this->getRateUrl($rate->getActivity()->getId(), $rate->getId());
     }
 
-    protected function getRateUrl($id = '1', $rateId = null): string
+    protected function getRateUrl(?int $id = 1, ?int $rateId = null): string
     {
         if (null !== $rateId) {
             return \sprintf('/api/activities/%s/rates/%s', $id, $rateId);
@@ -141,9 +140,7 @@ class ActivityControllerTest extends APIControllerBaseTestCase
         return [$project, $project2, $activity1];
     }
 
-    /**
-     * @dataProvider getCollectionTestData
-     */
+    #[DataProvider('getCollectionTestData')]
     public function testGetCollection($url, $project, $parameters, $expected): void
     {
         $client = $this->getClientForAuthenticatedUser(User::ROLE_USER);
@@ -223,11 +220,24 @@ class ActivityControllerTest extends APIControllerBaseTestCase
         self::assertIsArray($result);
         self::assertNotEmpty($result);
         self::assertEquals(5, \count($result));
+
         self::assertIsArray($result[0]);
         self::assertApiResponseTypeStructure('ActivityCollection', $result[0]);
-        self::assertEquals($imports[0]->getId(), $result[4]['project']);
-        self::assertEquals($imports[1]->getId(), $result[3]['project']);
+
+        self::assertIsArray($result[2]);
+        self::assertApiResponseTypeStructure('ActivityCollection', $result[2]);
+        self::assertArrayHasKey('project', $result[2]);
         self::assertEquals($imports[1]->getId(), $result[2]['project']);
+
+        self::assertIsArray($result[3]);
+        self::assertApiResponseTypeStructure('ActivityCollection', $result[3]);
+        self::assertArrayHasKey('project', $result[3]);
+        self::assertEquals($imports[1]->getId(), $result[3]['project']);
+
+        self::assertIsArray($result[4]);
+        self::assertApiResponseTypeStructure('ActivityCollection', $result[4]);
+        self::assertArrayHasKey('project', $result[4]);
+        self::assertEquals($imports[0]->getId(), $result[4]['project']);
     }
 
     public function testGetEntityIsSecure(): void
@@ -246,6 +256,24 @@ class ActivityControllerTest extends APIControllerBaseTestCase
 
         self::assertIsArray($result);
         self::assertApiResponseTypeStructure('ActivityEntity', $result);
+
+        self::assertNull($result['parentTitle']);
+        self::assertNotEmpty($result['id']);
+        self::assertIsArray($result['teams']);
+        self::assertEquals([], $result['teams']);
+        self::assertIsArray($result['metaFields']);
+        self::assertEquals([], $result['metaFields']);
+        self::assertEquals('Test', $result['name']);
+        self::assertNull($result['project']);
+        self::assertEquals(1000, $result['budget']);
+        self::assertEquals(100000, $result['timeBudget']);
+        self::assertNull($result['budgetType']);
+        self::assertNull($result['number']);
+        self::assertEquals('Test comment', $result['comment']);
+        self::assertNull($result['color']);
+        self::assertEquals('#5319e7', $result['color-safe']);
+        self::assertTrue($result['visible']);
+        self::assertTrue($result['billable']);
     }
 
     public function testNotFound(): void
@@ -259,9 +287,16 @@ class ActivityControllerTest extends APIControllerBaseTestCase
         $data = [
             'name' => 'foo',
             'project' => 1,
-            'visible' => true,
             'budget' => '999',
-            'timeBudget' => '7200',
+            'timeBudget' => '10,25',
+            'budgetType' => 'month',
+            'number' => 'P-754',
+            'comment' => 'Awesome activity since a short time',
+            'invoiceText' => 'Some invoice text, pay slow please',
+            'color' => '#000000',
+            'visible' => true,
+            'billable' => true,
+            'teams' => [1],
         ];
         $this->request($client, '/api/activities', 'POST', [], json_encode($data));
         self::assertTrue($client->getResponse()->isSuccessful());
@@ -272,7 +307,22 @@ class ActivityControllerTest extends APIControllerBaseTestCase
 
         self::assertIsArray($result);
         self::assertApiResponseTypeStructure('ActivityEntity', $result);
+        self::assertEquals('Test', $result['parentTitle']);
         self::assertNotEmpty($result['id']);
+        self::assertIsArray($result['teams']);
+        self::assertEquals([['id' => 1, 'name' => 'Test team', 'color' => null, 'color-safe' => '#03A9F4']], $result['teams']);
+        self::assertIsArray($result['metaFields']);
+        self::assertEquals([], $result['metaFields']);
+        self::assertEquals('foo', $result['name']);
+        self::assertEquals(1, $result['project']);
+        self::assertEquals('999', $result['budget']);
+        self::assertEquals('36900', $result['timeBudget']);
+        self::assertEquals('month', $result['budgetType']);
+        self::assertEquals('P-754', $result['number']);
+        self::assertEquals('Awesome activity since a short time', $result['comment']);
+        self::assertEquals('#000000', $result['color']);
+        self::assertTrue($result['visible']);
+        self::assertTrue($result['billable']);
     }
 
     public function testPostActionWithLeastFields(): void
@@ -410,7 +460,7 @@ class ActivityControllerTest extends APIControllerBaseTestCase
     public function testMetaActionThrowsExceptionOnMissingName(): void
     {
         $this->assertExceptionForPatchAction(User::ROLE_ADMIN, '/api/activities/1/meta', ['value' => 'X'], [
-            'code' => 400,
+            'code' => Response::HTTP_BAD_REQUEST,
             'message' => 'Bad Request'
         ]);
     }
@@ -418,7 +468,7 @@ class ActivityControllerTest extends APIControllerBaseTestCase
     public function testMetaActionThrowsExceptionOnMissingValue(): void
     {
         $this->assertExceptionForPatchAction(User::ROLE_ADMIN, '/api/activities/1/meta', ['name' => 'X'], [
-            'code' => 400,
+            'code' => Response::HTTP_BAD_REQUEST,
             'message' => 'Bad Request'
         ]);
     }
@@ -426,7 +476,7 @@ class ActivityControllerTest extends APIControllerBaseTestCase
     public function testMetaActionThrowsExceptionOnMissingMetafield(): void
     {
         $this->assertExceptionForPatchAction(User::ROLE_ADMIN, '/api/activities/1/meta', ['name' => 'X', 'value' => 'Y'], [
-            'code' => 404,
+            'code' => Response::HTTP_NOT_FOUND,
             'message' => 'Not Found'
         ]);
     }
@@ -508,5 +558,50 @@ class ActivityControllerTest extends APIControllerBaseTestCase
             'code' => Response::HTTP_NOT_FOUND,
             'message' => 'Not Found'
         ]);
+    }
+
+    public function testPostDefaultTeamAction(): void
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
+
+        $this->request($client, '/api/activities/1/team', 'POST');
+        self::assertTrue($client->getResponse()->isSuccessful());
+
+        $content = $client->getResponse()->getContent();
+        self::assertIsString($content);
+        $result = json_decode($content, true);
+        self::assertIsArray($result);
+        self::assertApiResponseTypeStructure('TeamEntity', $result);
+        self::assertIsNumeric($result['id']);
+        $teamId = $result['id'];
+
+        self::assertIsArray($result['members']);
+        self::assertCount(1, $result['members']);
+        self::assertIsArray($result['members'][0]);
+        self::assertArrayHasKey('teamlead', $result['members'][0]);
+        self::assertTrue($result['members'][0]['teamlead']);
+
+        // idempotent
+        $this->request($client, '/api/activities/1/team', 'POST');
+        self::assertTrue($client->getResponse()->isSuccessful());
+
+        $content = $client->getResponse()->getContent();
+        self::assertIsString($content);
+        $result = json_decode($content, true);
+        self::assertIsArray($result);
+        self::assertSame($teamId, $result['id']);
+        self::assertIsArray($result['members']);
+        self::assertCount(1, $result['members']);
+    }
+
+    public function testPostDefaultTeamActionIsSecure(): void
+    {
+        $this->assertUrlIsSecuredForRole(User::ROLE_USER, '/api/activities/1/team', 'POST');
+    }
+
+    public function testPostDefaultTeamActionNotFound(): void
+    {
+        $client = $this->getClientForAuthenticatedUser(User::ROLE_ADMIN);
+        $this->assertEntityNotFoundForPost($client, '/api/activities/' . PHP_INT_MAX . '/team');
     }
 }

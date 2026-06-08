@@ -369,6 +369,10 @@ final class Configuration implements ConfigurationInterface
                 ->booleanNode('upload_twig')
                     ->defaultFalse()
                 ->end()
+                ->enumNode('rounding_mode')
+                    ->values(['decimal', 'classic'])
+                    ->defaultValue('classic')
+                ->end()
             ->end()
         ;
 
@@ -396,6 +400,10 @@ final class Configuration implements ConfigurationInterface
                     ->scalarPrototype()->end()
                     ->defaultValue([])
                 ->end()
+                ->integerNode('timeout')
+                    ->defaultValue(60)
+                ->end()
+
             ->end()
         ;
 
@@ -548,8 +556,20 @@ final class Configuration implements ConfigurationInterface
                 ->booleanNode('login')
                     ->defaultTrue()
                 ->end()
+                ->scalarNode('theme')
+                    ->defaultValue('auto')
+                    ->validate()
+                        ->ifTrue(static function ($v) {
+                            return (!\in_array($v, ['auto', 'default', 'dark']));
+                        })
+                        ->thenInvalid('The theme must be one of: "auto", "default", "dark"')
+                    ->end()
+                ->end()
                 ->booleanNode('registration')
                     ->defaultFalse()
+                ->end()
+                ->booleanNode('wizard')
+                    ->defaultTrue()
                 ->end()
                 ->booleanNode('password_reset')
                     ->defaultTrue()
@@ -617,8 +637,15 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('timezone')->defaultNull()->end()
                         ->scalarNode('language')->defaultValue(User::DEFAULT_LANGUAGE)->end()
-                        ->scalarNode('theme')->defaultValue('default')->end()
-                        ->scalarNode('currency')->defaultValue(Customer::DEFAULT_CURRENCY)->end()
+                        ->scalarNode('theme')
+                            ->defaultValue('auto')
+                            ->validate()
+                                ->ifTrue(static function ($v) {
+                                    return (!\in_array($v, ['auto', 'default', 'dark']));
+                                })
+                                ->thenInvalid('The theme must be one of: "auto", "default", "dark"')
+
+                        ->end()
                     ->end()
                 ->end()
             ->end()
@@ -855,6 +882,9 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('baseurl')->end()
                         ->booleanNode('strict')->end()
                         ->booleanNode('debug')->end()
+                        ->booleanNode('cleanupLongRelayState')
+                            ->defaultFalse()
+                        ->end()
                         ->arrayNode('idp')
                             ->children()
                                 ->scalarNode('entityId')->end()

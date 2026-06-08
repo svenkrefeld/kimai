@@ -12,6 +12,8 @@ namespace App\WorkingTime;
 use App\Entity\User;
 use App\Entity\WorkingTime;
 use App\Event\WorkingTimeApproveMonthEvent;
+use App\Event\WorkingTimeQueryStatsEvent;
+use App\Event\WorkingTimeUnlockMonthEvent;
 use App\Event\WorkingTimeYearEvent;
 use App\Event\WorkingTimeYearSummaryEvent;
 use App\Repository\TimesheetRepository;
@@ -26,9 +28,9 @@ use App\WorkingTime\Model\YearPerUserSummary;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * @internal this API and the entire namespace is experimental: expect changes!
+ * @final not final for mocking in tests
  */
-final class WorkingTimeService
+class WorkingTimeService
 {
     private const LATEST_APPROVAL_PREF = '_latest_approval';
     private const LATEST_APPROVAL_FORMAT = 'Y-m-d H:i:s';
@@ -154,12 +156,14 @@ final class WorkingTimeService
                 $dayDate = $day->getDay();
                 $result = new WorkingTime($user, $dayDate);
 
-                if (($firstDay === null || $firstDay <= $dayDate) && ($lastDay === null || $lastDay >= $dayDate)) {
-                    $result->setExpectedTime($calculator->getWorkHoursForDay($dayDate));
-                }
+                if ($dayDate <= $until) {
+                    if (($firstDay === null || $firstDay <= $dayDate) && ($lastDay === null || $lastDay >= $dayDate)) {
+                        $result->setExpectedTime($calculator->getWorkHoursForDay($dayDate));
+                    }
 
-                if (\array_key_exists($key, $stats)) {
-                    $result->setActualTime($stats[$key]);
+                    if (\array_key_exists($key, $stats)) {
+                        $result->setActualTime($stats[$key]);
+                    }
                 }
 
                 $day->setWorkingTime($result);
@@ -180,15 +184,12 @@ final class WorkingTimeService
         return $year->getMonth($monthDate);
     }
 
+    // FIXME deprecated 3.0 remove $user, fetch from $month->getUser() instead
     public function approveMonth(User $user, Month $month, \DateTimeInterface $approvalDate, User $approvedBy): void
     {
         foreach ($month->getDays() as $day) {
             $workingTime = $day->getWorkingTime();
             if ($workingTime === null) {
-                continue;
-            }
-
-            if ($workingTime->getId() !== null) {
                 continue;
             }
 
@@ -204,15 +205,38 @@ final class WorkingTimeService
 
         $this->workingTimeRepository->persistScheduledWorkingTimes();
 
+        // $user = $month->getUser();
         $user->setPreferenceValue(self::LATEST_APPROVAL_PREF, $this->workingTimeRepository->getLatestApprovalDate($user)?->format(self::LATEST_APPROVAL_FORMAT));
         $this->userRepository->saveUser($user);
 
-        $this->eventDispatcher->dispatch(new WorkingTimeApproveMonthEvent($user, $month, $approvalDate, $approvedBy));
+        $this->eventDispatcher->dispatch(new WorkingTimeApproveMonthEvent($month, $approvedBy));
+    }
+
+    public function unlockMonth(Month $month, User $unlockedBy): void
+    {
+        foreach ($month->getDays() as $day) {
+            $workingTime = $day->getWorkingTime();
+            if ($workingTime === null || $workingTime->getId() === null) {
+                continue;
+            }
+
+            if (!$workingTime->isApproved()) {
+                continue;
+            }
+
+            $this->workingTimeRepository->scheduleWorkingTimeDelete($workingTime);
+        }
+
+        $this->workingTimeRepository->persistScheduledWorkingTimes();
+
+        $user = $month->getUser();
+        $user->setPreferenceValue(self::LATEST_APPROVAL_PREF, $this->workingTimeRepository->getLatestApprovalDate($user)?->format(self::LATEST_APPROVAL_FORMAT));
+        $this->userRepository->saveUser($user);
+
+        $this->eventDispatcher->dispatch(new WorkingTimeUnlockMonthEvent($month, $unlockedBy));
     }
 
     /**
-     * @param \DateTimeInterface $year
-     * @param User $user
      * @return array<string, int>
      */
     private function getYearStatistics(\DateTimeInterface $year, User $user): array
@@ -234,6 +258,9 @@ final class WorkingTimeService
             ->setParameter('user', $user->getId())
             ->addGroupBy('day')
         ;
+
+        $event = new WorkingTimeQueryStatsEvent($qb, $user, $begin, $end);
+        $this->eventDispatcher->dispatch($event);
 
         $results = $qb->getQuery()->getResult();
 

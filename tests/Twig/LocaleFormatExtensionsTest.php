@@ -13,16 +13,17 @@ use App\Configuration\LocaleService;
 use App\Entity\Timesheet;
 use App\Entity\User;
 use App\Twig\LocaleFormatExtensions;
+use App\Utils\LocaleFormatter;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Intl\Util\IntlTestHelper;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Twig\TwigTest;
 
-/**
- * @covers \App\Twig\LocaleFormatExtensions
- * @covers \App\Utils\LocaleFormatter
- */
+#[CoversClass(LocaleFormatExtensions::class)]
+#[CoversClass(LocaleFormatter::class)]
 class LocaleFormatExtensionsTest extends TestCase
 {
     private array $localeEn = ['en' => ['date' => 'Y-m-d', 'duration' => '%h:%m', 'time' => 'h:mm a']];
@@ -42,7 +43,9 @@ class LocaleFormatExtensionsTest extends TestCase
 
     protected function tearDown(): void
     {
-        date_default_timezone_set($this->oldTimezone);
+        if ($this->oldTimezone !== null) {
+            date_default_timezone_set($this->oldTimezone);
+        }
         $this->oldTimezone = null;
     }
 
@@ -124,9 +127,7 @@ class LocaleFormatExtensionsTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getDateShortData
-     */
+    #[DataProvider('getDateShortData')]
     public function testDateShort(string $locale, \DateTime|string|null $date, string $expected): void
     {
         $sut = $this->getSut($locale, [
@@ -155,9 +156,7 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getDateTimeData
-     */
+    #[DataProvider('getDateTimeData')]
     public function testDateTime(string $locale, \DateTime|string|null $date, string $expected): void
     {
         $sut = $this->getSut($locale, [
@@ -184,9 +183,7 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getDayNameTestData
-     */
+    #[DataProvider('getDayNameTestData')]
     public function testDayName(string $locale, string $date, string $expectedName, bool $short): void
     {
         $sut = $this->getSut($locale, []);
@@ -206,9 +203,7 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getMonthNameTestData
-     */
+    #[DataProvider('getMonthNameTestData')]
     public function testMonthName(string $locale, string $date, string $expectedName, bool $withYear = false): void
     {
         $sut = $this->getSut($locale, []);
@@ -282,9 +277,7 @@ class LocaleFormatExtensionsTest extends TestCase
         self::assertEquals('123.234,76', $sut->money(123234.7554, 'EUR', false));
     }
 
-    /**
-     * @dataProvider getMoneyNoCurrencyData
-     */
+    #[DataProvider('getMoneyNoCurrencyData')]
     public function testMoneyNoCurrency($result, $amount, $currency, $locale): void
     {
         $sut = $this->getSut($locale, $this->localeEn);
@@ -316,9 +309,7 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getMoneyData
-     */
+    #[DataProvider('getMoneyData')]
     public function testMoney(string $result, float|int|null $amount, string $currency, string $locale): void
     {
         $sut = $this->getSut($locale, $this->localeEn);
@@ -349,9 +340,7 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getAmountData
-     */
+    #[DataProvider('getAmountData')]
     public function testAmount(string $result, null|int|float|string $amount, string $locale): void
     {
         $sut = $this->getSut($locale, $this->localeEn);
@@ -378,10 +367,8 @@ class LocaleFormatExtensionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getMoneyData62_1
-     */
-    public function testMoney62_1(string $result, null|int|float $amount, string $currency, string $locale): void
+    #[DataProvider('getMoneyData62_1')]
+    public function testMoney621(string $result, null|int|float $amount, string $currency, string $locale): void
     {
         IntlTestHelper::requireFullIntl($this, '62.1');
 
@@ -459,6 +446,7 @@ class LocaleFormatExtensionsTest extends TestCase
                 'name' => null,
                 'admin' => false,
                 'superAdmin' => false,
+                'roles' => [],
             ],
         ];
         $user = $this->createMock(User::class);
@@ -488,6 +476,7 @@ class LocaleFormatExtensionsTest extends TestCase
                 'name' => 'anonymous',
                 'admin' => false,
                 'superAdmin' => false,
+                'roles' => [],
             ],
         ];
 
@@ -602,5 +591,15 @@ class LocaleFormatExtensionsTest extends TestCase
         $sut = $this->getSut('en', $this->localeEn);
         self::assertEquals('34.29', $sut->durationChart(123456));
         self::assertEquals('-34.29', $sut->durationChart(-123456));
+    }
+
+    public function testDateWeekday(): void
+    {
+        $dateTime = new \DateTimeImmutable('2026-08-13 08:00:00 Europe/Berlin');
+
+        $sut = $this->getSut('en', $this->localeEn);
+        self::assertEquals('Thu 13', $sut->dateWeekday($dateTime));
+        self::assertEquals('Thu#-#13', $sut->dateWeekday($dateTime, '#-#'));
+        self::assertEquals('Thu<br>13', $sut->dateWeekday($dateTime, '<br>'));
     }
 }

@@ -74,11 +74,9 @@ final class UserFixtures extends Fixture implements FixtureGroupInterface
     }
 
     /**
-     * @param User $user
-     * @param string|null $timezone
      * @return array<UserPreference>
      */
-    private function getUserPreferences(User $user, string $timezone = null): array
+    private function getUserPreferences(User $user, ?string $timezone = null): array
     {
         $preferences = [];
 
@@ -265,7 +263,7 @@ final class UserFixtures extends Fixture implements FixtureGroupInterface
         $user->setUserIdentifier(self::USERNAME_SUPER_ADMIN);
         $user->setEmail('susan_super@example.com');
         $user->setRoles([User::ROLE_SUPER_ADMIN]);
-        $user->setAvatar('/touch-icon-192x192.png');
+        $user->setAvatar('https://demo.kimai.org/touch-icon-192x192.png');
         $user->setEnabled(true);
         $prefs = $this->getUserPreferences($user, 'Europe/Berlin');
         $user->setPreferences($prefs);
@@ -280,7 +278,7 @@ final class UserFixtures extends Fixture implements FixtureGroupInterface
         $user->setUserIdentifier('super_admin');
         $user->setEmail('super_admin@example.com');
         $user->setRoles([User::ROLE_SUPER_ADMIN]);
-        $user->setAvatar('/touch-icon-192x192.png');
+        $user->setAvatar('https://demo.kimai.org/touch-icon-192x192.png');
         $user->setEnabled(true);
         $prefs = $this->getUserPreferences($user, 'Europe/Berlin');
         $user->setPreferences($prefs);

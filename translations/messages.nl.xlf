@@ -50,10 +50,6 @@
         <source>search</source>
         <target>Zoeken</target>
       </trans-unit>
-      <trans-unit id="hBNESu6" resname="my.profile">
-        <source>my.profile</source>
-        <target>Mijn profiel</target>
-      </trans-unit>
       <trans-unit id="XohImNo" resname="password">
         <source>Password</source>
         <target state="translated">Wachtwoord</target>
@@ -466,25 +462,25 @@
         <source>stats.workingTimeWeek</source>
         <target>Kalenderweek %week%</target>
       </trans-unit>
-      <trans-unit id="TdBJBAl" resname="stats.durationToday">
+      <trans-unit id="TdBJBAl" resname="stats.durationToday" xml:space="preserve">
         <source>stats.durationToday</source>
-        <target state="translated">Werkuren vandaag</target>
+        <target state="translated">Vandaag</target>
       </trans-unit>
-      <trans-unit id="XhKalZH" resname="stats.durationWeek">
+      <trans-unit id="XhKalZH" resname="stats.durationWeek" xml:space="preserve">
         <source>stats.durationWeek</source>
-        <target state="translated">Werkuren deze week</target>
+        <target state="translated">Deze week</target>
       </trans-unit>
-      <trans-unit id="uaOwf_P" resname="stats.durationMonth">
+      <trans-unit id="uaOwf_P" resname="stats.durationMonth" xml:space="preserve">
         <source>stats.durationMonth</source>
-        <target state="translated">Werkuren deze maand</target>
+        <target state="translated">Deze maand</target>
       </trans-unit>
-      <trans-unit id="WqF84KR" resname="stats.durationYear">
+      <trans-unit id="WqF84KR" resname="stats.durationYear" xml:space="preserve">
         <source>stats.durationYear</source>
-        <target state="translated">Werkuren dit jaar</target>
+        <target state="translated">Dit jaar</target>
       </trans-unit>
-      <trans-unit id="YtvPnl1" resname="stats.durationTotal">
+      <trans-unit id="YtvPnl1" resname="stats.durationTotal" xml:space="preserve">
         <source>stats.durationTotal</source>
-        <target state="translated">Totaal van werkuren</target>
+        <target state="translated">Totaal</target>
       </trans-unit>
       <trans-unit id="IFOLMgp" resname="stats.yourWorkingHours">
         <source>stats.yourWorkingHours</source>
@@ -574,24 +570,24 @@
         <source>preview</source>
         <target>Voorbeeld</target>
       </trans-unit>
-      <trans-unit id="X70dwP8" resname="button.print">
-        <source>button.print</source>
+      <trans-unit id="zpU6DrC" resname="print">
+        <source>print</source>
         <target>Afdrukken</target>
       </trans-unit>
-      <trans-unit id="W_TXvSi" resname="button.csv">
-        <source>button.csv</source>
+      <trans-unit id="U7ubCzi" resname="csv">
+        <source>csv</source>
         <target>CSV</target>
       </trans-unit>
-      <trans-unit id="vC2IsaP" resname="button.xlsx">
-        <source>button.xlsx</source>
+      <trans-unit id="HJgLIry" resname="xlsx">
+        <source>xlsx</source>
         <target>Excel</target>
       </trans-unit>
-      <trans-unit id="aAa5uRR" resname="button.pdf">
-        <source>button.pdf</source>
+      <trans-unit id="w1sh1so" resname="pdf">
+        <source>pdf</source>
         <target>PDF</target>
       </trans-unit>
-      <trans-unit id="ulYFDIo" resname="button.ods">
-        <source>button.ods</source>
+      <trans-unit id="lmUO63g" resname="ods">
+        <source>ods</source>
         <target>ODS</target>
       </trans-unit>
       <trans-unit id="zPcx3O_" resname="invoice_print">
@@ -786,13 +782,13 @@
         <source>user_permissions.title</source>
         <target>Gebruikersrechten</target>
       </trans-unit>
-      <trans-unit id="mflwMcX" resname="rates.title">
+      <trans-unit id="mflwMcX" resname="rates.title" xml:space="preserve" approved="yes">
         <source>rates.title</source>
-        <target>Kosten</target>
+        <target state="final">Prijs</target>
       </trans-unit>
-      <trans-unit id="0M_Gylq" resname="rates.empty">
+      <trans-unit id="0M_Gylq" resname="rates.empty" xml:space="preserve" approved="yes">
         <source>rates.empty</source>
-        <target state="translated">Er zijn nog geen kosten geconfigureerd.</target>
+        <target state="final">Er zijn nog geen prijzen opgegeven.</target>
       </trans-unit>
       <trans-unit id="5ofAsOs" resname="internalRate">
         <source>internalRate</source>
@@ -1030,9 +1026,9 @@
         <source>Working hours</source>
         <target>Werktijd</target>
       </trans-unit>
-      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear">
+      <trans-unit id="xkugSAA" resname="stats.durationFinancialYear" xml:space="preserve">
         <source>stats.durationFinancialYear</source>
-        <target>Werkuren dit boekjaar</target>
+        <target state="translated">Dit boekjaar</target>
       </trans-unit>
       <trans-unit id="_Pym9RO" resname="stats.activeUsersFinancialYear">
         <source>stats.activeUsersFinancialYear</source>
@@ -1504,7 +1500,7 @@
       </trans-unit>
       <trans-unit id="yJg6P3m" resname="holiday.intro" xml:space="preserve">
         <source>You have submitted %used% of your available %days% vacation days so far.</source>
-        <target state="needs-translation">Je hebt %used% van je beschikbare %days% vakantiedagen tot nu toe opgenomen.</target>
+        <target state="translated">Je hebt %used% van je %days% beschikbare vakantiedagen tot nu toe ingediend.</target>
       </trans-unit>
       <trans-unit id="DA1.Ln_" resname="time_off.intro" xml:space="preserve">
         <source>time_off.intro</source>
@@ -1526,9 +1522,9 @@
         <source>absence</source>
         <target state="translated">Afwezigheid</target>
       </trans-unit>
-      <trans-unit id="YDrWFFP" resname="sickness.intro">
-        <source>sickness.intro</source>
-        <target state="translated">Ziekte, doktersbezoek, zorg voor naaste familieleden, enz.</target>
+      <trans-unit id="YDrWFFP" resname="sickness.intro" xml:space="preserve">
+        <source>Incapacity for work, medically necessary appointments, care leave, etc.</source>
+        <target state="translated">Werkonbekwaamheid, medische afspraken, zorgverlof, enz.</target>
       </trans-unit>
       <trans-unit id="zlmddHB" resname="public_holidays" xml:space="preserve">
         <source>public_holidays</source>
@@ -1822,25 +1818,13 @@
         <source>profile-stats</source>
         <target>Profiel</target>
       </trans-unit>
-      <trans-unit id="zeD7Dew" resname="settings">
-        <source>settings</source>
-        <target>Voorkeuren</target>
+      <trans-unit id="zeD7Dew" resname="settings" xml:space="preserve">
+        <source>Settings</source>
+        <target state="needs-translation">Voorkeuren</target>
       </trans-unit>
-      <trans-unit id="anCjtwe" resname="timesheet.filter">
+      <trans-unit id="anCjtwe" resname="timesheet.filter" xml:space="preserve">
         <source>Filter timesheets</source>
-        <target>Tijden</target>
-      </trans-unit>
-      <trans-unit id="xY9_cU2" resname="customer.filter">
-        <source>Filter customers</source>
-        <target>Filter op klant</target>
-      </trans-unit>
-      <trans-unit id="UFgOnc6" resname="project.filter">
-        <source>Filter projects</source>
-        <target>Filter op project</target>
-      </trans-unit>
-      <trans-unit id="5G3QNHA" resname="activity.filter">
-        <source>Filter activities</source>
-        <target>Filter op activiteiten</target>
+        <target state="translated">Urenstaat</target>
       </trans-unit>
       <trans-unit id="b1pgNOd" resname="copy">
         <source>copy</source>
@@ -1917,6 +1901,74 @@
       <trans-unit id="aP9j_4L" resname="download" xml:space="preserve">
         <source>download</source>
         <target state="translated">Downloaden</target>
+      </trans-unit>
+      <trans-unit id="4WlKIfD" resname="unlock_month" xml:space="preserve" approved="no">
+        <source>Unlock month</source>
+        <target state="translated">Ontgrendel maand</target>
+      </trans-unit>
+      <trans-unit id="mhOe3Iy" resname="unlock_month.help" xml:space="preserve">
+        <source>unlock_month.help</source>
+        <target state="translated">Dit ontgrendelt alle dagen van het jaar na de geselecteerde datum.</target>
+      </trans-unit>
+      <trans-unit id="YzOSTim" resname="status.rejected" xml:space="preserve" approved="no">
+        <source>Rejected</source>
+        <target state="translated">Afgewezen</target>
+      </trans-unit>
+      <trans-unit id="CE6ZCkm" resname="reject" xml:space="preserve">
+        <source>reject</source>
+        <target state="translated">Afwijzen</target>
+      </trans-unit>
+      <trans-unit id="HQ2YM1b" resname="attendance_only_project" xml:space="preserve">
+        <source>attendance_only_project</source>
+        <target state="translated">Alleen ingangen van het geselecteerde project als werktijd tellen</target>
+      </trans-unit>
+      <trans-unit id="EiWubBr" resname="sessions" xml:space="preserve">
+        <source>Sessions</source>
+        <target state="translated">Sessies</target>
+      </trans-unit>
+      <trans-unit id="f0kKHXR" resname="sessions_logout" xml:space="preserve">
+        <source>Log out of all devices</source>
+        <target state="translated">Log uit van alle apparaten</target>
+      </trans-unit>
+      <trans-unit id="9qIU96X" resname="result" xml:space="preserve">
+        <source>result</source>
+        <target state="translated">Resultaat</target>
+      </trans-unit>
+      <trans-unit id="wvt4jH3" resname="training" xml:space="preserve">
+        <source>training</source>
+        <target state="translated">Training</target>
+      </trans-unit>
+      <trans-unit id="rD4oQRR" resname="postcode" xml:space="preserve">
+        <source>Postcode</source>
+        <target state="translated">ZIP/ Postcode</target>
+      </trans-unit>
+      <trans-unit id="EaYsI0E" resname="city" xml:space="preserve">
+        <source>City</source>
+        <target state="translated">Stad</target>
+      </trans-unit>
+      <trans-unit id="y1XHR1Q" resname="address_deprecated" xml:space="preserve">
+        <source>address_deprecated</source>
+        <target state="translated">Dit veld wordt binnenkort verwijderd. Draag het adres over om geldige facturen te blijven genereren (bijvoorbeeld voor e-facturering).</target>
+      </trans-unit>
+      <trans-unit id="nsbR30p" resname="sending_company" xml:space="preserve">
+        <source>sending_company</source>
+        <target state="needs-translation">Factuurafzender</target>
+      </trans-unit>
+      <trans-unit id="Uzll0ps" resname="Customer portal" xml:space="preserve">
+        <source>Customer portal</source>
+        <target state="translated">Klantenportaal</target>
+      </trans-unit>
+      <trans-unit id="cDOQMYv" resname="Beta" xml:space="preserve">
+        <source>Beta</source>
+        <target state="translated">Schakelt een preview-functie in die nog in ontwikkeling is.</target>
+      </trans-unit>
+      <trans-unit id="NA9GMDP" resname="Code" xml:space="preserve">
+        <source>Code</source>
+        <target state="translated">Code</target>
+      </trans-unit>
+      <trans-unit id="lt2Y2LO" resname="timesheet">
+        <source>Timesheet</source>
+        <target state="translated">Tijdrooster</target>
       </trans-unit>
     </body>
   </file>

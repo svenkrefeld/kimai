@@ -13,15 +13,15 @@ use App\Constants;
 use App\Entity\Activity;
 use App\Entity\User;
 use App\Twig\Extensions;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Twig\Node\TextNode;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Twig\TwigTest;
 
-/**
- * @covers \App\Twig\Extensions
- */
+#[CoversClass(Extensions::class)]
 class ExtensionsTest extends TestCase
 {
     protected function getSut(): Extensions
@@ -64,7 +64,7 @@ class ExtensionsTest extends TestCase
 
     public function testGetFunctions(): void
     {
-        $functions = ['report_date', 'class_name', 'iso_day_by_name', 'random_color'];
+        $functions = ['date_range', 'report_date', 'class_name', 'iso_day_by_name', 'random_color'];
         $sut = $this->getSut();
         $twigFunctions = $sut->getFunctions();
         self::assertCount(\count($functions), $twigFunctions);
@@ -149,9 +149,7 @@ sdfsdf' . PHP_EOL . "\n" .
         ];
     }
 
-    /**
-     * @dataProvider getMultilineTestData
-     */
+    #[DataProvider('getMultilineTestData')]
     public function testMultilineIndent($indent, $string, $expected): void
     {
         $sut = $this->getSut();
@@ -211,14 +209,31 @@ sdfsdf' . PHP_EOL . "\n" .
         yield [' &ndash; ', "foo\r\nbar\rtest\nhello", 'foo &ndash; bar &ndash; test &ndash; hello'];
     }
 
-    /**
-     * @dataProvider getTestDataReplaceNewline
-     */
+    #[DataProvider('getTestDataReplaceNewline')]
     public function testReplaceNewline(string $replacer, $input, $expected): void
     {
         $sut = $this->getSut();
 
         self::assertEquals($expected, $sut->replaceNewline($input, $replacer));
+    }
+
+    public function testReportDate(): void
+    {
+        $sut = $this->getSut();
+
+        $begin = new \DateTimeImmutable('2025-02-01 17:13:45');
+        $end = new \DateTimeImmutable('2025-02-25 06:10:00');
+
+        self::assertEquals('2025-02-01 - 2025-02-25', $sut->buildDateRange($begin, $end));
+    }
+
+    public function testFormatReportDate(): void
+    {
+        $sut = $this->getSut();
+
+        $date = new \DateTimeImmutable('2024-07-23 17:13:45');
+
+        self::assertEquals('2024-07-23', $sut->formatReportDate($date));
     }
 
     public function testGetRandomColor(): void

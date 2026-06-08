@@ -12,11 +12,10 @@ namespace App\Tests\Invoice\Hydrator;
 use App\Invoice\Hydrator\InvoiceModelProjectHydrator;
 use App\Project\ProjectStatisticService;
 use App\Tests\Invoice\Renderer\RendererTestTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Invoice\Hydrator\InvoiceModelProjectHydrator
- */
+#[CoversClass(InvoiceModelProjectHydrator::class)]
 class InvoiceModelProjectHydratorTest extends TestCase
 {
     use RendererTestTrait;
@@ -34,6 +33,7 @@ class InvoiceModelProjectHydratorTest extends TestCase
     public function assertModelStructure(array $model): void
     {
         $keys = [
+            'project._counter',
             'project.id',
             'project.name',
             'project.comment',

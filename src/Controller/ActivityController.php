@@ -14,11 +14,8 @@ use App\Activity\ActivityStatisticService;
 use App\Configuration\SystemConfiguration;
 use App\Entity\Activity;
 use App\Entity\ActivityRate;
-use App\Entity\MetaTableTypeInterface;
 use App\Entity\Project;
-use App\Entity\Team;
 use App\Event\ActivityDetailControllerEvent;
-use App\Event\ActivityMetaDefinitionEvent;
 use App\Event\ActivityMetaDisplayEvent;
 use App\Export\Spreadsheet\EntityWithMetaFieldsExporter;
 use App\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
@@ -51,19 +48,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: '/admin/activity')]
 final class ActivityController extends AbstractController
 {
-    public function __construct(
-        private readonly ActivityRepository $repository,
-        private readonly SystemConfiguration $configuration,
-        private readonly EventDispatcherInterface $dispatcher,
-        private readonly ActivityService $activityService
-    )
+    public function __construct(private readonly ActivityRepository $repository)
     {
     }
 
     #[Route(path: '/', defaults: ['page' => 1], name: 'admin_activity', methods: ['GET'])]
     #[Route(path: '/page/{page}', requirements: ['page' => '[1-9]\d*'], name: 'admin_activity_paginated', methods: ['GET'])]
     #[IsGranted(new Expression("is_granted('listing', 'activity')"))]
-    public function indexAction(int $page, Request $request): Response
+    public function indexAction(int $page, Request $request, EventDispatcherInterface $dispatcher, SystemConfiguration $configuration): Response
     {
         $query = new ActivityQuery();
         $query->loadTeams();
@@ -76,7 +68,10 @@ final class ActivityController extends AbstractController
         }
 
         $entries = $this->repository->getPagerfantaForQuery($query);
-        $metaColumns = $this->findMetaColumns($query);
+
+        $event = new ActivityMetaDisplayEvent($query, ActivityMetaDisplayEvent::ACTIVITY);
+        $dispatcher->dispatch($event);
+        $metaColumns = $event->getFields();
 
         $table = new DataTable('activity_admin', $query);
         $table->setPagination($entries);
@@ -114,29 +109,16 @@ final class ActivityController extends AbstractController
             'page_setup' => $page,
             'dataTable' => $table,
             'metaColumns' => $metaColumns,
-            'defaultCurrency' => $this->configuration->getCustomerDefaultCurrency(),
+            'defaultCurrency' => $configuration->getDefaultCurrency(),
             'now' => $this->getDateTimeFactory()->createDateTime(),
         ]);
     }
 
-    /**
-     * @param ActivityQuery $query
-     * @return MetaTableTypeInterface[]
-     */
-    private function findMetaColumns(ActivityQuery $query): array
-    {
-        $event = new ActivityMetaDisplayEvent($query, ActivityMetaDisplayEvent::ACTIVITY);
-        $this->dispatcher->dispatch($event);
-
-        return $event->getFields();
-    }
-
     #[Route(path: '/{id}/details', name: 'activity_details', methods: ['GET', 'POST'])]
     #[IsGranted('view', 'activity')]
-    public function detailsAction(Activity $activity, TeamRepository $teamRepository, ActivityRateRepository $rateRepository, ActivityStatisticService $statisticService): Response
+    public function detailsAction(Activity $activity, TeamRepository $teamRepository, ActivityRateRepository $rateRepository, ActivityStatisticService $statisticService, ActivityService $activityService, EventDispatcherInterface $dispatcher): Response
     {
-        $event = new ActivityMetaDefinitionEvent($activity);
-        $this->dispatcher->dispatch($event);
+        $activityService->loadMetaFields($activity);
 
         $stats = null;
         $rates = [];
@@ -179,7 +161,7 @@ final class ActivityController extends AbstractController
 
         // additional boxes by plugins
         $event = new ActivityDetailControllerEvent($activity);
-        $this->dispatcher->dispatch($event);
+        $dispatcher->dispatch($event);
         $boxes = $event->getController();
 
         $page = $this->createPageSetup();
@@ -205,6 +187,10 @@ final class ActivityController extends AbstractController
     #[IsGranted('edit', 'activity')]
     public function editRateAction(Activity $activity, ActivityRate $rate, Request $request, ActivityRateRepository $repository): Response
     {
+        if ($rate->getActivity() !== $activity) {
+            throw $this->createAccessDeniedException('Trying to edit rate and activity that do not belong together.');
+        }
+
         return $this->rateFormAction($activity, $rate, $request, $repository, $this->generateUrl('admin_activity_rate_edit', ['id' => $activity->getId(), 'rate' => $rate->getId()]));
     }
 
@@ -247,31 +233,29 @@ final class ActivityController extends AbstractController
 
     #[Route(path: '/create/{project}', name: 'admin_activity_create_with_project', methods: ['GET', 'POST'])]
     #[IsGranted('create_activity')]
-    public function createWithProjectAction(Request $request, Project $project): Response
+    #[IsGranted('edit', 'project')]
+    public function createWithProjectAction(Project $project, Request $request, ActivityService $activityService, SystemConfiguration $configuration): Response
     {
-        return $this->createActivity($request, $project);
+        return $this->createActivity($request, $activityService, $configuration, $project);
     }
 
     #[Route(path: '/create', name: 'admin_activity_create', methods: ['GET', 'POST'])]
     #[IsGranted('create_activity')]
-    public function createAction(Request $request): Response
+    public function createAction(Request $request, ActivityService $activityService, SystemConfiguration $configuration): Response
     {
-        return $this->createActivity($request, null);
+        return $this->createActivity($request, $activityService, $configuration, null);
     }
 
-    private function createActivity(Request $request, ?Project $project = null): Response
+    private function createActivity(Request $request, ActivityService $activityService, SystemConfiguration $configuration, ?Project $project = null): Response
     {
-        $activity = $this->activityService->createNewActivity($project);
+        $activity = $activityService->createNewActivity($project);
 
-        $event = new ActivityMetaDefinitionEvent($activity);
-        $this->dispatcher->dispatch($event);
-
-        $editForm = $this->createEditForm($activity);
+        $editForm = $this->createEditForm($activity, $configuration);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             try {
-                $this->activityService->saveNewActivity($activity);
+                $activityService->saveActivity($activity);
                 $this->flashSuccess('action.update.success');
 
                 return $this->redirectToRouteAfterCreate('activity_details', ['id' => $activity->getId()]);
@@ -289,7 +273,7 @@ final class ActivityController extends AbstractController
 
     #[Route(path: '/{id}/permissions', name: 'admin_activity_permissions', methods: ['GET', 'POST'])]
     #[IsGranted('permissions', 'activity')]
-    public function teamPermissionsAction(Activity $activity, Request $request): Response
+    public function teamPermissionsAction(Activity $activity, Request $request, ActivityService $activityService): Response
     {
         $form = $this->createForm(ActivityTeamPermissionForm::class, $activity, [
             'action' => $this->generateUrl('admin_activity_permissions', ['id' => $activity->getId()]),
@@ -300,7 +284,7 @@ final class ActivityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->activityService->updateActivity($activity);
+                $activityService->saveActivity($activity);
                 $this->flashSuccess('action.update.success');
 
                 if ($this->isGranted('view', $activity)) {
@@ -320,42 +304,18 @@ final class ActivityController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/{id}/create_team', name: 'activity_team_create', methods: ['GET'])]
-    #[IsGranted('create_team')]
-    #[IsGranted('permissions', 'activity')]
-    public function createDefaultTeamAction(Activity $activity, TeamRepository $teamRepository): Response
-    {
-        $defaultTeam = $teamRepository->findOneBy(['name' => $activity->getName()]);
-
-        if (null === $defaultTeam) {
-            $defaultTeam = new Team($activity->getName());
-        }
-
-        $defaultTeam->addTeamlead($this->getUser());
-        $defaultTeam->addActivity($activity);
-
-        try {
-            $teamRepository->saveTeam($defaultTeam);
-        } catch (Exception $ex) {
-            $this->flashUpdateException($ex);
-        }
-
-        return $this->redirectToRoute('activity_details', ['id' => $activity->getId()]);
-    }
-
     #[Route(path: '/{id}/edit', name: 'admin_activity_edit', methods: ['GET', 'POST'])]
     #[IsGranted('edit', 'activity')]
-    public function editAction(Activity $activity, Request $request): Response
+    public function editAction(Activity $activity, Request $request, ActivityService $activityService, SystemConfiguration $configuration): Response
     {
-        $event = new ActivityMetaDefinitionEvent($activity);
-        $this->dispatcher->dispatch($event);
+        $activityService->loadMetaFields($activity);
 
-        $editForm = $this->createEditForm($activity);
+        $editForm = $this->createEditForm($activity, $configuration);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             try {
-                $this->activityService->updateActivity($activity);
+                $activityService->saveActivity($activity);
                 $this->flashSuccess('action.update.success');
 
                 if ($this->isGranted('view', $activity)) {
@@ -377,7 +337,7 @@ final class ActivityController extends AbstractController
 
     #[Route(path: '/{id}/delete', name: 'admin_activity_delete', methods: ['GET', 'POST'])]
     #[IsGranted('delete', 'activity')]
-    public function deleteAction(Activity $activity, Request $request, ActivityStatisticService $statisticService): Response
+    public function deleteAction(Activity $activity, Request $request, ActivityStatisticService $statisticService, ActivityService $activityService): Response
     {
         $stats = $statisticService->getActivityStatistics($activity);
 
@@ -404,7 +364,9 @@ final class ActivityController extends AbstractController
 
         if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
             try {
-                $this->repository->deleteActivity($activity, $deleteForm->get('activity')->getData());
+                /** @var Activity|null $replace */
+                $replace = $deleteForm->get('activity')->getData();
+                $activityService->deleteActivity($activity, $replace);
                 $this->flashSuccess('action.delete.success');
             } catch (Exception $ex) {
                 $this->flashDeleteException($ex);
@@ -463,9 +425,9 @@ final class ActivityController extends AbstractController
     /**
      * @return FormInterface<mixed>
      */
-    private function createEditForm(Activity $activity): FormInterface
+    private function createEditForm(Activity $activity, SystemConfiguration $configuration): FormInterface
     {
-        $currency = $this->configuration->getCustomerDefaultCurrency();
+        $currency = $configuration->getDefaultCurrency();
         $url = $this->generateUrl('admin_activity_create');
         if ($activity->getProject()?->getId() !== null) {
             $url = $this->generateUrl('admin_activity_create_with_project', ['project' => $activity->getProject()->getId()]);
